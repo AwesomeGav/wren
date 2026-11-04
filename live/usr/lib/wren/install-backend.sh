@@ -19,53 +19,116 @@ HOST=${WREN_HOSTNAME:-wren}; TZ_NAME=${WREN_TZ:-UTC}; LOCALE=${WREN_LOCALE:-en_U
 XKB=${WREN_XKB:-us}; KEYMAP=${WREN_KEYMAP:-us}
 [[ -b $DISK ]] || fail "The disk $DISK was not found."
 MEDIA=${WREN_MEDIA:-/run/archiso/bootmnt}
-if [[ -d /sys/firmware/efi && -z ${WREN_FORCE_BIOS:-} ]]; then UEFI=1; else UEFI=0; fi
+if [[ -n ${WREN_FORCE_UEFI:-} ]]; then UEFI=1
+elif [[ -d /sys/firmware/efi && -z ${WREN_FORCE_BIOS:-} ]]; then UEFI=1; else UEFI=0; fi
+# erase: whole disk | free: new partition in free space | partition: reuse one partition
+MODE=${WREN_MODE:-erase}
+NVRAM_OPT=(); [[ -n ${WREN_NO_NVRAM:-} ]] && NVRAM_OPT=(--no-nvram)
+ESP=""
 
 # ---------------------------------------------------------------- disk
 step 2 "Preparing the disk"
 swapoff -a 2>/dev/null || true
 umount -R "$T" 2>/dev/null || true
-while read -r part; do
-  umount "$part" 2>/dev/null || true
-  swapoff "$part" 2>/dev/null || true
-done < <(lsblk -lnpo NAME "$DISK" | tail -n +2)
-wipefs -af "$DISK" >/dev/null
 
-if ((UEFI)); then
-  sfdisk --wipe always --wipe-partitions always "$DISK" <<'EOF'
+part_list() { lsblk -lnpo NAME,TYPE "$DISK" | awk '$2 == "part" {print $1}'; }
+settle() {
+  partprobe "$DISK" 2>/dev/null || partx -u "$DISK" 2>/dev/null || true
+  udevadm settle 2>/dev/null || true
+  sleep 1
+  # Without udev (e.g. in a container) partition device files may be missing; create them
+  local p maj min
+  for p in $(part_list); do
+    if [[ ! -b $p && -r /sys/class/block/${p##*/}/dev ]]; then
+      IFS=: read -r maj min < "/sys/class/block/${p##*/}/dev"
+      mknod "$p" b "$maj" "$min"
+    fi
+  done
+}
+find_esp() {
+  lsblk -lnpo NAME,PARTTYPE "$DISK" |
+    awk 'tolower($2) == "c12a7328-f81f-11d2-ba4b-00a0c93ec93b" || tolower($2) == "0xef" {print $1; exit}'
+}
+
+case $MODE in
+erase)
+  while read -r part; do
+    umount "$part" 2>/dev/null || true
+    swapoff "$part" 2>/dev/null || true
+  done < <(lsblk -lnpo NAME "$DISK" | tail -n +2)
+  wipefs -af "$DISK" >/dev/null
+  if ((UEFI)); then
+    sfdisk --wipe always --wipe-partitions always "$DISK" <<'EOF'
 label: gpt
 size=1GiB, type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B, name="WREN-BOOT"
 type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="WREN"
 EOF
-else
-  sfdisk --wipe always --wipe-partitions always "$DISK" <<'EOF'
+  else
+    sfdisk --wipe always --wipe-partitions always "$DISK" <<'EOF'
 label: gpt
 size=1MiB, type=21686148-6449-6E6F-744E-656564454649, name="BIOS-BOOT"
 type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="WREN"
 EOF
-fi
-partprobe "$DISK" 2>/dev/null || true
-udevadm settle
-sleep 1
-mapfile -t PARTS < <(lsblk -lnpo NAME,TYPE "$DISK" | awk '$2 == "part" {print $1}')
-[[ ${#PARTS[@]} -ge 2 ]] || fail "The new partitions didn't appear on $DISK."
-# Without udev (e.g. in a container) partition device files may be missing; create them
-for p in "${PARTS[@]}"; do
-  if [[ ! -b $p && -r /sys/class/block/${p##*/}/dev ]]; then
-    IFS=: read -r maj min < "/sys/class/block/${p##*/}/dev"
-    mknod "$p" b "$maj" "$min"
   fi
-done
-BOOT=${PARTS[0]}; ROOTP=${PARTS[1]}
+  settle
+  mapfile -t PARTS < <(part_list)
+  [[ ${#PARTS[@]} -ge 2 ]] || fail "The new partitions didn't appear on $DISK."
+  BOOT=${PARTS[0]}; ROOTP=${PARTS[1]}
+  ;;
+free)
+  LABEL=$(sfdisk -d "$DISK" 2>/dev/null | sed -n 's/^label: *//p')
+  [[ $LABEL == gpt || $LABEL == dos ]] || fail "This disk has no partition table, so there's no free space to use."
+  SS=$(blockdev --getss "$DISK")
+  MIB=$((1024 * 1024))
+  START_B=$(( (${WREN_FREE_START:?} + MIB - 1) / MIB * MIB ))
+  END_B=$(( WREN_FREE_START + ${WREN_FREE_SIZE:?} ))
+  [[ $LABEL == gpt ]] && END_B=$(( END_B - MIB ))
+  END_B=$(( END_B / MIB * MIB ))
+  (( END_B - START_B >= 12 * 1000 * 1000 * 1000 )) || fail "The free space is too small (Wren needs 12 GB)."
+  if [[ $LABEL == gpt ]]; then TYPE=0FC63DAF-8483-4772-8E79-3D69D8477DE4; else TYPE=83; fi
+  mapfile -t BEFORE < <(part_list)
+  echo "start=$((START_B / SS)), size=$(((END_B - START_B) / SS)), type=$TYPE" |
+    sfdisk --append --no-reread --wipe-partitions always "$DISK"
+  settle
+  ROOTP=""
+  for p in $(part_list); do
+    if [[ " ${BEFORE[*]} " != *" $p "* ]]; then ROOTP=$p; fi
+  done
+  [[ -n $ROOTP ]] || fail "The new partition didn't appear on $DISK."
+  ;;
+partition)
+  ROOTP=${WREN_TARGET:?}
+  [[ -b $ROOTP ]] || fail "The partition $ROOTP was not found."
+  [[ $(lsblk -no PKNAME "$ROOTP" | head -n1) == "$(basename "$DISK")" ]] || fail "$ROOTP isn't on $DISK."
+  [[ $ROOTP != "$(find_esp)" ]] || fail "That's the computer's boot partition. Pick a different one."
+  umount "$ROOTP" 2>/dev/null || true
+  wipefs -af "$ROOTP" >/dev/null
+  ;;
+*) fail "Unknown install type: $MODE" ;;
+esac
+
+if [[ $MODE != erase ]]; then
+  if ((UEFI)); then
+    ESP=$(find_esp)
+    [[ -n $ESP ]] || fail "This disk has no EFI boot partition, so Wren can't start alongside the other system. Choose \"Erase the whole disk\" or use a different disk."
+  elif [[ $(sfdisk -d "$DISK" 2>/dev/null | sed -n 's/^label: *//p') == gpt ]]; then
+    lsblk -lnpo PARTTYPE "$DISK" | grep -qi 21686148-6449-6e6f-744e-656564454649 ||
+      fail "This older computer can't start Wren from this disk alongside another system. Choose \"Erase the whole disk\" instead."
+  fi
+fi
 
 step 6 "Formatting"
 mkfs.ext4 -F -q -L wren "$ROOTP"
-if ((UEFI)); then mkfs.fat -F 32 -n WRENBOOT "$BOOT" >/dev/null; fi
+if [[ $MODE == erase ]] && ((UEFI)); then mkfs.fat -F 32 -n WRENBOOT "$BOOT" >/dev/null; fi
 mkdir -p "$T"
 mount "$ROOTP" "$T"
-if ((UEFI)); then
+if [[ $MODE == erase ]] && ((UEFI)); then
   mkdir -p "$T/boot"
   mount "$BOOT" "$T/boot"
+elif ((UEFI)); then
+  # Share the existing EFI partition (never formatted); Wren's kernel stays on its own partition
+  mkdir -p "$T/efi"
+  mount "$ESP" "$T/efi"
 fi
 
 # ---------------------------------------------------------------- copy
@@ -158,6 +221,13 @@ if [[ $XKB != us ]]; then
   sed -i "s|^command = \"cage|command = \"env XKB_DEFAULT_LAYOUT=$XKB cage|" "$T/etc/greetd/config.toml"
 fi
 
+# Alongside another system: show a boot menu and keep the clock the way Windows expects
+if [[ $MODE != erase ]]; then
+  mkdir -p "$T/etc/wren"
+  touch "$T/etc/wren/dual-boot"
+  printf '0.0 0 0.0\n0\nLOCAL\n' > "$T/etc/adjtime"
+fi
+
 # Start-up screen and quiet boot (boot image and menu are built further down)
 arch-chroot "$T" bash /usr/lib/wren/setup-boot-splash.sh
 
@@ -165,7 +235,7 @@ arch-chroot "$T" bash /usr/lib/wren/setup-boot-splash.sh
 step 80 "Creating your account"
 arch-chroot "$T" env WREN_FULLNAME="$FULLNAME" WREN_USER="$USERNAME" /bin/bash -e <<'EOF'
 locale-gen >/dev/null
-hwclock --systohc 2>/dev/null || true
+[[ -f /etc/wren/dual-boot ]] || hwclock --systohc 2>/dev/null || true
 useradd -m -G wheel,video,audio,input -c "$WREN_FULLNAME" -s /bin/bash "$WREN_USER"
 passwd -l root >/dev/null
 echo '%wheel ALL=(ALL:ALL) ALL' > /etc/sudoers.d/10-wheel
@@ -188,10 +258,13 @@ step 88 "Preparing the system to start"
 arch-chroot "$T" mkinitcpio -P
 
 step 94 "Installing the boot loader"
-if ((UEFI)); then
-  arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Wren --recheck
+if ((UEFI)) && [[ $MODE == erase ]]; then
+  arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Wren --recheck "${NVRAM_OPT[@]}"
   # Second copy at the fallback path, for computers that ignore boot entries
   arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/boot --removable --recheck
+elif ((UEFI)); then
+  # Alongside another system: add Wren's own entry, leave the other system's files alone
+  arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=Wren --recheck "${NVRAM_OPT[@]}"
 else
   arch-chroot "$T" grub-install --target=i386-pc --recheck "$DISK"
 fi

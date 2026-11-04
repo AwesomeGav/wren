@@ -1,0 +1,64 @@
+# Wren boot menu (shown only when Wren is installed next to another system)
+title-text: ""
+desktop-image: "background.jpg"
+desktop-color: "#141210"
+terminal-font: "Unifont Regular 16"
+
++ image {
+    top = 14%
+    left = 50%-48
+    width = 96
+    height = 96
+    file = "logo.png"
+}
+
++ label {
+    top = 14%+112
+    left = 0
+    width = 100%
+    align = "center"
+    text = "Choose what to start"
+    font = "Unifont Regular 16"
+    color = "#F1EBE3"
+}
+
++ boot_menu {
+    left = 50%-280
+    top = 14%+150
+    width = 560
+    height = 260
+    menu_pixmap_style = "menu_*.png"
+    item_font = "Unifont Regular 16"
+    item_color = "#D9D1C7"
+    selected_item_font = "Unifont Regular 16"
+    selected_item_color = "#1A120B"
+    selected_item_pixmap_style = "select_*.png"
+    item_height = 40
+    item_padding = 14
+    item_spacing = 4
+    icon_width = 0
+    icon_height = 0
+    item_icon_space = 0
+    scrollbar = false
+}
+
++ label {
+    id = "__timeout__"
+    top = 14%+430
+    left = 0
+    width = 100%
+    align = "center"
+    text = "Starting the highlighted system in %d seconds"
+    font = "Unifont Regular 16"
+    color = "#A89F94"
+}
+
++ label {
+    top = 14%+458
+    left = 0
+    width = 100%
+    align = "center"
+    text = "Use the arrow keys to choose, then press Enter"
+    font = "Unifont Regular 16"
+    color = "#6E665D"
+}

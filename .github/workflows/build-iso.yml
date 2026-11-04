@@ -46,19 +46,26 @@ jobs:
 
       - name: Take screenshots of the desktop
         continue-on-error: true
+        run: bash tests/screenshots.sh || true
+
+      - name: Test the installer on a virtual disk
+        run: bash tests/test-install.sh
+
+      - name: Test installing next to Windows, then boot it
+        run: bash tests/test-dualboot.sh
+
+      - name: Upload screenshots (screenshots branch)
+        if: always()
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          bash tests/screenshots.sh || true
           pacman -S --noconfirm --needed git >/dev/null
-          cd screenshots
+          mkdir -p screenshots && cd screenshots
           git init -q -b screenshots
           git -c user.name="Wren Build" -c user.email="build@users.noreply.github.com" add -A
           git -c user.name="Wren Build" -c user.email="build@users.noreply.github.com" commit -q --allow-empty -m "Screenshots for build ${{ github.run_number }}"
           git push -qf "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" screenshots
-
-      - name: Test the installer on a virtual disk
-        run: bash tests/test-install.sh
 
       - name: Keep only the newest package versions in the cache
         run: |

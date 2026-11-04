@@ -91,6 +91,8 @@ intel-ucode
 amd-ucode
 
 # --- Installer tools ----------------------------------------------------
+os-prober
+ntfs-3g
 rsync
 grub
 efibootmgr

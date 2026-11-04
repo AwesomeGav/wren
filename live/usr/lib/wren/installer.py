@@ -105,6 +105,89 @@ def list_disks():
     return disks
 
 
+ESP_TYPES = {"c12a7328-f81f-11d2-ba4b-00a0c93ec93b", "0xef"}
+SKIP_TYPES = ESP_TYPES | {
+    "e3c9e316-0b5c-4db8-817d-f92df00215ae",  # Microsoft reserved
+    "de94bba4-06d1-4d40-a16a-bfd50179d6ac",  # Windows recovery
+    "21686148-6449-6e6f-744e-656564454649",  # BIOS boot
+    "0x5", "0xf", "0x85", "0x27",            # extended / hidden recovery
+}
+MIB = 1024 * 1024
+
+
+def disk_layout(path, data=None):
+    """Partitions, usable free space and what's on a disk, read with lsblk (no root needed)."""
+    if data is None:
+        try:
+            data = json.loads(run(["lsblk", "-J", "-b", "-o",
+                                   "NAME,PATH,SIZE,START,TYPE,FSTYPE,LABEL,PARTTYPE,PARTTYPENAME,PTTYPE,"
+                                   "MOUNTPOINTS,PARTN", path]))
+        except json.JSONDecodeError:
+            data = {}
+    devs = data.get("blockdevices") or [{}]
+    dev = devs[0]
+    size = int(dev.get("size") or 0)
+    pttype = (dev.get("pttype") or "").lower()
+    parts = []
+    for c in dev.get("children") or []:
+        if c.get("type") != "part":
+            continue
+        ptype = (c.get("parttype") or "").lower()
+        parts.append({
+            "path": c.get("path"), "start": int(c.get("start") or 0) * 512, "size": int(c.get("size") or 0),
+            "fstype": (c.get("fstype") or "").lower(), "label": c.get("label") or "", "ptype": ptype,
+            "typename": c.get("parttypename") or "", "number": int(c.get("partn") or 0),
+            "mounted": any(m for m in (c.get("mountpoints") or []) if m),
+            "esp": ptype in ESP_TYPES,
+        })
+    parts.sort(key=lambda p: p["start"])
+    # Free space between and after partitions (1 MiB aligned, room left for the GPT backup)
+    gaps, cursor = [], MIB
+    end = size - (MIB if pttype == "gpt" else 0)
+    for p in parts:
+        if p["number"] > 4 and pttype == "dos":
+            continue  # logical partitions sit inside the extended one
+        if p["start"] > cursor:
+            gaps.append((cursor, p["start"] - cursor))
+        cursor = max(cursor, p["start"] + p["size"])
+    if end > cursor:
+        gaps.append((cursor, end - cursor))
+    free = []
+    for start, length in gaps:
+        a = (start + MIB - 1) // MIB * MIB
+        length -= a - start
+        if length >= MIN_DISK:
+            free.append({"start": a, "size": length})
+    free.sort(key=lambda g: -g["size"])
+    primaries = len([p for p in parts if 0 < p["number"] <= 4]) if pttype == "dos" else 0
+    windows = any(p["fstype"] == "ntfs" or "microsoft" in p["typename"].lower() for p in parts)
+    others = [p for p in parts if not p["esp"] and p["ptype"] not in SKIP_TYPES]
+    uefi = os.path.isdir("/sys/firmware/efi")
+    has_esp = any(p["esp"] for p in parts)
+    has_biosboot = any(p["ptype"] == "21686148-6449-6e6f-744e-656564454649" for p in parts)
+
+    blocker = None
+    if not parts or pttype not in ("gpt", "dos"):
+        blocker = "This disk is empty, so there's nothing to keep."
+    elif uefi and not has_esp:
+        blocker = "This disk has no EFI boot partition, so Wren can't start alongside what's on it."
+    elif not uefi and pttype == "gpt" and not has_biosboot:
+        blocker = "This older computer can't start Wren from this disk alongside another system."
+
+    can_free = bool(free) and not blocker and not (pttype == "dos" and primaries >= 4)
+    replaceable = [p for p in others if not p["mounted"] and p["size"] >= MIN_DISK] if not blocker else []
+    return {"size": size, "pttype": pttype, "parts": parts, "free": free, "windows": windows,
+            "has_data": bool(others), "can_free": can_free, "replaceable": replaceable,
+            "blocker": blocker, "full_primaries": pttype == "dos" and primaries >= 4}
+
+
+def describe_part(p):
+    kind = {"ntfs": "Windows (NTFS)", "ext4": "Linux (ext4)", "btrfs": "Linux (btrfs)", "vfat": "FAT32",
+            "exfat": "exFAT"}.get(p["fstype"], p["fstype"].upper() or "Unknown")
+    name = f" “{p['label']}”" if p["label"] else ""
+    return f"{p['path'].split('/')[-1]}{name} · {kind} · {human_size(p['size'])}"
+
+
 def string_list(items):
     model = Gtk.StringList()
     for item in items:
@@ -240,22 +323,30 @@ class DiskPage(Page):
     def __init__(self, win):
         super().__init__(win)
         self.widget, self.box = page_shell("Where should Wren go?",
-                                           "Wren will use the whole disk you choose.")
-        self.group = Adw.PreferencesGroup()
+                                           "Pick a disk, then choose how to install.")
+        self.group = Adw.PreferencesGroup(title="Disk")
         self.box.append(self.group)
+        self.how = Adw.PreferencesGroup(title="How to install", visible=False)
+        self.box.append(self.how)
+        self.hint = make_label("", "page-body", xalign=0, visible=False)
+        self.box.append(self.hint)
         warn = Gtk.Box(spacing=10, margin_top=4)
         icon = Gtk.Image.new_from_icon_name("dialog-warning-symbolic")
         icon.add_css_class("warn")
         warn.append(icon)
-        warn.append(make_label("Everything on the selected disk will be erased. "
-                               "Back up anything you want to keep first.", "warn", xalign=0, hexpand=True))
+        self.warning = make_label("", "warn", xalign=0, hexpand=True)
+        warn.append(self.warning)
+        self.warn_box = warn
         self.box.append(warn)
         refresh = Gtk.Button(label="Refresh disk list", halign=Gtk.Align.START)
         refresh.add_css_class("flat")
         refresh.connect("clicked", lambda *_: self.on_show())
         self.box.append(refresh)
-        self.rows = []
+        self.rows, self.how_rows = [], []
         self.selected = None
+        self.layout = None
+        self.mode = None
+        self.part_dd = None
 
     def on_show(self):
         for row in self.rows:
@@ -265,16 +356,14 @@ class DiskPage(Page):
         first = None
         disks = list_disks()
         if not disks:
-            row = Adw.ActionRow(title="No disks found",
-                                subtitle="Connect a drive and press Refresh.")
+            row = Adw.ActionRow(title="No disks found", subtitle="Connect a drive and press Refresh.")
             self.group.add(row)
             self.rows.append(row)
         for disk in disks:
-            title = f"{disk['model']}"
             subtitle = f"{human_size(disk['size'])} · {disk['path']}" + (f" · {disk['tran']}" if disk["tran"] else "")
             if not disk["big_enough"]:
                 subtitle += " · too small (needs 12 GB)"
-            row = Adw.ActionRow(title=title, subtitle=subtitle)
+            row = Adw.ActionRow(title=disk["model"], subtitle=subtitle)
             check = Gtk.CheckButton(valign=Gtk.Align.CENTER)
             if first:
                 check.set_group(first)
@@ -289,6 +378,7 @@ class DiskPage(Page):
             self.group.add(row)
             self.rows.append(row)
         usable = [d for d in disks if d["big_enough"]]
+        self._show_modes()
         if len(usable) == 1:
             for row, disk in zip(self.rows, disks):
                 if disk is usable[0]:
@@ -298,14 +388,122 @@ class DiskPage(Page):
     def _pick(self, check, disk):
         if check.get_active():
             self.selected = disk
+            self.layout = disk_layout(disk["path"])
+            self._show_modes()
+        self.win.update_buttons()
+
+    def _show_modes(self):
+        for row in self.how_rows:
+            self.how.remove(row)
+        self.how_rows = []
+        self.mode = None
+        self.part_dd = None
+        self.hint.set_visible(False)
+        self.warn_box.set_visible(False)
+        L = self.layout if self.selected else None
+        self.how.set_visible(L is not None)
+        if L is None:
+            return
+
+        first = None
+
+        def add(mode, title, subtitle, enabled, extra=None):
+            nonlocal first
+            row = Adw.ActionRow(title=title, subtitle=subtitle)
+            check = Gtk.CheckButton(valign=Gtk.Align.CENTER, sensitive=enabled)
+            if first:
+                check.set_group(first)
+            else:
+                first = check
+            check.connect("toggled", lambda c: c.get_active() and self._set_mode(mode))
+            row.add_prefix(check)
+            if extra:
+                row.add_suffix(extra)
+            row.set_activatable_widget(check)
+            row.set_sensitive(enabled)
+            self.how.add(row)
+            self.how_rows.append(row)
+            return check
+
+        # Alongside
+        if L["can_free"]:
+            sub = f"Uses {human_size(L['free'][0]['size'])} of free space. Everything else stays as it is."
+        elif L["blocker"] and L["has_data"]:
+            sub = L["blocker"]
+        elif L["full_primaries"]:
+            sub = "This disk already has 4 main partitions, the most it can hold."
+        elif L["has_data"]:
+            sub = "There's no free space yet. See below for how to make room."
+        else:
+            sub = "This disk is empty, so there's nothing to keep."
+        c_free = add("free", "Install alongside" + (" Windows" if L["windows"] else " what's already here"),
+                     sub, L["can_free"])
+
+        # Replace a partition
+        repl = L["replaceable"]
+        if repl:
+            self.part_dd = Gtk.DropDown.new_from_strings([describe_part(p) for p in repl])
+            self.part_dd.set_valign(Gtk.Align.CENTER)
+            self.part_dd.connect("notify::selected", lambda *_: self._set_mode(self.mode))
+        add("partition", "Replace a partition",
+            "Erases one partition and installs Wren there." if repl else "No partition here is big enough (12 GB).",
+            bool(repl), self.part_dd)
+
+        # Erase
+        c_erase = add("erase", "Erase the whole disk", "Removes everything on this disk, including other systems.", True)
+
+        if L["windows"] and not L["can_free"] and not L["blocker"]:
+            self.hint.set_text("Want to keep Windows? Make room first: in Windows, open Disk Management "
+                               "(right-click Start), right-click your C: drive, choose Shrink Volume, and shrink "
+                               "it by at least 20 GB (20,000 MB). Then restart from this USB stick and pick "
+                               "“Install alongside Windows”.")
+            self.hint.set_visible(True)
+        if L["can_free"]:
+            c_free.set_active(True)
+        elif not L["has_data"]:
+            c_erase.set_active(True)
+
+    def _set_mode(self, mode):
+        self.mode = mode
+        L = self.layout
+        msg = ""
+        if mode == "erase":
+            msg = "Everything on this disk will be erased. Back up anything you want to keep first."
+        elif mode == "partition" and self.part_dd is not None:
+            p = L["replaceable"][self.part_dd.get_selected()]
+            msg = f"Everything on {describe_part(p)} will be erased."
+            if p["fstype"] == "ntfs":
+                msg += " This looks like a Windows partition. Windows may stop working."
+        elif mode == "free":
+            msg = ("Nothing on the disk will be erased. A menu will let you choose Wren or "
+                   f"{'Windows' if L['windows'] else 'your other system'} each time you start. "
+                   "If Windows uses BitLocker, have your recovery key handy.")
+        self.warning.set_text(msg)
+        self.warn_box.set_visible(bool(msg))
         self.win.update_buttons()
 
     def can_continue(self):
-        return self.selected is not None
+        if self.selected is None or self.mode is None:
+            return False
+        if self.mode == "partition":
+            return self.part_dd is not None
+        if self.mode == "free":
+            return bool(self.layout and self.layout["can_free"])
+        return True
 
     def values(self):
         d = self.selected
-        return {"disk": d["path"], "disk_label": f"{d['model']} ({human_size(d['size'])})"}
+        v = {"disk": d["path"], "mode": self.mode, "disk_label": f"{d['model']} ({human_size(d['size'])})"}
+        if self.mode == "free":
+            g = self.layout["free"][0]
+            v.update(free_start=g["start"], free_size=g["size"],
+                     where=f"{human_size(g['size'])} of free space on {v['disk_label']}")
+        elif self.mode == "partition":
+            p = self.layout["replaceable"][self.part_dd.get_selected()]
+            v.update(target=p["path"], where=describe_part(p))
+        else:
+            v["where"] = v["disk_label"]
+        return v
 
 
 class AccountPage(Page):
@@ -389,7 +587,9 @@ class ReviewPage(Page):
             self.group.remove(row)
         v = self.win.values()
         items = [
-            ("drive-harddisk-symbolic", "Disk (will be erased)", v["disk_label"]),
+            ("drive-harddisk-symbolic",
+             {"erase": "Disk (will be erased)", "partition": "Partition (will be erased)",
+              "free": "Free space (nothing is erased)"}[v["mode"]], v["where"]),
             ("avatar-default-symbolic", "Account", f"{v['fullname']} ({v['user']})"),
             ("computer-symbolic", "Computer name", v["hostname"]),
             ("preferences-desktop-locale-symbolic", "Language", v["language"]),
@@ -517,8 +717,14 @@ class Window(Adw.ApplicationWindow):
         self.back.set_sensitive(self.index > 0)
         self.next.set_sensitive(page.can_continue())
         review = isinstance(page, ReviewPage)
-        self.next.set_label("Erase Disk & Install" if review else "Continue")
-        if review:
+        mode = self.pages[3].mode if hasattr(self.pages[3], "mode") else "erase"
+        label = {"erase": "Erase Disk & Install", "partition": "Erase Partition & Install",
+                 "free": "Install"}.get(mode, "Install")
+        self.next.set_label(label if review else "Continue")
+        if review and mode == "free":
+            self.next.remove_css_class("destructive-action")
+            self.next.add_css_class("suggested-action")
+        elif review:
             self.next.remove_css_class("suggested-action")
             self.next.add_css_class("destructive-action")
         else:
@@ -528,12 +734,21 @@ class Window(Adw.ApplicationWindow):
     def on_next(self):
         if isinstance(self.pages[self.index], ReviewPage):
             v = self.values()
-            dialog = Adw.AlertDialog(
-                heading="Erase this disk?",
-                body=f"Everything on {v['disk_label']} will be permanently deleted and Wren will be installed.")
+            if v["mode"] == "free":
+                heading, body, go = ("Install Wren alongside?",
+                                     f"Wren will use {v['where']}. Nothing else will be changed.", "Install")
+            elif v["mode"] == "partition":
+                heading, body, go = ("Erase this partition?",
+                                     f"Everything on {v['where']} will be permanently deleted.", "Erase & Install")
+            else:
+                heading, body, go = ("Erase this disk?",
+                                     f"Everything on {v['disk_label']} will be permanently deleted and Wren "
+                                     "will be installed.", "Erase & Install")
+            dialog = Adw.AlertDialog(heading=heading, body=body)
             dialog.add_response("cancel", "Cancel")
-            dialog.add_response("install", "Erase & Install")
-            dialog.set_response_appearance("install", Adw.ResponseAppearance.DESTRUCTIVE)
+            dialog.add_response("install", go)
+            dialog.set_response_appearance("install", Adw.ResponseAppearance.SUGGESTED if v["mode"] == "free"
+                                           else Adw.ResponseAppearance.DESTRUCTIVE)
             dialog.set_default_response("cancel")
             dialog.set_close_response("cancel")
             dialog.connect("response", lambda _d, r: self.start_install() if r == "install" else None)
@@ -551,7 +766,9 @@ class Window(Adw.ApplicationWindow):
         self.go(len(self.pages) - 1)
         env = dict(os.environ, WREN_DISK=v["disk"], WREN_USER=v["user"], WREN_FULLNAME=v["fullname"],
                    WREN_HOSTNAME=v["hostname"], WREN_TZ=v["timezone"], WREN_LOCALE=v["locale"],
-                   WREN_XKB=v["xkb"], WREN_KEYMAP=v["keymap"])
+                   WREN_XKB=v["xkb"], WREN_KEYMAP=v["keymap"], WREN_MODE=v["mode"],
+                   WREN_FREE_START=str(v.get("free_start", "")), WREN_FREE_SIZE=str(v.get("free_size", "")),
+                   WREN_TARGET=v.get("target", ""))
         wren_env = {k: env[k] for k in env if k.startswith("WREN_")}
         cmd = [BACKEND] if os.geteuid() == 0 else \
             ["sudo", "-n", "env"] + [f"{k}={v}" for k, v in wren_env.items()] + [BACKEND]
