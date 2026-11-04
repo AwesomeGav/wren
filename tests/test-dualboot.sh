@@ -28,6 +28,19 @@ mknodes() {  # partition device nodes (no udev in containers)
   done
 }
 
+debug_windows() {  # <label> <esp device or ""> [env...]: trace the Windows detection step
+  local label=$1 esp=$2; shift 2
+  {
+    ls -l /mnt/wren/etc/grub.d/ | tail -n 6
+    grep -n "35_wren_windows" /mnt/wren/boot/grub/grub.cfg || echo "(35_wren_windows section not in grub.cfg)"
+    [[ -n $esp ]] && mkdir -p /mnt/wren/efi && mount "$esp" /mnt/wren/efi
+    env "$@" arch-chroot /mnt/wren sh -x /etc/grub.d/35_wren_windows 2>&1 | head -n 25
+    [[ -n $esp ]] && umount /mnt/wren/efi
+    for d in $(blkid -p -o device -t TYPE=ntfs 2>/dev/null; ls /dev/loop*p* 2>/dev/null); do :; done
+    ls /dev/loop*p* 2>/dev/null | tr '\n' ' '
+  } 2>&1 | while IFS= read -r l; do echo "::error title=$label Windows detection::$l"; done
+}
+
 free_region() {  # prints "<start bytes> <size bytes>" of the biggest free region
   local loop=$1 ss
   ss=$(blockdev --getss "$loop")
@@ -82,7 +95,10 @@ if install_alongside "$loop" WREN_FORCE_UEFI=1 WREN_NO_NVRAM=1; then
   grep -q LOCAL /mnt/wren/etc/adjtime || fail "UEFI: clock not set to Windows-style local time"
   grep -q 'set timeout=5' /mnt/wren/boot/grub/grub.cfg || fail "UEFI: boot menu isn't shown"
   grep -q 'themes/wren/theme.txt' /mnt/wren/boot/grub/grub.cfg || warnmsg "UEFI: Wren boot menu theme not referenced"
-  grep -q "menuentry 'Windows'" /mnt/wren/boot/grub/grub.cfg || fail "UEFI: Windows isn't in the boot menu"
+  if ! grep -q "menuentry 'Windows'" /mnt/wren/boot/grub/grub.cfg; then
+    fail "UEFI: Windows isn't in the boot menu"
+    debug_windows UEFI "${loop}p1" WREN_FORCE_UEFI=1
+  fi
   grep -q "menuentry 'Wren Linux'" /mnt/wren/boot/grub/grub.cfg || fail "UEFI: Wren isn't in the boot menu"
   umount /mnt/wren
 else
@@ -116,7 +132,10 @@ if install_alongside "$loop" WREN_FORCE_BIOS=1; then
   dd if="$loop" bs=512 count=1 2>/dev/null | grep -aq GRUB || fail "BIOS: GRUB not installed in the boot sector"
   mkdir -p /mnt/wren && mount "${loop}p3" /mnt/wren
   grep -q 'set timeout=5' /mnt/wren/boot/grub/grub.cfg || fail "BIOS: boot menu isn't shown"
-  grep -q "menuentry 'Windows'" /mnt/wren/boot/grub/grub.cfg || fail "BIOS: Windows isn't in the boot menu"
+  if ! grep -q "menuentry 'Windows'" /mnt/wren/boot/grub/grub.cfg; then
+    fail "BIOS: Windows isn't in the boot menu"
+    debug_windows BIOS ""
+  fi
   grep -q "menuentry 'Wren Linux'" /mnt/wren/boot/grub/grub.cfg || fail "BIOS: Wren isn't in the boot menu"
   cp /mnt/wren/boot/grub/grub.cfg "$SHOTS/dualboot-bios-grub.cfg.txt"
   # Test only: the boot image was tailored to the build server's hardware; make a
