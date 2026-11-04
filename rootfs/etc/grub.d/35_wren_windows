@@ -1,0 +1,51 @@
+#!/bin/sh
+# Wren: adds Windows to the boot menu when Wren is installed next to it.
+# Looks for Windows' own boot files directly instead of relying on os-prober.
+set -e
+[ -f /etc/wren/dual-boot ] || exit 0
+
+entry_efi() {  # <device> <path to bootmgfw.efi inside the partition>
+  uuid=$(blkid -p -s UUID -o value "$1" 2>/dev/null) || return 0
+  [ -n "$uuid" ] || return 0
+  cat <<ENTRY
+menuentry 'Windows' --class windows --class os {
+	insmod part_gpt
+	insmod part_msdos
+	insmod fat
+	search --no-floppy --fs-uuid --set=root $uuid
+	chainloader $2
+}
+ENTRY
+}
+
+entry_bios() {  # <NTFS device with bootmgr>
+  uuid=$(blkid -p -s UUID -o value "$1" 2>/dev/null) || return 0
+  [ -n "$uuid" ] || return 0
+  cat <<ENTRY
+menuentry 'Windows' --class windows --class os {
+	insmod part_msdos
+	insmod ntfs
+	insmod ntldr
+	search --no-floppy --fs-uuid --set=root $uuid
+	ntldr /bootmgr
+}
+ENTRY
+}
+
+if [ -d /sys/firmware/efi ] || [ -n "${WREN_FORCE_UEFI:-}" ]; then
+  for esp in /efi /boot/efi /boot; do
+    if [ -f "$esp/EFI/Microsoft/Boot/bootmgfw.efi" ]; then
+      dev=$(findmnt -no SOURCE "$esp" 2>/dev/null || true)
+      [ -n "$dev" ] && entry_efi "$dev" /EFI/Microsoft/Boot/bootmgfw.efi
+      exit 0
+    fi
+  done
+else
+  for dev in $(blkid -t TYPE=ntfs -o device 2>/dev/null); do
+    if ntfscat "$dev" bootmgr >/dev/null 2>&1; then
+      entry_bios "$dev"
+      exit 0
+    fi
+  done
+fi
+exit 0

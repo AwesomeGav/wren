@@ -6,19 +6,17 @@ logo.image = Image("logo.png");
 word.image = Image("wordmark.png");
 ring.image = Image("spinner.png");
 
-cx = Window.GetX() + Window.GetWidth() / 2;
-cy = Window.GetY() + Window.GetHeight() / 2;
-
 logo.sprite = Sprite(logo.image);
-logo.sprite.SetPosition(cx - logo.image.GetWidth() / 2, cy - logo.image.GetHeight() - 20, 1);
-
 word.sprite = Sprite(word.image);
-word.sprite.SetPosition(cx - word.image.GetWidth() / 2, cy + 6, 1);
-
 ring.sprite = Sprite();
 ring.angle = 0;
 
+# Recentred every frame: the screen size can change while booting
 fun refresh_callback() {
+  cx = Window.GetX() + Window.GetWidth() / 2;
+  cy = Window.GetY() + Window.GetHeight() / 2;
+  logo.sprite.SetPosition(cx - logo.image.GetWidth() / 2, cy - logo.image.GetHeight() - 20, 1);
+  word.sprite.SetPosition(cx - word.image.GetWidth() / 2, cy + 6, 1);
   ring.angle += 0.10;
   rotated = ring.image.Rotate(ring.angle);
   ring.sprite.SetImage(rotated);

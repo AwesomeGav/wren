@@ -11,7 +11,7 @@ MEDIA="$PWD/build/work/iso"
 SHOTS="$PWD/screenshots"
 mkdir -p "$SHOTS"
 pacman -S --noconfirm --needed rsync dosfstools e2fsprogs grub arch-install-scripts util-linux ntfs-3g \
-  os-prober qemu-system-x86 python-pillow socat >/dev/null
+  qemu-system-x86 python-pillow socat >/dev/null
 
 problems=()
 fail() { problems+=("$1"); }
@@ -64,13 +64,13 @@ mkdir -p /mnt/esp/EFI/Microsoft/Boot /mnt/esp/EFI/Boot
 echo "fake windows boot manager" > /mnt/esp/EFI/Microsoft/Boot/bootmgfw.efi
 echo "fallback belongs to windows" > /mnt/esp/EFI/Boot/bootx64.efi
 umount /mnt/esp
-esp_uuid=$(blkid -s UUID -o value "${loop}p1"); win_uuid=$(blkid -s UUID -o value "${loop}p3")
+esp_uuid=$(blkid -p -s UUID -o value "${loop}p1"); win_uuid=$(blkid -p -s UUID -o value "${loop}p3")
 
 if install_alongside "$loop" WREN_FORCE_UEFI=1 WREN_NO_NVRAM=1; then
   mknodes "$loop"
-  [[ $(blkid -s UUID -o value "${loop}p1") == "$esp_uuid" ]] || fail "UEFI: EFI partition was reformatted"
-  [[ $(blkid -s UUID -o value "${loop}p3") == "$win_uuid" ]] || fail "UEFI: Windows partition changed"
-  [[ $(blkid -s TYPE -o value "${loop}p4") == ext4 ]] || fail "UEFI: no new ext4 partition for Wren"
+  [[ $(blkid -p -s UUID -o value "${loop}p1") == "$esp_uuid" ]] || fail "UEFI: EFI partition was reformatted"
+  [[ $(blkid -p -s UUID -o value "${loop}p3") == "$win_uuid" ]] || fail "UEFI: Windows partition changed"
+  [[ $(blkid -p -s TYPE -o value "${loop}p4") == ext4 ]] || fail "UEFI: no new ext4 partition for Wren"
   mount "${loop}p1" /mnt/esp
   [[ -f /mnt/esp/EFI/Microsoft/Boot/bootmgfw.efi ]] || fail "UEFI: Windows boot manager file is gone"
   grep -q "belongs to windows" /mnt/esp/EFI/Boot/bootx64.efi 2>/dev/null || fail "UEFI: Windows' fallback boot file was overwritten"
@@ -82,8 +82,8 @@ if install_alongside "$loop" WREN_FORCE_UEFI=1 WREN_NO_NVRAM=1; then
   grep -q LOCAL /mnt/wren/etc/adjtime || fail "UEFI: clock not set to Windows-style local time"
   grep -q 'set timeout=5' /mnt/wren/boot/grub/grub.cfg || fail "UEFI: boot menu isn't shown"
   grep -q 'themes/wren/theme.txt' /mnt/wren/boot/grub/grub.cfg || warnmsg "UEFI: Wren boot menu theme not referenced"
-  if grep -qi windows /mnt/wren/boot/grub/grub.cfg; then note "UEFI: boot menu lists Windows"
-  else warnmsg "UEFI: os-prober didn't add Windows in the test container"; fi
+  grep -q "menuentry 'Windows'" /mnt/wren/boot/grub/grub.cfg || fail "UEFI: Windows isn't in the boot menu"
+  grep -q "menuentry 'Wren Linux'" /mnt/wren/boot/grub/grub.cfg || fail "UEFI: Wren isn't in the boot menu"
   umount /mnt/wren
 else
   fail "UEFI: install alongside Windows failed: $(grep '^@@ERROR' /tmp/dual.log | tail -n1)"
@@ -106,18 +106,18 @@ echo "fake bootmgr" > /tmp/bootmgr
 ntfscp -f "${loop}p1" /tmp/bootmgr bootmgr >/dev/null 2>&1 || true
 mkdir -p /tmp/bcd && echo x > /tmp/bcd/BCD
 ntfscp -f "${loop}p1" /tmp/bcd/BCD "Boot/BCD" >/dev/null 2>&1 || true
-sysr_uuid=$(blkid -s UUID -o value "${loop}p1"); win_uuid=$(blkid -s UUID -o value "${loop}p2")
+sysr_uuid=$(blkid -p -s UUID -o value "${loop}p1"); win_uuid=$(blkid -p -s UUID -o value "${loop}p2")
 
 if install_alongside "$loop" WREN_FORCE_BIOS=1; then
   mknodes "$loop"
-  [[ $(blkid -s UUID -o value "${loop}p1") == "$sysr_uuid" ]] || fail "BIOS: System Reserved partition changed"
-  [[ $(blkid -s UUID -o value "${loop}p2") == "$win_uuid" ]] || fail "BIOS: Windows partition changed"
-  [[ $(blkid -s TYPE -o value "${loop}p3") == ext4 ]] || fail "BIOS: no new ext4 partition for Wren"
+  [[ $(blkid -p -s UUID -o value "${loop}p1") == "$sysr_uuid" ]] || fail "BIOS: System Reserved partition changed"
+  [[ $(blkid -p -s UUID -o value "${loop}p2") == "$win_uuid" ]] || fail "BIOS: Windows partition changed"
+  [[ $(blkid -p -s TYPE -o value "${loop}p3") == ext4 ]] || fail "BIOS: no new ext4 partition for Wren"
   dd if="$loop" bs=512 count=1 2>/dev/null | grep -aq GRUB || fail "BIOS: GRUB not installed in the boot sector"
   mkdir -p /mnt/wren && mount "${loop}p3" /mnt/wren
   grep -q 'set timeout=5' /mnt/wren/boot/grub/grub.cfg || fail "BIOS: boot menu isn't shown"
-  if grep -qi windows /mnt/wren/boot/grub/grub.cfg; then note "BIOS: boot menu lists Windows"
-  else warnmsg "BIOS: os-prober didn't add Windows in the test container"; fi
+  grep -q "menuentry 'Windows'" /mnt/wren/boot/grub/grub.cfg || fail "BIOS: Windows isn't in the boot menu"
+  grep -q "menuentry 'Wren Linux'" /mnt/wren/boot/grub/grub.cfg || fail "BIOS: Wren isn't in the boot menu"
   cp /mnt/wren/boot/grub/grub.cfg "$SHOTS/dualboot-bios-grub.cfg.txt"
   # Test only: the boot image was tailored to the build server's hardware; make a
   # generic one so the virtual machine below can start it

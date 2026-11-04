@@ -55,7 +55,7 @@ if [[ -f /etc/default/grub ]]; then
   if [[ -f /etc/wren/dual-boot ]]; then
     setkey GRUB_TIMEOUT 5
     setkey GRUB_TIMEOUT_STYLE menu
-    setkey GRUB_DISABLE_OS_PROBER false
+    setkey GRUB_DISABLE_OS_PROBER true
     setkey GRUB_DISABLE_SUBMENU y
     setkey GRUB_GFXMODE auto
     setkey GRUB_COLOR_NORMAL '"light-gray/black"'
