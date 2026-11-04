@@ -1,8 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Install Wren Linux
+Name=Install Wren
 Comment=Install Wren Linux on this computer
-Exec=foot -e wren-install
-Icon=system-software-install
+Exec=wren-installer
+Icon=/usr/share/wren/logo-256.png
 Terminal=false
 Categories=System;
+StartupWMClass=org.wrenlinux.Installer

@@ -1,3 +1,0 @@
-#!/bin/sh
-# Open the app menu, or close it if it's already open.
-pkill -x fuzzel || exec fuzzel

@@ -1,18 +1,40 @@
-# Wren dark theme for window frames and menus
+# Wren window style: warm graphite title bars, centered titles, soft shadows
 border.width: 1
-padding.height: 6
+padding.height: 7
+window.titlebar.padding.width: 8
+window.titlebar.padding.height: 2
+window.button.width: 30
+window.button.spacing: 2
+window.label.text.justify: center
 
-window.active.border.color: #89b4fa
-window.inactive.border.color: #313244
-window.active.title.bg.color: #1e1e2e
-window.inactive.title.bg.color: #181825
-window.active.label.text.color: #cdd6f4
-window.inactive.label.text.color: #6c7086
-window.active.button.unpressed.image.color: #cdd6f4
-window.inactive.button.unpressed.image.color: #6c7086
+window.active.title.bg.color: #221E1A
+window.inactive.title.bg.color: #1C1916
+window.active.label.text.color: #F1EBE3
+window.inactive.label.text.color: #8A8178
+window.active.border.color: #2E2924
+window.inactive.border.color: #26221E
+window.active.button.unpressed.image.color: #D9D1C7
+window.inactive.button.unpressed.image.color: #6E665D
+window.active.button.close.unpressed.image.color: #F0A06A
 
-menu.items.bg.color: #1e1e2e
-menu.items.text.color: #cdd6f4
-menu.items.active.bg.color: #89b4fa
-menu.items.active.text.color: #1e1e2e
-menu.separator.color: #45475a
+window.active.shadow.size: 28
+window.inactive.shadow.size: 14
+window.active.shadow.color: #00000077
+window.inactive.shadow.color: #00000044
+
+menu.border.width: 1
+menu.border.color: #3A342E
+menu.items.padding.x: 12
+menu.items.padding.y: 6
+menu.items.bg.color: #26221E
+menu.items.text.color: #F1EBE3
+menu.items.active.bg.color: #E0894A
+menu.items.active.text.color: #1A120B
+menu.separator.color: #3A342E
+menu.title.bg.color: #26221E
+
+osd.bg.color: #26221E
+osd.border.color: #3A342E
+osd.border.width: 1
+osd.label.text.color: #F1EBE3
+osd.window-switcher.item.active.border.color: #E0894A

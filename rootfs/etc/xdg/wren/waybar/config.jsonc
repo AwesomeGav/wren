@@ -1,60 +1,97 @@
 {
   "layer": "top",
   "position": "bottom",
-  "height": 38,
-  "spacing": 4,
-  "modules-left": ["custom/apps", "wlr/taskbar"],
-  "modules-right": ["tray", "pulseaudio", "backlight", "battery", "clock", "custom/power"],
-
-  "custom/apps": {
-    "format": "  Apps",
-    "tooltip": false,
-    "on-click": "wren-apps"
+  "height": 46,
+  "margin-left": 10,
+  "margin-right": 10,
+  "margin-bottom": 8,
+  "spacing": 0,
+  "modules-left": [
+    "image#wren",
+    "wlr/taskbar"
+  ],
+  "modules-right": [
+    "tray",
+    "group/status",
+    "clock"
+  ],
+  "image#wren": {
+    "path": "/usr/share/wren/logo-64.png",
+    "size": 24,
+    "on-click": "wren-shell launcher",
+    "tooltip": false
   },
-
   "wlr/taskbar": {
-    "format": "{icon} {title:.22}",
-    "icon-size": 18,
-    "icon-theme": "Papirus-Dark",
+    "format": "{icon}",
+    "icon-size": 24,
     "tooltip-format": "{title}",
     "on-click": "activate",
     "on-click-middle": "close",
     "on-click-right": "minimize-raise"
   },
-
-  "tray": { "icon-size": 18, "spacing": 8 },
-
+  "tray": {
+    "icon-size": 18,
+    "spacing": 10
+  },
+  "group/status": {
+    "orientation": "horizontal",
+    "modules": [
+      "network",
+      "pulseaudio",
+      "battery"
+    ]
+  },
+  "network": {
+    "format-wifi": "󰖩",
+    "format-ethernet": "󰈀",
+    "format-disconnected": "󰖪",
+    "format-disabled": "󰖪",
+    "tooltip-format-wifi": "{essid}",
+    "tooltip-format-ethernet": "Wired connection",
+    "tooltip-format-disconnected": "Not connected",
+    "on-click": "wren-shell control"
+  },
   "pulseaudio": {
-    "format": "{icon}  {volume}%",
-    "format-muted": "  Muted",
-    "format-icons": { "default": ["", "", ""] },
-    "on-click": "pavucontrol",
-    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-    "scroll-step": 5
+    "format": "{icon}",
+    "format-muted": "󰝟",
+    "format-icons": {
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
+    },
+    "tooltip-format": "Volume {volume}%",
+    "scroll-step": 5,
+    "on-click": "wren-shell control"
   },
-
-  "backlight": {
-    "format": "  {percent}%",
-    "on-scroll-up": "brightnessctl set +5%",
-    "on-scroll-down": "brightnessctl set 5%-"
-  },
-
   "battery": {
-    "states": { "warning": 25, "critical": 10 },
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
     "format": "{icon}  {capacity}%",
-    "format-charging": "  {capacity}%",
-    "format-icons": ["", "", "", "", ""],
-    "tooltip-format": "{timeTo}"
+    "format-charging": "󰂄  {capacity}%",
+    "format-full": "󰁹  {capacity}%",
+    "format-icons": [
+      "󰂎",
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ],
+    "tooltip-format": "{timeTo}",
+    "on-click": "wren-shell control"
   },
-
   "clock": {
-    "format": "{:%a %b %d   %I:%M %p}",
-    "tooltip-format": "<tt>{calendar}</tt>"
-  },
-
-  "custom/power": {
-    "format": "",
-    "tooltip": false,
-    "on-click": "wren-power-menu"
+    "format": "{:%I:%M %p}",
+    "tooltip-format": "{:%A, %B %d, %Y}",
+    "on-click": "wren-shell control"
   }
 }

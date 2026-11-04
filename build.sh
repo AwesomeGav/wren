@@ -39,11 +39,19 @@ echo ":: Copying Wren files into the live system"
 cp -r rootfs/. "$ROOT/"
 cp -r live/. "$ROOT/"
 install -Dm755 wren-setup "$ROOT/usr/local/bin/wren-setup"
-for f in "$ROOT"/usr/local/bin/wren-*; do
+for f in "$ROOT"/usr/local/bin/wren-* "$ROOT"/usr/lib/wren/*.sh "$ROOT"/usr/lib/wren/*.py; do
   chmod 755 "$f"
   rel="/${f#"$ROOT"/}"
   sed -i "/^file_permissions=(/a\\  [\"$rel\"]=\"0:0:755\"" "$PROFILE/profiledef.sh"
 done
+
+echo ":: Wren theme for the live session's user (root)"
+cp -r rootfs/etc/skel/. "$ROOT/root/"
+
+echo ":: Keep the file manager's background indexer off (saves CPU and battery)"
+mkdir -p "$ROOT/etc/systemd/user"
+ln -sf /dev/null "$ROOT/etc/systemd/user/localsearch-3.service"
+ln -sf /dev/null "$ROOT/etc/systemd/user/tracker-miner-fs-3.service"
 
 echo ":: Services: NetworkManager instead of the default networkd/iwd"
 rm -f "$UNITS"/multi-user.target.wants/systemd-networkd.service \

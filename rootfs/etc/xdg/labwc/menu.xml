@@ -2,21 +2,15 @@
 <!-- Right-click on the desktop opens this menu -->
 <openbox_menu>
   <menu id="root-menu" label="">
-    <item label="All Apps"><action name="Execute" command="wren-apps" /></item>
-    <separator />
+    <item label="Apps"><action name="Execute" command="wren-shell launcher" /></item>
+    <item label="Files"><action name="Execute" command="nautilus --new-window" /></item>
     <item label="Web Browser"><action name="Execute" command="firefox" /></item>
-    <item label="Files"><action name="Execute" command="thunar" /></item>
-    <item label="Text Editor"><action name="Execute" command="mousepad" /></item>
-    <item label="Terminal"><action name="Execute" command="foot" /></item>
     <separator />
-    <menu id="settings-menu" label="Settings">
-      <item label="Wi-Fi &amp; Network"><action name="Execute" command="nm-connection-editor" /></item>
-      <item label="Bluetooth"><action name="Execute" command="blueman-manager" /></item>
-      <item label="Sound"><action name="Execute" command="pavucontrol" /></item>
-      <item label="Displays"><action name="Execute" command="wdisplays" /></item>
-    </menu>
+    <item label="Quick Settings"><action name="Execute" command="wren-shell control" /></item>
+    <item label="Display Settings"><action name="Execute" command="wdisplays" /></item>
+    <item label="Sound Settings"><action name="Execute" command="pavucontrol" /></item>
+    <item label="Bluetooth Devices"><action name="Execute" command="blueman-manager" /></item>
+    <separator />
     <item label="Take Screenshot"><action name="Execute" command="wren-screenshot" /></item>
-    <separator />
-    <item label="Power…"><action name="Execute" command="wren-power-menu" /></item>
   </menu>
 </openbox_menu>

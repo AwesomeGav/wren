@@ -23,18 +23,21 @@ pacman -S --needed --noconfirm "${pkgs[@]}"
 
 echo ":: Applying Wren settings..."
 cp -r "$src/rootfs/." /
-chmod 755 /usr/local/bin/wren-*
+chmod 755 /usr/local/bin/wren-* /usr/lib/wren/*.py
 install -Dm755 "$src/wren-setup" /usr/local/bin/wren-setup
-
 mkdir -p /etc/greetd
-cat > /etc/greetd/config.toml <<'EOF'
-[terminal]
-vt = 1
-
-[default_session]
-command = "tuigreet --time --remember --asterisks --greeting 'Welcome to Wren Linux' --cmd labwc"
-user = "greeter"
-EOF
+cp /usr/share/wren/greetd/* /etc/greetd/
+# Give existing users the Wren app theme
+for home in /home/*/; do
+  user=$(basename "$home")
+  id "$user" >/dev/null 2>&1 || continue
+  install -d -o "$user" -g "$user" "$home.config" "$home.config/gtk-3.0" "$home.config/gtk-4.0"
+  for v in 3.0 4.0; do
+    [[ -f $home.config/gtk-$v/gtk.css ]] || install -o "$user" -g "$user" -m644 \
+      /etc/skel/.config/gtk-$v/gtk.css "$home.config/gtk-$v/gtk.css"
+  done
+done
+systemctl --global mask localsearch-3.service tracker-miner-fs-3.service 2>/dev/null || true
 
 echo ":: Switching on services..."
 # Avoid two network managers fighting each other

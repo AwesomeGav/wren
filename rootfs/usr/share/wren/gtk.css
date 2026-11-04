@@ -1,0 +1,70 @@
+/* Wren Linux palette for GTK 3 (adw-gtk3) and GTK 4 (libadwaita) apps.
+   Warm graphite surfaces with an ember accent. */
+
+@define-color accent_color #F0A06A;
+@define-color accent_bg_color #E0894A;
+@define-color accent_fg_color #1A120B;
+
+@define-color destructive_color #F08A78;
+@define-color destructive_bg_color #C4513F;
+@define-color destructive_fg_color #FFFFFF;
+
+@define-color success_color #9CC98C;
+@define-color warning_color #E9C46A;
+@define-color error_color #F08A78;
+
+@define-color window_bg_color #1C1916;
+@define-color window_fg_color #F1EBE3;
+@define-color view_bg_color #181512;
+@define-color view_fg_color #F1EBE3;
+
+@define-color headerbar_bg_color #221E1A;
+@define-color headerbar_fg_color #F1EBE3;
+@define-color headerbar_border_color #F1EBE3;
+@define-color headerbar_backdrop_color #1C1916;
+@define-color headerbar_shade_color rgba(0, 0, 0, 0.36);
+
+@define-color sidebar_bg_color #211D19;
+@define-color sidebar_fg_color #F1EBE3;
+@define-color sidebar_backdrop_color #1E1A17;
+@define-color sidebar_shade_color rgba(0, 0, 0, 0.36);
+@define-color secondary_sidebar_bg_color #1F1B18;
+@define-color secondary_sidebar_fg_color #F1EBE3;
+
+@define-color card_bg_color rgba(255, 240, 225, 0.05);
+@define-color card_fg_color #F1EBE3;
+@define-color card_shade_color rgba(0, 0, 0, 0.36);
+
+@define-color dialog_bg_color #26221E;
+@define-color dialog_fg_color #F1EBE3;
+@define-color popover_bg_color #26221E;
+@define-color popover_fg_color #F1EBE3;
+@define-color popover_shade_color rgba(0, 0, 0, 0.36);
+@define-color thumbnail_bg_color #26221E;
+@define-color thumbnail_fg_color #F1EBE3;
+
+@define-color shade_color rgba(0, 0, 0, 0.36);
+@define-color scrollbar_outline_color rgba(0, 0, 0, 0.5);
+
+/* libadwaita 1.6+ variables */
+:root {
+  --accent-color: #F0A06A;
+  --accent-bg-color: #E0894A;
+  --accent-fg-color: #1A120B;
+  --destructive-bg-color: #C4513F;
+  --window-bg-color: #1C1916;
+  --window-fg-color: #F1EBE3;
+  --view-bg-color: #181512;
+  --view-fg-color: #F1EBE3;
+  --headerbar-bg-color: #221E1A;
+  --headerbar-fg-color: #F1EBE3;
+  --headerbar-backdrop-color: #1C1916;
+  --sidebar-bg-color: #211D19;
+  --sidebar-fg-color: #F1EBE3;
+  --sidebar-backdrop-color: #1E1A17;
+  --secondary-sidebar-bg-color: #1F1B18;
+  --card-bg-color: rgba(255, 240, 225, 0.05);
+  --dialog-bg-color: #26221E;
+  --popover-bg-color: #26221E;
+  --thumbnail-bg-color: #26221E;
+}

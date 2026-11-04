@@ -20,8 +20,29 @@ jobs:
       - name: Install build tools
         run: pacman -Syu --noconfirm archiso
 
+      - name: Check scripts for syntax errors
+        run: |
+          for f in build.sh wren-setup live/usr/lib/wren/install-backend.sh tests/test-install.sh; do bash -n "$f"; done
+          python -m py_compile rootfs/usr/lib/wren/shell.py live/usr/lib/wren/installer.py
+
       - name: Build the ISO
         run: bash build.sh
+
+      - name: Take screenshots of the desktop
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bash tests/screenshots.sh
+          pacman -S --noconfirm --needed git >/dev/null
+          cd screenshots
+          git init -q -b screenshots
+          git -c user.name="Wren Build" -c user.email="build@users.noreply.github.com" add -A
+          git -c user.name="Wren Build" -c user.email="build@users.noreply.github.com" commit -qm "Screenshots for build ${{ github.run_number }}"
+          git push -qf "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" screenshots
+
+      - name: Test the installer on a virtual disk
+        run: bash tests/test-install.sh
 
       - name: Publish as a download (Releases page)
         uses: softprops/action-gh-release@v2
@@ -30,6 +51,6 @@ jobs:
           name: Wren Linux (build ${{ github.run_number }})
           body: |
             Download the .iso below, flash it to a USB stick with balenaEtcher or Ventoy, and boot from it.
-            Click **Apps → Install Wren Linux** to install.
+            The Wren installer opens automatically. Pick **Install Wren** and follow the steps.
           files: out/*.iso
           make_latest: true

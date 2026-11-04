@@ -1,0 +1,57 @@
+/* Wren login screen */
+* {
+  font-family: "Inter", sans-serif;
+}
+window {
+  background-color: #141210;
+  color: #F1EBE3;
+}
+frame {
+  background-color: rgba(28, 25, 22, 0.92);
+  border: 1px solid rgba(255, 240, 225, 0.08);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+}
+label {
+  color: #F1EBE3;
+}
+entry, combobox button, dropdown button {
+  background-color: rgba(255, 240, 225, 0.06);
+  border: 1px solid rgba(255, 240, 225, 0.08);
+  border-radius: 12px;
+  color: #F1EBE3;
+  min-height: 40px;
+  box-shadow: none;
+}
+entry:focus-within {
+  border-color: #E0894A;
+  outline: none;
+}
+button {
+  background-color: rgba(255, 240, 225, 0.07);
+  border-radius: 12px;
+  color: #F1EBE3;
+  border: none;
+  box-shadow: none;
+  min-height: 38px;
+  padding: 0 16px;
+}
+button:hover {
+  background-color: rgba(255, 240, 225, 0.12);
+}
+button.suggested-action {
+  background-color: #E0894A;
+  color: #1A120B;
+  font-weight: 600;
+}
+button.suggested-action:hover {
+  background-color: #EC9A5E;
+}
+button.destructive-action {
+  background-color: rgba(196, 81, 63, 0.9);
+  color: #FFFFFF;
+}
+.error, infobar.error {
+  color: #F08A78;
+}

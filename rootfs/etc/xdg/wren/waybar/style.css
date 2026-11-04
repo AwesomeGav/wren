@@ -1,51 +1,84 @@
+/* Wren panel: a floating dock-style bar */
 * {
   font-family: "Inter", "Symbols Nerd Font", sans-serif;
   font-size: 13px;
+  min-height: 0;
   border: none;
   border-radius: 0;
-  min-height: 0;
+  box-shadow: none;
+  text-shadow: none;
 }
 
 window#waybar {
-  background: rgba(24, 24, 37, 0.96);
-  color: #cdd6f4;
-  border-top: 1px solid #313244;
+  background: rgba(28, 25, 22, 0.95);
+  border: 1px solid rgba(255, 240, 225, 0.07);
+  border-radius: 16px;
+  color: #F1EBE3;
 }
 
-#custom-apps {
-  background: #89b4fa;
-  color: #1e1e2e;
-  font-weight: 600;
-  padding: 0 14px;
-  margin: 5px 4px 5px 6px;
-  border-radius: 8px;
+#image.wren {
+  padding: 0 12px 0 16px;
 }
-#custom-apps:hover { background: #b4befe; }
 
+#taskbar {
+  margin-left: 2px;
+}
 #taskbar button {
-  color: #cdd6f4;
-  padding: 0 10px;
-  margin: 5px 2px;
-  border-radius: 8px;
+  padding: 3px 9px 1px 9px;
+  margin: 6px 2px;
+  border-radius: 10px;
+  border-bottom: 2px solid transparent;
+  background: transparent;
 }
-#taskbar button.active { background: #313244; }
-#taskbar button:hover { background: #45475a; }
-
-#tray, #pulseaudio, #backlight, #battery, #clock, #custom-power {
-  padding: 0 10px;
+#taskbar button:hover {
+  background: rgba(255, 240, 225, 0.06);
+}
+#taskbar button.active {
+  background: rgba(255, 240, 225, 0.09);
+  border-bottom: 2px solid #E0894A;
+}
+#taskbar button.minimized {
+  opacity: 0.55;
 }
 
-#battery.warning { color: #f9e2af; }
-#battery.critical { color: #f38ba8; }
+#tray {
+  padding: 0 8px;
+}
+#tray > .needs-attention {
+  color: #E0894A;
+}
 
-#custom-power {
-  color: #f38ba8;
-  margin-right: 6px;
+#status {
+  background: rgba(255, 240, 225, 0.06);
+  border-radius: 10px;
+  margin: 7px 4px;
+  padding: 0 6px;
+}
+#status:hover {
+  background: rgba(255, 240, 225, 0.11);
+}
+#network, #pulseaudio, #battery {
+  padding: 0 7px;
   font-size: 15px;
+}
+#battery {
+  font-size: 13px;
+}
+#battery.warning:not(.charging) { color: #E9C46A; }
+#battery.critical:not(.charging) { color: #F08A78; }
+
+#clock {
+  padding: 0 16px 0 8px;
+  font-weight: 600;
+  font-feature-settings: "tnum";
 }
 
 tooltip {
-  background: #1e1e2e;
-  border: 1px solid #45475a;
-  border-radius: 8px;
+  background: #26221E;
+  border: 1px solid #3A342E;
+  border-radius: 10px;
+}
+tooltip label {
+  color: #F1EBE3;
+  padding: 2px 4px;
 }

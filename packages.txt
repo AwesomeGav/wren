@@ -5,12 +5,10 @@
 labwc
 xorg-xwayland
 waybar
-fuzzel
-foot
 mako
 swaybg
-swaylock
 swayidle
+hyprlock
 xdg-desktop-portal-wlr
 xdg-desktop-portal-gtk
 polkit-gnome
@@ -20,30 +18,39 @@ libnotify
 grim
 slurp
 brightnessctl
+foot
+
+# --- Wren Shell + Installer (Python GTK4) -------------------------------
+python
+python-gobject
+gtk4
+libadwaita
+gtk4-layer-shell
+
+# --- Login screen -------------------------------------------------------
 greetd
-greetd-tuigreet
+greetd-regreet
+cage
 
 # --- Look & feel --------------------------------------------------------
 adw-gtk-theme
-papirus-icon-theme
+adwaita-icon-theme
+adwaita-cursors
 inter-font
 noto-fonts
 noto-fonts-emoji
 ttf-nerd-fonts-symbols
-gnome-themes-extra
+dconf
 
-# --- Everyday apps ------------------------------------------------------
+# --- Everyday apps (modern GTK4, no Xfce) -------------------------------
 firefox
-thunar
-thunar-volman
-thunar-archive-plugin
+nautilus
 gvfs
 gvfs-mtp
-tumbler
-ffmpegthumbnailer
+gnome-text-editor
+loupe
+gnome-calculator
 file-roller
-mousepad
-ristretto
 pavucontrol
 wdisplays
 network-manager-applet
@@ -66,6 +73,17 @@ intel-media-driver
 libva-intel-driver
 libva-mesa-driver
 sof-firmware
+intel-ucode
+amd-ucode
+
+# --- Installer tools ----------------------------------------------------
+rsync
+grub
+efibootmgr
+dosfstools
+e2fsprogs
+arch-install-scripts
+sudo
 
 # --- Low-power performance ----------------------------------------------
 zram-generator
