@@ -1,0 +1,27 @@
+[Default Applications]
+inode/directory=org.gnome.Nautilus.desktop
+text/plain=org.gnome.TextEditor.desktop
+text/markdown=org.gnome.TextEditor.desktop
+application/pdf=org.gnome.Papers.desktop
+image/png=org.gnome.Loupe.desktop
+image/jpeg=org.gnome.Loupe.desktop
+image/gif=org.gnome.Loupe.desktop
+image/webp=org.gnome.Loupe.desktop
+image/svg+xml=org.gnome.Loupe.desktop
+image/heic=org.gnome.Loupe.desktop
+video/mp4=io.github.celluloid_player.Celluloid.desktop
+video/x-matroska=io.github.celluloid_player.Celluloid.desktop
+video/webm=io.github.celluloid_player.Celluloid.desktop
+video/quicktime=io.github.celluloid_player.Celluloid.desktop
+video/x-msvideo=io.github.celluloid_player.Celluloid.desktop
+audio/mpeg=org.gnome.Decibels.desktop
+audio/flac=org.gnome.Decibels.desktop
+audio/ogg=org.gnome.Decibels.desktop
+audio/x-wav=org.gnome.Decibels.desktop
+audio/mp4=org.gnome.Decibels.desktop
+application/zip=org.gnome.FileRoller.desktop
+application/x-7z-compressed=org.gnome.FileRoller.desktop
+application/x-tar=org.gnome.FileRoller.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+text/html=firefox.desktop

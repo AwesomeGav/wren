@@ -27,7 +27,8 @@ LIVE = os.path.isdir("/run/archiso")
 
 # Helper and technical entries that clutter the app grid
 HIDDEN_APPS = {
-    "foot-server.desktop", "footclient.desktop", "lftp.desktop", "qv4l2.desktop", "qvidcap.desktop",
+    "foot.desktop", "foot-server.desktop", "footclient.desktop", "org.codeberg.dnkl.foot.desktop",
+    "org.codeberg.dnkl.foot-server.desktop", "org.codeberg.dnkl.footclient.desktop", "lftp.desktop", "qv4l2.desktop", "qvidcap.desktop",
     "vim.desktop", "gvim.desktop", "nm-connection-editor.desktop", "avahi-discover.desktop",
     "bssh.desktop", "bvnc.desktop", "blueman-manager.desktop", "blueman-adapters.desktop", "xgps.desktop", "xgpsspeed.desktop", "lstopo.desktop",
     "org.freedesktop.IBus.Setup.desktop", "cmake-gui.desktop", "htop.desktop", "btop.desktop",

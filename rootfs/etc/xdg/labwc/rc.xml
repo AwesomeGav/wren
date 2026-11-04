@@ -43,7 +43,7 @@
     <keybind key="Super_L" onRelease="yes"><action name="Execute" command="wren-shell launcher" /></keybind>
     <keybind key="W-space"><action name="Execute" command="wren-shell launcher" /></keybind>
     <keybind key="W-a"><action name="Execute" command="wren-shell control" /></keybind>
-    <keybind key="W-Return"><action name="Execute" command="foot" /></keybind>
+    <keybind key="W-Return"><action name="Execute" command="wren-terminal" /></keybind>
     <keybind key="W-e"><action name="Execute" command="nautilus --new-window" /></keybind>
     <keybind key="W-l"><action name="Execute" command="hyprlock -c /etc/xdg/wren/hypr/hyprlock.conf" /></keybind>
     <keybind key="Print"><action name="Execute" command="wren-screenshot" /></keybind>

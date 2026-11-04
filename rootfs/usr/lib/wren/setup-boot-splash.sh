@@ -10,7 +10,7 @@ cat > /etc/plymouth/plymouthd.conf <<'CONF'
 [Daemon]
 Theme=wren
 ShowDelay=0
-DeviceTimeout=5
+DeviceTimeout=3
 CONF
 
 # Add the plymouth hook to the boot image, right after systemd or udev
@@ -40,10 +40,16 @@ if [[ -f /etc/default/grub ]]; then
          -e 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' \
          -e 's/^GRUB_TIMEOUT_STYLE=.*/GRUB_TIMEOUT_STYLE=hidden/' \
          -e 's/^#\?GRUB_GFXPAYLOAD_LINUX=.*/GRUB_GFXPAYLOAD_LINUX=keep/' \
-         -e 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash plymouth.use-simpledrm loglevel=3 rd.udev.log_level=3 systemd.show_status=false rd.systemd.show_status=false vt.global_cursor_default=0"/' \
+         -e 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash plymouth.use-simpledrm systemd.tpm2_wait=0 loglevel=3 rd.udev.log_level=3 systemd.show_status=false rd.systemd.show_status=false vt.global_cursor_default=0"/' \
          /etc/default/grub
   grep -q '^GRUB_GFXPAYLOAD_LINUX=' /etc/default/grub || echo 'GRUB_GFXPAYLOAD_LINUX=keep' >> /etc/default/grub
 fi
+
+# Services a desktop doesn't need to wait for at start-up
+for u in NetworkManager-wait-online.service systemd-networkd-wait-online.service \
+         systemd-udev-settle.service lvm2-monitor.service mdmonitor.service; do
+  systemctl mask "$u" >/dev/null 2>&1 || true
+done
 
 # Keep the splash up until the login screen is ready
 mkdir -p /etc/systemd/system/greetd.service.d

@@ -44,6 +44,19 @@ ttf-nerd-fonts-symbols
 dconf
 
 # --- Everyday apps (modern GTK4, no Xfce) -------------------------------
+vte4
+xdg-terminal-exec
+celluloid
+decibels
+papers
+snapshot
+gnome-clocks
+gnome-weather
+gnome-system-monitor
+gnome-disk-utility
+baobab
+simple-scan
+flatpak
 firefox
 nautilus
 gvfs

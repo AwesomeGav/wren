@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=Terminal
+Comment=Use the command line
+Exec=wren-terminal
+Icon=/usr/share/wren/icons/terminal.png
+Terminal=false
+Categories=System;TerminalEmulator;
+Keywords=shell;prompt;command;commandline;cmd;console;
+StartupWMClass=org.wrenlinux.Terminal
+X-TerminalArgExec=-e
+X-ExecArg=-e
+Actions=new-window;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=wren-terminal

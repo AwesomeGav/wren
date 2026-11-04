@@ -151,6 +151,13 @@ class Window(Adw.ApplicationWindow):
             else:
                 GLib.idle_add(self.append, line)
         code = proc.wait()
+        if code == 0:
+            GLib.idle_add(self.progress, 99, "Updating apps from the App Store…")
+            try:
+                subprocess.run(["flatpak", "update", "--user", "-y", "--noninteractive"],
+                               capture_output=True, timeout=1800)
+            except Exception:
+                pass
         if code in (126, 127) and not error:
             error = "The update was cancelled."
         GLib.idle_add(self.finish, code == 0, error or f"The update stopped (code {code}).")

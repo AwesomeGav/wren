@@ -15,7 +15,7 @@ import sys
 import threading
 
 LAST_USER = "/var/cache/wren-greeter/last-user"
-SESSION = ["labwc"]
+SESSION = ["wren-session"]
 DEMO = bool(os.environ.get("WREN_GREETER_DEMO"))
 NOLOGIN = ("nologin", "false", "sync", "halt", "shutdown")
 

@@ -31,7 +31,16 @@ WREN_BT_DEMO=1 wren-bluetooth >/var/tmp/shots/bluetooth.log 2>&1 & pid=$!
 shot 8-bluetooth 5; kill $pid; sleep 1
 wren-bluetooth >>/var/tmp/shots/bluetooth.log 2>&1 & pid=$!
 shot 8-bluetooth-no-adapter 5; kill $pid; sleep 1
-gnome-text-editor & shot 6-text-editor 5
+gnome-text-editor & pid=$!; shot 6-text-editor 5; kill $pid; sleep 1
+wren-terminal -e sh -c 'printf "\033[1;38;2;224;137;74mWren Terminal\033[0m\n\n"; ls -la --color=always ~; echo; uname -sr; exec bash' \
+  >/var/tmp/shots/terminal.log 2>&1 & shot 9-terminal 6
+pkill -f /usr/lib/wren/terminal.py; sleep 1
+wren-store >/var/tmp/shots/store.log 2>&1 & shot 10-store 18
+pkill -f /usr/lib/wren/store.py; sleep 1
+WREN_STORE_PAGE=cat:Game wren-store >>/var/tmp/shots/store.log 2>&1 & shot 10-store-games 15
+pkill -f /usr/lib/wren/store.py; sleep 1
+WREN_STORE_PAGE=app:org.gimp.GIMP wren-store >>/var/tmp/shots/store.log 2>&1 & shot 10-store-app 15
+pkill -f /usr/lib/wren/store.py; sleep 1
 labwc --exit
 EOF
 
@@ -50,7 +59,7 @@ install -d -m 700 -o wren -g wren /tmp/xdg-wren
 
 COMMON="WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
 runuser -u wren -- env HOME=$H USER=wren XDG_RUNTIME_DIR=/tmp/xdg-wren $COMMON \
-  timeout 170 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
+  timeout 290 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
 
 # Wren Login, in demo mode, inside the same kiosk compositor greetd uses
 mkdir -p -m 700 /tmp/xdg-root
