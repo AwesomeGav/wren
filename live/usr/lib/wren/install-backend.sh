@@ -129,7 +129,10 @@ PRESETS=('default')
 default_image="/boot/initramfs-linux.img"
 EOF
 
-genfstab -U "$T" > "$T/etc/fstab"
+# Wren uses compressed RAM swap (zram), never a swap partition. Leave swap out of
+# fstab: the live USB's zram swap gets a new ID every boot, and listing it would
+# make every start-up wait 90 seconds for a disk that never appears.
+genfstab -U "$T" | awk '$3 != "swap"' > "$T/etc/fstab"
 
 # ---------------------------------------------------------------- settings
 echo "$HOST" > "$T/etc/hostname"
