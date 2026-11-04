@@ -15,10 +15,10 @@ jobs:
       image: archlinux:latest
       options: --privileged
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install build tools
-        run: pacman -Syu --noconfirm archiso
+        run: pacman -Syu --noconfirm archiso python
 
       - name: Check scripts for syntax errors
         run: |
