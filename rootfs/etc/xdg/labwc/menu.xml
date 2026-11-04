@@ -8,10 +8,8 @@
     <item label="Terminal"><action name="Execute" command="wren-terminal" /></item>
     <item label="App Store"><action name="Execute" command="wren-store" /></item>
     <separator />
+    <item label="Settings"><action name="Execute" command="wren-settings" /></item>
     <item label="Quick Settings"><action name="Execute" command="wren-shell control" /></item>
-    <item label="Display Settings"><action name="Execute" command="wdisplays" /></item>
-    <item label="Sound Settings"><action name="Execute" command="pavucontrol" /></item>
-    <item label="Bluetooth Devices"><action name="Execute" command="wren-bluetooth" /></item>
     <separator />
     <item label="Take Screenshot"><action name="Execute" command="wren-screenshot" /></item>
   </menu>

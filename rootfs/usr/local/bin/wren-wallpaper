@@ -1,0 +1,7 @@
+#!/bin/sh
+# Sets the desktop background from ~/.config/wren/settings.env (WREN_WALLPAPER).
+WREN_WALLPAPER=/usr/share/wren/wallpapers/topographic.jpg
+[ -r "$HOME/.config/wren/settings.env" ] && . "$HOME/.config/wren/settings.env"
+[ -r "$WREN_WALLPAPER" ] || WREN_WALLPAPER=/usr/share/wren/wallpaper.jpg
+pkill -x swaybg 2>/dev/null
+exec swaybg -i "$WREN_WALLPAPER" -m fill

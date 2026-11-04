@@ -38,6 +38,11 @@ wren-store >/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store 18; kill $pid;
 WREN_STORE_PAGE=cat:Game wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-games 15; kill $pid; sleep 2
 WREN_STORE_PAGE=app:org.gimp.GIMP wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-app 15; kill $pid; sleep 2
 WREN_STORE_PAGE=search:minecraft wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-search 15; kill $pid; sleep 2
+wren-settings system >/var/tmp/shots/settings.log 2>&1 & pid=$!; shot 11-settings-system 5
+for page in about devices personalization apps time power; do
+  wren-settings $page >>/var/tmp/shots/settings.log 2>&1; shot "11-settings-$page" 4
+done
+kill $pid; sleep 1
 labwc --exit
 EOF
 
@@ -56,7 +61,7 @@ install -d -m 700 -o wren -g wren /tmp/xdg-wren
 
 COMMON="WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
 runuser -u wren -- env HOME=$H USER=wren XDG_RUNTIME_DIR=/tmp/xdg-wren $COMMON \
-  timeout 290 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
+  timeout 360 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
 
 # Wren Login, in demo mode, inside the same kiosk compositor greetd uses
 mkdir -p -m 700 /tmp/xdg-root

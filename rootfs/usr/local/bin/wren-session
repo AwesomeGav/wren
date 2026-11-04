@@ -2,4 +2,5 @@
 # Starts the Wren desktop with the full login environment (so apps installed
 # from the App Store show up in the app grid).
 [ -r /etc/profile ] && . /etc/profile
-exec labwc
+# -m: user settings (mouse, keyboard...) layer on top of Wren's defaults
+exec labwc -m

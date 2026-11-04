@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Settings
+Comment=Change how Wren looks and works
+Exec=wren-settings
+Icon=/usr/share/wren/icons/settings.png
+Terminal=false
+Categories=Settings;System;
+Keywords=preferences;settings;control;panel;display;sound;wifi;bluetooth;mouse;background;wallpaper;
+StartupWMClass=org.wrenlinux.Settings

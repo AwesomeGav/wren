@@ -45,6 +45,7 @@ dconf
 
 # --- Everyday apps (modern GTK4, no Xfce) -------------------------------
 vte4
+wlr-randr
 xdg-terminal-exec
 celluloid
 decibels

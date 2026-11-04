@@ -21,7 +21,9 @@ mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
 sed -i 's#/usr/share/wren/gtk.css#/usr/share/wren/gtk3.css#' "$HOME/.config/gtk-3.0/gtk.css" 2>/dev/null
 [ -f "$HOME/.config/gtk-4.0/gtk.css" ] || cp /etc/skel/.config/gtk-4.0/gtk.css "$HOME/.config/gtk-4.0/"
 
-swaybg -i /usr/share/wren/wallpaper.jpg -m fill >/dev/null 2>&1 &
+wren-wallpaper >/dev/null 2>&1 &
+# Display layout saved in Settings
+[ -x "$HOME/.config/wren/display.sh" ] && "$HOME/.config/wren/display.sh" >/dev/null 2>&1
 waybar -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/dev/null 2>&1 &
 mako -c /etc/xdg/wren/mako/config >/dev/null 2>&1 &
 wren-shell --service >/dev/null 2>&1 &
@@ -32,8 +34,5 @@ if [ -d /run/archiso ]; then
   (sleep 2; wren-installer) >/dev/null 2>&1 &
 else
   wren-update-notify >/dev/null 2>&1 &
-  # Lock after 10 idle minutes and before sleeping
-  swayidle -w \
-    timeout 600 'pidof hyprlock || hyprlock -c /etc/xdg/wren/hypr/hyprlock.conf &' \
-    before-sleep 'pidof hyprlock || hyprlock -c /etc/xdg/wren/hypr/hyprlock.conf &' >/dev/null 2>&1 &
+  wren-idle >/dev/null 2>&1 &
 fi
