@@ -31,7 +31,7 @@ export GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1
 timeout 150 dbus-run-session -- labwc -s 'sh /tmp/scenes.sh' >/tmp/shots/desktop.log 2>&1
 EOF
 
-arch-chroot "$R" bash /tmp/run-desktop.sh || true
+arch-chroot "$R" bash /tmp/run-desktop.sh >"$OUT/chroot.log" 2>&1 || echo "desktop exited with $?" >>"$OUT/chroot.log"
 cp "$R"/tmp/shots/* "$OUT/" 2>/dev/null
 rm -rf "$R/tmp/shots" "$R/tmp/scenes.sh" "$R/tmp/run-desktop.sh" "$R/tmp/xdg" "$R/root/.config/wren"
 ls -la "$OUT"
