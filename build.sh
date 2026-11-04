@@ -58,7 +58,7 @@ cp -r live/. "$ROOT/"
 install -Dm755 wren-setup "$ROOT/usr/local/bin/wren-setup"
 mkdir -p "$ROOT/usr/share/xsessions" "$ROOT/usr/share/wren/migrations"
 cp migrations/*.sh "$ROOT/usr/share/wren/migrations/"
-for f in "$ROOT"/usr/local/bin/wren-* "$ROOT"/usr/lib/wren/*.sh "$ROOT"/usr/lib/wren/*.py; do
+for f in "$ROOT"/usr/local/bin/wren-* "$ROOT"/usr/lib/wren/*.sh "$ROOT"/usr/lib/wren/*.py "$ROOT"/usr/lib/wren/live-power; do
   chmod 755 "$f"
   rel="/${f#"$ROOT"/}"
   sed -i "/^file_permissions=(/a\\  [\"$rel\"]=\"0:0:755\"" "$PROFILE/profiledef.sh"
@@ -84,14 +84,11 @@ done
 ln -sf /usr/lib/systemd/system/NetworkManager.service "$UNITS/dbus-org.freedesktop.NetworkManager.service"
 ln -sf /usr/lib/systemd/system/bluetooth.service "$UNITS/dbus-org.bluez.service"
 
-echo ":: Start the desktop automatically on the live USB"
-cat >> "$ROOT/root/.zlogin" <<'EOF'
-
-# Wren: launch the desktop on the first console
-if [[ -z ${WAYLAND_DISPLAY:-} && $(tty) == /dev/tty1 ]]; then
-  exec labwc
-fi
-EOF
+echo ":: Live USB logs in as a regular account (some apps refuse to run as root)"
+sed -i 's/--autologin root/--autologin wren/' "$ROOT/etc/systemd/system/getty@tty1.service.d/autologin.conf"
+ln -sf /etc/systemd/system/wren-live-user.service "$UNITS/multi-user.target.wants/wren-live-user.service"
+sed -i "/^file_permissions=(/a\\  [\"/etc/sudoers.d/wren-live\"]=\"0:0:440\"" "$PROFILE/profiledef.sh"
+sed -i "/^file_permissions=(/a\\  [\"/etc/sudoers.d\"]=\"0:0:750\"" "$PROFILE/profiledef.sh"
 
 echo ":: Building ISO (this takes a while)"
 mkarchiso -v -w build/work -o out "$PROFILE"

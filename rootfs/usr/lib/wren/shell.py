@@ -531,16 +531,10 @@ class Control(Sheet):
             spawn(LOCK_CMD)
         elif action == "logout":
             spawn(["labwc", "--exit"])
-        elif LIVE and os.geteuid() == 0:
+        elif LIVE and os.path.exists("/usr/lib/wren/live-power"):
             # The live USB runs from the stick; switch off/restart instantly so it can't hang
-            os.sync()
-            try:
-                with open("/proc/sys/kernel/sysrq", "w") as f:
-                    f.write("1")
-                with open("/proc/sysrq-trigger", "w") as f:
-                    f.write("b" if action == "reboot" else "o")
-            except OSError:
-                spawn(["systemctl", action, "--force"])
+            cmd = ["/usr/lib/wren/live-power", action]
+            spawn(cmd if os.geteuid() == 0 else ["sudo", "-n"] + cmd)
         else:
             spawn(["systemctl", action])
 

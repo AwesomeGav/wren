@@ -108,11 +108,14 @@ rm -f "$T/etc/mkinitcpio.conf.d/archiso.conf" \
       "$T/etc/ssh/sshd_config.d/10-archiso.conf" \
       "$T/etc/motd" "$T/root/.zlogin" "$T/root/.automated_script.sh" \
       "$T/usr/local/bin/wren-installer" "$T/usr/share/applications/wren-installer.desktop" \
-      "$T/usr/lib/wren/installer.py" "$T/usr/lib/wren/install-backend.sh"
+      "$T/usr/lib/wren/installer.py" "$T/usr/lib/wren/install-backend.sh" "$T/usr/lib/wren/live-power" \
+      "$T/etc/sudoers.d/wren-live" "$T/etc/polkit-1/rules.d/49-wren-live.rules" \
+      "$T/etc/profile.d/wren-live.sh" "$T/etc/systemd/system/wren-live-user.service"
 rm -rf "$T/etc/systemd/system/getty@tty1.service.d"
 for unit in pacman-init.service choose-mirror.service etc-pacman.d-gnupg.mount sshd.service \
             reflector.service livecd-talk.service livecd-alsa-unmuter.service iwd.service \
-            systemd-networkd.service systemd-networkd.socket systemd-networkd-wait-online.service; do
+            systemd-networkd.service systemd-networkd.socket systemd-networkd-wait-online.service \
+            wren-live-user.service; do
   find "$T/etc/systemd/system" -name "$unit" \( -type l -o -type f \) -delete 2>/dev/null || true
 done
 cat > "$T/etc/mkinitcpio.d/linux.preset" <<'EOF'

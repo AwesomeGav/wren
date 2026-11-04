@@ -66,13 +66,13 @@ def restart_now():
     """Reboot right away. A normal shutdown can hang on the live USB (it runs from
     the stick), and the new system is already safely written and unmounted."""
     os.sync()
+    cmd = ["/usr/lib/wren/live-power", "reboot"]
+    if os.geteuid() != 0:
+        cmd = ["sudo", "-n"] + cmd
     try:
-        with open("/proc/sys/kernel/sysrq", "w") as f:
-            f.write("1")
-        with open("/proc/sysrq-trigger", "w") as f:
-            f.write("b")
+        subprocess.Popen(cmd)
     except OSError:
-        subprocess.Popen(["systemctl", "reboot", "--force"])
+        subprocess.Popen(["systemctl", "reboot"])
 
 
 def human_size(n):
@@ -552,7 +552,9 @@ class Window(Adw.ApplicationWindow):
         env = dict(os.environ, WREN_DISK=v["disk"], WREN_USER=v["user"], WREN_FULLNAME=v["fullname"],
                    WREN_HOSTNAME=v["hostname"], WREN_TZ=v["timezone"], WREN_LOCALE=v["locale"],
                    WREN_XKB=v["xkb"], WREN_KEYMAP=v["keymap"])
-        cmd = [BACKEND] if os.geteuid() == 0 else ["pkexec", "--keep-cwd", BACKEND]
+        wren_env = {k: env[k] for k in env if k.startswith("WREN_")}
+        cmd = [BACKEND] if os.geteuid() == 0 else \
+            ["sudo", "-n", "env"] + [f"{k}={v}" for k, v in wren_env.items()] + [BACKEND]
         try:
             proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                     stderr=subprocess.STDOUT, text=True, env=env, bufsize=1)

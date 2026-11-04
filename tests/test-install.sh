@@ -30,7 +30,9 @@ else
            etc/greetd/regreet.toml etc/sudoers.d/10-wheel usr/lib/wren/shell.py; do
     [[ -e /mnt/check/$f ]] || problems+=("Missing after install: /$f")
   done
-  for f in etc/mkinitcpio.conf.d/archiso.conf usr/lib/wren/installer.py root/.zlogin; do
+  for f in etc/mkinitcpio.conf.d/archiso.conf usr/lib/wren/installer.py root/.zlogin \
+           etc/sudoers.d/wren-live etc/polkit-1/rules.d/49-wren-live.rules etc/profile.d/wren-live.sh \
+           etc/systemd/system/multi-user.target.wants/wren-live-user.service usr/lib/wren/live-power; do
     [[ -e /mnt/check/$f ]] && problems+=("Live-only file left behind: /$f")
   done
   grep -q '^tester:.*:Test O'"'"'Brien:' /mnt/check/etc/passwd || problems+=("User account not created correctly")

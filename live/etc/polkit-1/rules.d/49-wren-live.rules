@@ -1,0 +1,6 @@
+// Live USB only: the live account can do admin tasks without a password.
+polkit.addRule(function (action, subject) {
+  if (subject.user == "wren") {
+    return polkit.Result.YES;
+  }
+});

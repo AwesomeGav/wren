@@ -1,0 +1,12 @@
+[Unit]
+Description=Create the Wren live session account
+Before=getty@tty1.service systemd-user-sessions.service
+ConditionPathExists=!/home/wren
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/useradd -m -G wheel,video,audio,input -c "Wren" -s /bin/bash wren
+ExecStart=/usr/bin/passwd -d wren
+
+[Install]
+WantedBy=multi-user.target

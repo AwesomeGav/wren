@@ -1,0 +1,9 @@
+#!/bin/sh
+# Live USB only: restart or switch off instantly. A normal shutdown can hang if the
+# USB stick is removed, because the live system runs from it.
+sync
+echo 1 > /proc/sys/kernel/sysrq
+case "$1" in
+  reboot) echo b > /proc/sysrq-trigger ;;
+  poweroff) echo o > /proc/sysrq-trigger ;;
+esac
