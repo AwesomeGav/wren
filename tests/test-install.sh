@@ -43,6 +43,7 @@ else
   grep -q 'splash' /mnt/check/boot/grub/grub.cfg || problems+=("Start-up screen not enabled in boot menu")
   grep -q "echo.*'Loading " /mnt/check/boot/grub/grub.cfg && problems+=("Boot menu still prints Loading messages")
   grep -q 'Theme=wren' /mnt/check/etc/plymouth/plymouthd.conf || problems+=("Start-up theme not selected")
+  grep -q 'wren-greeter' /mnt/check/etc/greetd/config.toml || problems+=("Wren Login not set as the login screen")
   umount /mnt/check
 fi
 losetup -d "$loop" || true

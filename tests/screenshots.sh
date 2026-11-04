@@ -48,24 +48,17 @@ echo sample > "$H/notes.txt"
 chown -R wren:wren "$H"
 install -d -m 700 -o wren -g wren /tmp/xdg-wren
 
-# System message bus + accounts service, needed by the login screen
-mkdir -p /run/dbus
-dbus-daemon --system --fork 2>/var/tmp/shots/system-bus.log
-/usr/lib/accounts-daemon >/dev/null 2>&1 &
-sleep 2
-
 COMMON="WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
 runuser -u wren -- env HOME=$H USER=wren XDG_RUNTIME_DIR=/tmp/xdg-wren $COMMON \
   timeout 170 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
 
-# Login screen, in demo mode, inside the same kiosk compositor greetd uses
+# Wren Login, in demo mode, inside the same kiosk compositor greetd uses
 mkdir -p -m 700 /tmp/xdg-root
 env XDG_RUNTIME_DIR=/tmp/xdg-root $COMMON timeout 40 dbus-run-session -- cage -s -- sh -c \
-  'regreet --demo --config /usr/share/wren/greetd/regreet.toml --style /usr/share/wren/greetd/regreet.css & sleep 8; grim /var/tmp/shots/7-login.png; kill %1' \
+  'WREN_GREETER_DEMO=1 python3 /usr/lib/wren/greeter.py & sleep 7; grim /var/tmp/shots/7-login.png; kill %1' \
   >/var/tmp/shots/login.log 2>&1
 
 # Leave the system as we found it
-pkill -f accounts-daemon; pkill -x dbus-daemon
 userdel -r wren 2>/dev/null
 rm -rf /tmp/xdg-wren /tmp/xdg-root
 EOF
