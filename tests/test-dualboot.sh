@@ -19,11 +19,12 @@ note() { echo "::notice title=Dual boot::$1"; }
 warnmsg() { echo "::warning title=Dual boot::$1"; }
 
 mknodes() {  # partition device nodes (no udev in containers)
-  local loop=$1 p maj min
+  local loop=$1 p
+  local want have
   for p in /sys/block/"${loop##*/}"/"${loop##*/}"p*; do
     [[ -e $p/dev ]] || continue
-    IFS=: read -r maj min < "$p/dev"
-    [[ -b /dev/${p##*/} ]] || mknod "/dev/${p##*/}" b "$maj" "$min"
+    want=$(cat "$p/dev"); have=$(stat -c '%Hr:%Lr' "/dev/${p##*/}" 2>/dev/null || true)
+    if [[ $have != "$want" ]]; then rm -f -- "/dev/${p##*/}"; mknod "/dev/${p##*/}" b "${want%%:*}" "${want##*:}"; fi
   done
 }
 
@@ -86,6 +87,7 @@ if install_alongside "$loop" WREN_FORCE_UEFI=1 WREN_NO_NVRAM=1; then
   umount /mnt/wren
 else
   fail "UEFI: install alongside Windows failed: $(grep '^@@ERROR' /tmp/dual.log | tail -n1)"
+  tail -n 12 /tmp/dual.log | while IFS= read -r l; do echo "::error title=UEFI install log::$l"; done
 fi
 losetup -d "$loop"
 
@@ -124,6 +126,7 @@ if install_alongside "$loop" WREN_FORCE_BIOS=1; then
   umount /mnt/wren
 else
   fail "BIOS: install alongside Windows failed: $(grep '^@@ERROR' /tmp/dual.log | tail -n1)"
+  tail -n 12 /tmp/dual.log | while IFS= read -r l; do echo "::error title=BIOS install log::$l"; done
 fi
 losetup -d "$loop"
 

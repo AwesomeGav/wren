@@ -85,7 +85,6 @@ vulkan-intel
 vulkan-radeon
 intel-media-driver
 libva-intel-driver
-libva-mesa-driver
 sof-firmware
 intel-ucode
 amd-ucode

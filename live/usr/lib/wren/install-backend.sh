@@ -37,17 +37,24 @@ settle() {
   udevadm settle 2>/dev/null || true
   sleep 1
   # Without udev (e.g. in a container) partition device files may be missing; create them
-  local p maj min
+  local p want have
   for p in $(part_list); do
-    if [[ ! -b $p && -r /sys/class/block/${p##*/}/dev ]]; then
-      IFS=: read -r maj min < "/sys/class/block/${p##*/}/dev"
-      mknod "$p" b "$maj" "$min"
+    [[ -r /sys/class/block/${p##*/}/dev ]] || continue
+    want=$(cat "/sys/class/block/${p##*/}/dev")
+    have=$(stat -c '%Hr:%Lr' "$p" 2>/dev/null || true)
+    if [[ $have != "$want" ]]; then
+      rm -f -- "$p"
+      mknod "$p" b "${want%%:*}" "${want##*:}"
     fi
   done
 }
+# Partition types straight from the partition table (works without udev)
+part_types() {
+  sfdisk -d "$DISK" 2>/dev/null | awk -F'[ ,=]+' '/^\// {
+    t = ""; for (i = 1; i <= NF; i++) if ($i == "type") t = tolower($(i + 1)); print $1, t }'
+}
 find_esp() {
-  lsblk -lnpo NAME,PARTTYPE "$DISK" |
-    awk 'tolower($2) == "c12a7328-f81f-11d2-ba4b-00a0c93ec93b" || tolower($2) == "0xef" {print $1; exit}'
+  part_types | awk '$2 == "c12a7328-f81f-11d2-ba4b-00a0c93ec93b" || $2 == "ef" {print $1; exit}'
 }
 
 case $MODE in
@@ -112,7 +119,7 @@ if [[ $MODE != erase ]]; then
     ESP=$(find_esp)
     [[ -n $ESP ]] || fail "This disk has no EFI boot partition, so Wren can't start alongside the other system. Choose \"Erase the whole disk\" or use a different disk."
   elif [[ $(sfdisk -d "$DISK" 2>/dev/null | sed -n 's/^label: *//p') == gpt ]]; then
-    lsblk -lnpo PARTTYPE "$DISK" | grep -qi 21686148-6449-6e6f-744e-656564454649 ||
+    part_types | grep -q 21686148-6449-6e6f-744e-656564454649 ||
       fail "This older computer can't start Wren from this disk alongside another system. Choose \"Erase the whole disk\" instead."
   fi
 fi
