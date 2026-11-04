@@ -148,14 +148,8 @@ if [[ $XKB != us ]]; then
   sed -i "s|^command = \"cage|command = \"env XKB_DEFAULT_LAYOUT=$XKB cage|" "$T/etc/greetd/config.toml"
 fi
 
-# Bootloader defaults
-if [[ -f $T/etc/default/grub ]]; then
-  sed -i -e 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="Wren"/' \
-         -e 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' \
-         -e 's/^GRUB_TIMEOUT_STYLE=.*/GRUB_TIMEOUT_STYLE=hidden/' \
-         -e 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet loglevel=3 rd.udev.log_level=3 vt.global_cursor_default=0"/' \
-         "$T/etc/default/grub"
-fi
+# Start-up screen and quiet boot (boot image and menu are built further down)
+arch-chroot "$T" bash /usr/lib/wren/setup-boot-splash.sh
 
 # ---------------------------------------------------------------- inside the new system
 step 80 "Creating your account"
@@ -192,5 +186,11 @@ else
   arch-chroot "$T" grub-install --target=i386-pc --recheck "$DISK"
 fi
 arch-chroot "$T" grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot "$T" /usr/lib/wren/quiet-grub-cfg.sh
+# This system already has everything the upgrade steps add
+mkdir -p "$T/var/lib/wren/migrations"
+for m in "$SRC"/usr/share/wren/migrations/*.sh; do
+  if [[ -f $m ]]; then touch "$T/var/lib/wren/migrations/$(basename "$m" .sh)"; fi
+done
 
 step 100 "Finished"

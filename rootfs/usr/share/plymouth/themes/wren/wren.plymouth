@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Wren
+Description=Wren Linux start-up screen
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/wren
+ScriptFile=/usr/share/plymouth/themes/wren/wren.script
