@@ -24,6 +24,16 @@ from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
 from gi.repository import Gtk4LayerShell as Layer  # noqa: E402
 
 LIVE = os.path.isdir("/run/archiso")
+
+# Helper and technical entries that clutter the app grid
+HIDDEN_APPS = {
+    "foot-server.desktop", "footclient.desktop", "lftp.desktop", "qv4l2.desktop", "qvidcap.desktop",
+    "vim.desktop", "gvim.desktop", "nm-connection-editor.desktop", "avahi-discover.desktop",
+    "bssh.desktop", "bvnc.desktop", "xgps.desktop", "xgpsspeed.desktop", "lstopo.desktop",
+    "org.freedesktop.IBus.Setup.desktop", "cmake-gui.desktop", "htop.desktop", "btop.desktop",
+    "nvim.desktop", "mpv.desktop", "uxterm.desktop", "xterm.desktop", "gcr-prompter.desktop",
+}
+HIDDEN_PREFIXES = ("stoken", "org.gnome.Tecla", "electron", "jshell", "java")
 LOCK_CMD = ["hyprlock", "-c", "/etc/xdg/wren/hypr/hyprlock.conf"]
 
 CSS = """
@@ -203,7 +213,9 @@ class Launcher(Sheet):
     def refresh(self):
         self.flow.remove_all()
         self.apps = {}
-        infos = [a for a in Gio.AppInfo.get_all() if a.should_show()]
+        infos = [a for a in Gio.AppInfo.get_all() if a.should_show()
+                 and (a.get_id() or "") not in HIDDEN_APPS
+                 and not (a.get_id() or "").startswith(HIDDEN_PREFIXES)]
         infos.sort(key=lambda a: a.get_display_name().lower())
         for info in infos:
             tile = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)

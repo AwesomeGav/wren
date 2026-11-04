@@ -23,7 +23,7 @@
 
   <!-- Drag a window to the top edge to maximize, to a side to fill half the screen -->
   <snapping>
-    <range>12</range>
+    <range inner="12" outer="12" />
     <topMaximize>yes</topMaximize>
   </snapping>
 

@@ -2,7 +2,7 @@
 xdg-user-dirs-update >/dev/null 2>&1
 
 # First login: tell GNOME/libadwaita apps to use Wren's dark style and fonts
-if [ ! -f "$HOME/.config/wren/defaults-applied" ]; then
+if [ ! -f "$HOME/.config/wren/defaults-v2" ]; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
   gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
   gsettings set org.gnome.desktop.interface icon-theme Adwaita
@@ -11,7 +11,9 @@ if [ ! -f "$HOME/.config/wren/defaults-applied" ]; then
   gsettings set org.gnome.desktop.interface accent-color orange
   gsettings set org.gnome.desktop.interface enable-animations false
   gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
-  mkdir -p "$HOME/.config/wren" && touch "$HOME/.config/wren/defaults-applied"
+  gsettings set org.gnome.TextEditor style-scheme 'wren-dark'
+  gsettings set org.gnome.TextEditor style-variant 'dark'
+  mkdir -p "$HOME/.config/wren" && touch "$HOME/.config/wren/defaults-v2"
 fi
 mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
 [ -f "$HOME/.config/gtk-3.0/gtk.css" ] || cp /etc/skel/.config/gtk-3.0/gtk.css "$HOME/.config/gtk-3.0/"
@@ -19,6 +21,9 @@ mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
 
 swaybg -i /usr/share/wren/wallpaper.jpg -m fill >/dev/null 2>&1 &
 waybar -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/dev/null 2>&1 &
+# Waybar 0.15 can miss its first size message while the desktop is busy starting,
+# leaving the panel invisible. Reloading it once things settle makes it show reliably.
+(sleep 3; pkill -USR2 -x waybar; sleep 5; pkill -USR2 -x waybar) >/dev/null 2>&1 &
 mako -c /etc/xdg/wren/mako/config >/dev/null 2>&1 &
 wren-shell --service >/dev/null 2>&1 &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 >/dev/null 2>&1 &

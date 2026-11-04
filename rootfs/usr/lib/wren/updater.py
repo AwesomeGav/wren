@@ -40,10 +40,8 @@ class Window(Adw.ApplicationWindow):
         super().__init__(application=app, title="Software Update", default_width=480, default_height=460)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14, margin_top=28, margin_bottom=28,
                       margin_start=32, margin_end=32, valign=Gtk.Align.CENTER, vexpand=True)
-        logo = Gtk.Picture.new_for_filename(LOGO)
-        logo.set_size_request(84, 84)
-        logo.set_can_shrink(True)
-        logo.set_content_fit(Gtk.ContentFit.CONTAIN)
+        logo = Gtk.Image.new_from_file(LOGO)
+        logo.set_pixel_size(84)
         box.append(logo)
         self.title = Gtk.Label(label="Software Update", wrap=True, justify=Gtk.Justification.CENTER)
         self.title.add_css_class("title")

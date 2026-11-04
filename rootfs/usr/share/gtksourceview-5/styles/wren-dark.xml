@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<style-scheme id="wren-dark" name="Wren Dark" version="1.0" kind="dark">
+  <author>Wren Linux</author>
+  <description>Warm graphite and ember, matching the Wren desktop</description>
+  <color name="bg" value="#1C1916"/>
+  <color name="bg2" value="#26221E"/>
+  <color name="fg" value="#F1EBE3"/>
+  <color name="dim" value="#8A8178"/>
+  <color name="ember" value="#E0894A"/>
+  <color name="ember2" value="#F0A06A"/>
+  <color name="green" value="#9CC98C"/>
+  <color name="yellow" value="#E9C46A"/>
+  <color name="blue" value="#86A8C7"/>
+  <color name="purple" value="#C79BC0"/>
+  <color name="red" value="#F08A78"/>
+  <style name="text" foreground="fg" background="bg"/>
+  <style name="selection" foreground="fg" background="#5A3D27"/>
+  <style name="selection-unfocused" foreground="fg" background="#3A2C22"/>
+  <style name="cursor" foreground="ember"/>
+  <style name="current-line" background="bg2"/>
+  <style name="line-numbers" foreground="dim" background="bg"/>
+  <style name="current-line-number" foreground="fg" background="bg2"/>
+  <style name="bracket-match" background="#4A3A2C" bold="true"/>
+  <style name="search-match" background="#6B4A2C"/>
+  <style name="draw-spaces" foreground="#3A342E"/>
+  <style name="right-margin" foreground="dim" background="bg2"/>
+  <style name="def:comment" foreground="dim" italic="true"/>
+  <style name="def:string" foreground="green"/>
+  <style name="def:keyword" foreground="ember2" bold="true"/>
+  <style name="def:statement" foreground="ember2"/>
+  <style name="def:type" foreground="yellow"/>
+  <style name="def:number" foreground="purple"/>
+  <style name="def:boolean" foreground="purple"/>
+  <style name="def:constant" foreground="purple"/>
+  <style name="def:function" foreground="blue"/>
+  <style name="def:identifier" foreground="fg"/>
+  <style name="def:preprocessor" foreground="red"/>
+  <style name="def:special-char" foreground="yellow"/>
+  <style name="def:error" foreground="red" underline="error"/>
+</style-scheme>

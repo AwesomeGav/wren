@@ -15,6 +15,7 @@ sleep 3
 pkill -x waybar; pkill -f /usr/lib/wren/shell.py; sleep 1
 waybar -l debug -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/var/tmp/shots/waybar.log 2>&1 &
 wren-shell --service >/var/tmp/shots/shell.log 2>&1 &
+(sleep 3; pkill -USR2 -x waybar) &
 shot 1-desktop 8
 wren-shell launcher; shot 2-launcher 3; wren-shell launcher
 wren-shell control;  shot 3-quick-settings 3; wren-shell control
@@ -23,7 +24,7 @@ for page in 0 1 3 4; do
   shot "4-installer-page$page" 5
   kill $pid; sleep 1
 done
-nautilus --new-window /usr/share & shot 5-files 6
+nautilus --new-window /usr/share & shot 5-files 12
 gnome-text-editor & shot 6-text-editor 5
 labwc --exit
 EOF
