@@ -277,7 +277,7 @@ class Window(Adw.ApplicationWindow):
         side.append(sep)
         self.mine = Gtk.ListBox(selection_mode=Gtk.SelectionMode.SINGLE)
         self.mine.add_css_class("side")
-        self.mine.append(self._nav_row("Installed", "emblem-ok-symbolic", ("installed",)))
+        self.mine.append(self._nav_row("Installed", "object-select-symbolic", ("installed",)))
         self.mine.append(self._nav_row("Updates", "software-update-available-symbolic", ("updates",)))
         side.append(self.mine)
         self.nav.connect("row-activated", self.on_nav)

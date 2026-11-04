@@ -33,14 +33,11 @@ wren-bluetooth >>/var/tmp/shots/bluetooth.log 2>&1 & pid=$!
 shot 8-bluetooth-no-adapter 5; kill $pid; sleep 1
 gnome-text-editor & pid=$!; shot 6-text-editor 5; kill $pid; sleep 1
 wren-terminal -e sh -c 'printf "\033[1;38;2;224;137;74mWren Terminal\033[0m\n\n"; ls -la --color=always ~; echo; uname -sr; exec bash' \
-  >/var/tmp/shots/terminal.log 2>&1 & shot 9-terminal 6
-pkill -f /usr/lib/wren/terminal.py; sleep 1
-wren-store >/var/tmp/shots/store.log 2>&1 & shot 10-store 18
-pkill -f /usr/lib/wren/store.py; sleep 1
-WREN_STORE_PAGE=cat:Game wren-store >>/var/tmp/shots/store.log 2>&1 & shot 10-store-games 15
-pkill -f /usr/lib/wren/store.py; sleep 1
-WREN_STORE_PAGE=app:org.gimp.GIMP wren-store >>/var/tmp/shots/store.log 2>&1 & shot 10-store-app 15
-pkill -f /usr/lib/wren/store.py; sleep 1
+  >/var/tmp/shots/terminal.log 2>&1 & pid=$!; shot 9-terminal 6; kill $pid; sleep 1
+wren-store >/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store 18; kill $pid; sleep 2
+WREN_STORE_PAGE=cat:Game wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-games 15; kill $pid; sleep 2
+WREN_STORE_PAGE=app:org.gimp.GIMP wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-app 15; kill $pid; sleep 2
+WREN_STORE_PAGE=search:minecraft wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-search 15; kill $pid; sleep 2
 labwc --exit
 EOF
 

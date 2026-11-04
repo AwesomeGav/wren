@@ -153,7 +153,7 @@ class Window(Adw.ApplicationWindow):
 
     def on_selected(self):
         page = self.tabs.get_selected_page()
-        if page:
+        if page and getattr(page, "term", None):
             self.set_title(page.get_title())
             page.term.grab_focus()
 
@@ -165,7 +165,7 @@ class Window(Adw.ApplicationWindow):
 
     def current_term(self):
         page = self.tabs.get_selected_page()
-        return page.term if page else None
+        return getattr(page, "term", None) if page else None
 
     def close_tab(self):
         page = self.tabs.get_selected_page()
