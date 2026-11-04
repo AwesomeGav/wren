@@ -196,10 +196,9 @@ class Card(Gtk.Box):
     def row(self, icon, title, subtitle="", control=None, on_click=None):
         box = Gtk.Box(spacing=14)
         box.add_css_class("row")
-        if icon:
-            img = Gtk.Image.new_from_icon_name(icon)
-            img.add_css_class("row-icon")
-            box.append(img)
+        img = Gtk.Image.new_from_icon_name(icon) if icon else Gtk.Image()
+        img.add_css_class("row-icon")
+        box.append(img)
         text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, valign=Gtk.Align.CENTER)
         text.append(label(title, "row-title", wrap=True))
         sub = label(subtitle, "row-sub", wrap=True, visible=bool(subtitle))
@@ -660,7 +659,12 @@ class Pages:
             pic = Gtk.Picture.new_for_filename(thumb if os.path.exists(thumb) else w)
             pic.set_content_fit(Gtk.ContentFit.COVER)
             pic.set_size_request(180, 112)
-            b = Gtk.Button(child=pic, tooltip_text=os.path.basename(w).rsplit(".", 1)[0].replace("-", " ").title())
+            nice = os.path.basename(w).rsplit(".", 1)[0].replace("-", " ").title()
+            tile = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+            tile.append(pic)
+            tile.append(label(nice if w.startswith(WALLPAPERS) else "Your photo", "row-sub", margin_start=4,
+                              margin_bottom=4))
+            b = Gtk.Button(child=tile, tooltip_text=nice)
             b.add_css_class("wall")
             b.add_css_class("flat")
             b.path = w
@@ -739,7 +743,7 @@ class Pages:
         apps = sorted([a for a in Gio.AppInfo.get_all() if a.should_show()], key=lambda a: a.get_display_name().lower())
         for a in apps:
             app_id = (a.get_id() or "").removesuffix(".desktop")
-            is_flatpak = isinstance(a, Gio.DesktopAppInfo) and "flatpak" in (a.get_filename() or "")
+            is_flatpak = "flatpak" in (getattr(a, "get_filename", lambda: "")() or "")
             ctl = button("Uninstall", lambda app_id=app_id, a=a: self.uninstall(app_id, a.get_display_name())) \
                 if is_flatpak else label("Part of Wren", "row-sub")
             img = a.get_icon()
