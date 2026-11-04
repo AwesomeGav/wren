@@ -41,6 +41,7 @@ else
   grep -q 'menuentry' /mnt/check/boot/grub/grub.cfg || problems+=("Boot menu has no entries")
   grep -qE '^HOOKS=.*plymouth' /mnt/check/etc/mkinitcpio.conf || problems+=("Start-up screen hook missing")
   grep -q 'splash' /mnt/check/boot/grub/grub.cfg || problems+=("Start-up screen not enabled in boot menu")
+  grep -q 'plymouth.use-simpledrm' /mnt/check/boot/grub/grub.cfg || problems+=("Start-up screen early display option missing")
   grep -q "echo.*'Loading " /mnt/check/boot/grub/grub.cfg && problems+=("Boot menu still prints Loading messages")
   grep -q 'Theme=wren' /mnt/check/etc/plymouth/plymouthd.conf || problems+=("Start-up theme not selected")
   grep -q 'wren-greeter' /mnt/check/etc/greetd/config.toml || problems+=("Wren Login not set as the login screen")
