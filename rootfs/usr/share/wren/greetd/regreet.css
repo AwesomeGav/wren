@@ -3,11 +3,11 @@
   font-family: "Inter", sans-serif;
 }
 window {
-  background-color: #141210;
+  background: #141210;
   color: #F1EBE3;
 }
 frame {
-  background-color: rgba(28, 25, 22, 0.92);
+  background: rgba(28, 25, 22, 0.92);
   border: 1px solid rgba(255, 240, 225, 0.08);
   border-radius: 0;
   padding: 20px;
@@ -17,7 +17,7 @@ label {
   color: #F1EBE3;
 }
 entry, combobox button, dropdown button {
-  background-color: rgba(255, 240, 225, 0.06);
+  background: rgba(255, 240, 225, 0.06);
   border: 1px solid rgba(255, 240, 225, 0.08);
   border-radius: 0;
   color: #F1EBE3;
@@ -29,7 +29,7 @@ entry:focus-within {
   outline: none;
 }
 button {
-  background-color: rgba(255, 240, 225, 0.07);
+  background: rgba(255, 240, 225, 0.07);
   border-radius: 0;
   color: #F1EBE3;
   border: none;
@@ -38,18 +38,18 @@ button {
   padding: 0 16px;
 }
 button:hover {
-  background-color: rgba(255, 240, 225, 0.12);
+  background: rgba(255, 240, 225, 0.12);
 }
 button.suggested-action {
-  background-color: #E0894A;
+  background: #E0894A;
   color: #1A120B;
   font-weight: 600;
 }
 button.suggested-action:hover {
-  background-color: #EC9A5E;
+  background: #EC9A5E;
 }
 button.destructive-action {
-  background-color: rgba(196, 81, 63, 0.9);
+  background: rgba(196, 81, 63, 0.9);
   color: #FFFFFF;
 }
 .error, infobar.error {

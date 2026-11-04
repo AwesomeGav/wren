@@ -1,0 +1,12 @@
+[Icon Theme]
+Name=Wren
+Comment=Wren folders, everything else from Adwaita
+Inherits=Adwaita,hicolor
+Directories=scalable/places
+
+[scalable/places]
+Size=128
+MinSize=8
+MaxSize=512
+Type=Scalable
+Context=Places

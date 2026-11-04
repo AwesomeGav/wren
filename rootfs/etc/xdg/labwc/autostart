@@ -2,10 +2,10 @@
 xdg-user-dirs-update >/dev/null 2>&1
 
 # First login: tell GNOME/libadwaita apps to use Wren's dark style and fonts
-if [ ! -f "$HOME/.config/wren/defaults-v2" ]; then
+if [ ! -f "$HOME/.config/wren/defaults-v3" ]; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
   gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
-  gsettings set org.gnome.desktop.interface icon-theme Adwaita
+  gsettings set org.gnome.desktop.interface icon-theme Wren
   gsettings set org.gnome.desktop.interface font-name 'Inter 10'
   gsettings set org.gnome.desktop.interface document-font-name 'Inter 10'
   gsettings set org.gnome.desktop.interface accent-color orange
@@ -13,7 +13,7 @@ if [ ! -f "$HOME/.config/wren/defaults-v2" ]; then
   gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
   gsettings set org.gnome.TextEditor style-scheme 'wren-dark'
   gsettings set org.gnome.TextEditor style-variant 'dark'
-  mkdir -p "$HOME/.config/wren" && touch "$HOME/.config/wren/defaults-v2"
+  mkdir -p "$HOME/.config/wren" && touch "$HOME/.config/wren/defaults-v3"
 fi
 mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
 [ -f "$HOME/.config/gtk-3.0/gtk.css" ] || cp /etc/skel/.config/gtk-3.0/gtk.css "$HOME/.config/gtk-3.0/"

@@ -351,10 +351,16 @@ class Control(Sheet):
         self.card.append(grid)
 
         # Wi-Fi network picker
-        self.net_btn = Gtk.Button(label="Choose Wi-Fi network…")
+        links = Gtk.Box(spacing=10, homogeneous=True)
+        self.net_btn = Gtk.Button(label="Wi-Fi networks…")
         self.net_btn.add_css_class("pill-btn")
         self.net_btn.connect("clicked", lambda *_: self.toggle_networks())
-        self.card.append(self.net_btn)
+        links.append(self.net_btn)
+        self.bt_btn = Gtk.Button(label="Bluetooth devices…")
+        self.bt_btn.add_css_class("pill-btn")
+        self.bt_btn.connect("clicked", lambda *_: self.open_app(["wren-bluetooth"]))
+        links.append(self.bt_btn)
+        self.card.append(links)
         self.net_reveal = Gtk.Revealer(transition_type=Gtk.RevealerTransitionType.SLIDE_DOWN,
                                        transition_duration=150)
         self.net_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
@@ -364,10 +370,6 @@ class Control(Sheet):
         net_scroll.set_child(self.net_box)
         self.net_reveal.set_child(net_scroll)
         self.card.append(self.net_reveal)
-        self.bt_btn = Gtk.Button(label="Bluetooth devices…")
-        self.bt_btn.add_css_class("pill-btn")
-        self.bt_btn.connect("clicked", lambda *_: self.open_app(["wren-bluetooth"]))
-        self.card.append(self.bt_btn)
 
         # Sliders
         self.vol_row, self.vol = self._slider("audio-volume-high-symbolic", self.set_volume)

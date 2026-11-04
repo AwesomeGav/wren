@@ -58,14 +58,6 @@ entry:focus-within, .entry:focus-within, row.entry:focus-within {
   outline-offset: -1px;
 }
 
-/* Buttons: flat graphite blocks */
-button:not(.flat):not(.suggested-action):not(.destructive-action):not(.titlebutton) {
-  background-color: rgba(255, 240, 225, 0.07);
-}
-button:not(.flat):not(.suggested-action):not(.destructive-action):not(.titlebutton):hover {
-  background-color: rgba(255, 240, 225, 0.12);
-}
-
 /* Window control buttons */
 windowcontrols > button > image {
   background-color: transparent;
