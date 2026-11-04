@@ -45,5 +45,5 @@ CONF
 if [[ ${1:-} == --rebuild ]]; then
   mkinitcpio -P
   grub-mkconfig -o /boot/grub/grub.cfg
-  /usr/lib/wren/quiet-grub-cfg.sh
+  sh /usr/lib/wren/quiet-grub-cfg.sh
 fi

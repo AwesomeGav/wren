@@ -76,7 +76,8 @@ step 85 "Applying the new Wren desktop"
 keep=$(grep '^XKB_' /etc/xdg/labwc/environment 2>/dev/null || true)
 cp -r "$src/rootfs/." /
 if [[ -n $keep ]]; then echo "$keep" >> /etc/xdg/labwc/environment; fi
-chmod 755 /usr/local/bin/wren-* /usr/lib/wren/*.py 2>/dev/null || true
+chmod 755 /usr/local/bin/wren-* /usr/lib/wren/*.py /usr/lib/wren/*.sh 2>/dev/null || true
+mkdir -p /usr/share/xsessions
 mkdir -p /etc/greetd
 cp "$src/rootfs/usr/share/wren/greetd/regreet.toml" "$src/rootfs/usr/share/wren/greetd/regreet.css" /etc/greetd/
 

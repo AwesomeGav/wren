@@ -186,7 +186,7 @@ else
   arch-chroot "$T" grub-install --target=i386-pc --recheck "$DISK"
 fi
 arch-chroot "$T" grub-mkconfig -o /boot/grub/grub.cfg
-arch-chroot "$T" /usr/lib/wren/quiet-grub-cfg.sh
+arch-chroot "$T" sh /usr/lib/wren/quiet-grub-cfg.sh
 # This system already has everything the upgrade steps add
 mkdir -p "$T/var/lib/wren/migrations"
 for m in "$SRC"/usr/share/wren/migrations/*.sh; do

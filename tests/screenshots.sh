@@ -15,20 +15,20 @@ cat > "$R/var/tmp/scenes.sh" <<'EOF'
 shot() { sleep "$2"; grim "/var/tmp/shots/$1.png"; }
 # Restart the panel and shell with logging, to diagnose display problems
 sleep 3
-pkill -x waybar; pkill -f /usr/lib/wren/shell.py; sleep 1
+stop_panels() { for p in /proc/[0-9]*; do [ "$(cat "$p/comm" 2>/dev/null)" = waybar ] && kill "${p#/proc/}"; done; sleep 1; }
+stop_panels
 waybar -l debug -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/var/tmp/shots/waybar.log 2>&1 &
-wren-shell --service >/var/tmp/shots/shell.log 2>&1 &
 shot 1-desktop 8
 # Try each panel variant on its own
 for cfg in /var/tmp/variants/*.json; do
   name=$(basename "$cfg" .json)
   css=/etc/xdg/wren/waybar/style.css
   [ "$name" = e-old-build6 ] && css=/var/tmp/variants/old.css
-  pkill -x waybar; sleep 1
+  stop_panels
   waybar -l debug -c "$cfg" -s "$css" >"/var/tmp/shots/panel-$name.log" 2>&1 &
   shot "panel-$name" 4
 done
-pkill -x waybar; sleep 1
+stop_panels
 waybar -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/dev/null 2>&1 &
 sleep 2
 wren-shell launcher; shot 2-launcher 3; wren-shell launcher

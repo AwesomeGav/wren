@@ -56,7 +56,7 @@ echo ":: Copying Wren files into the live system"
 cp -r rootfs/. "$ROOT/"
 cp -r live/. "$ROOT/"
 install -Dm755 wren-setup "$ROOT/usr/local/bin/wren-setup"
-mkdir -p "$ROOT/usr/share/wren/migrations"
+mkdir -p "$ROOT/usr/share/xsessions" "$ROOT/usr/share/wren/migrations"
 cp migrations/*.sh "$ROOT/usr/share/wren/migrations/"
 for f in "$ROOT"/usr/local/bin/wren-* "$ROOT"/usr/lib/wren/*.sh "$ROOT"/usr/lib/wren/*.py; do
   chmod 755 "$f"

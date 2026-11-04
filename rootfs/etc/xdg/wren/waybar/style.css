@@ -10,8 +10,9 @@
 }
 
 window#waybar {
-  background: #1C1916;
-  border-top: 1px solid #2E2924;
+  background: rgba(28, 25, 22, 0.96);
+  border: 1px solid rgba(255, 240, 225, 0.07);
+  border-radius: 16px;
   color: #F1EBE3;
 }
 
@@ -49,11 +50,20 @@ window#waybar {
   padding: 0 8px;
 }
 
+#status {
+  background: rgba(255, 240, 225, 0.06);
+  border-radius: 10px;
+  margin: 7px 4px;
+  padding: 0 4px;
+}
 #network, #pulseaudio, #battery, #custom-power {
   font-size: 16px;
-  padding: 0 9px;
-  margin: 7px 1px;
+  padding: 0 8px;
+  margin: 0;
   border-radius: 9px;
+}
+#custom-power {
+  margin: 7px 8px 7px 2px;
 }
 #battery {
   font-size: 13px;
@@ -72,7 +82,6 @@ window#waybar {
 }
 #custom-power {
   color: #F0A06A;
-  margin-right: 8px;
 }
 
 tooltip {

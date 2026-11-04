@@ -1,7 +1,7 @@
 {
   "layer": "top",
   "position": "bottom",
-  "height": 44,
+  "height": 46,
   "spacing": 0,
   "modules-left": [
     "custom/apps",
@@ -9,9 +9,7 @@
   ],
   "modules-right": [
     "tray",
-    "network",
-    "pulseaudio",
-    "battery",
+    "group/status",
     "clock",
     "custom/power"
   ],
@@ -89,5 +87,16 @@
     "format": "󰐥",
     "tooltip": false,
     "on-click": "wren-shell control"
+  },
+  "margin-left": 10,
+  "margin-right": 10,
+  "margin-bottom": 8,
+  "group/status": {
+    "orientation": "horizontal",
+    "modules": [
+      "network",
+      "pulseaudio",
+      "battery"
+    ]
   }
 }
