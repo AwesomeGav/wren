@@ -45,6 +45,10 @@ else
   grep -q "echo.*'Loading " /mnt/check/boot/grub/grub.cfg && problems+=("Boot menu still prints Loading messages")
   grep -q 'Theme=wren' /mnt/check/etc/plymouth/plymouthd.conf || problems+=("Start-up theme not selected")
   grep -q 'wren-greeter' /mnt/check/etc/greetd/config.toml || problems+=("Wren Login not set as the login screen")
+  for u in cloud-init.target.wants/cloud-init-main.service sysinit.target.wants/systemd-time-wait-sync.service \
+           multi-user.target.wants/ModemManager.service network-online.target.wants/systemd-networkd-wait-online.service; do
+    [[ -e /mnt/check/etc/systemd/system/$u ]] && problems+=("Slow-boot service still enabled: $u")
+  done
   umount /mnt/check
 fi
 losetup -d "$loop" || true

@@ -10,7 +10,7 @@ cat > /etc/plymouth/plymouthd.conf <<'CONF'
 [Daemon]
 Theme=wren
 ShowDelay=0
-DeviceTimeout=8
+DeviceTimeout=5
 CONF
 
 # Add the plymouth hook to the boot image, right after systemd or udev

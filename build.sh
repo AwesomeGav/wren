@@ -72,6 +72,14 @@ mkdir -p "$ROOT/etc/systemd/user"
 ln -sf /dev/null "$ROOT/etc/systemd/user/localsearch-3.service"
 ln -sf /dev/null "$ROOT/etc/systemd/user/tracker-miner-fs-3.service"
 
+echo ":: Faster boot: drop cloud-server tools and services a desktop doesn't need"
+sed -i '/^cloud-init$/d' "$PROFILE/packages.x86_64"
+rm -rf "$UNITS/cloud-init.target.wants" "$UNITS/systemd-networkd-wait-online.service.d"
+rm -f "$UNITS/sysinit.target.wants/systemd-time-wait-sync.service" \
+      "$UNITS/multi-user.target.wants/ModemManager.service" "$UNITS/dbus-org.freedesktop.ModemManager1.service" \
+      "$UNITS/sockets.target.wants/pcscd.socket" "$UNITS/multi-user.target.wants/vmware-vmblock-fuse.service"
+mkdir -p "$ROOT/etc/cloud" && touch "$ROOT/etc/cloud/cloud-init.disabled"
+
 echo ":: Services: NetworkManager instead of the default networkd/iwd"
 rm -f "$UNITS"/multi-user.target.wants/systemd-networkd.service \
       "$UNITS"/multi-user.target.wants/iwd.service \
