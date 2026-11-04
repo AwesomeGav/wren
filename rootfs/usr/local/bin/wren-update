@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Wren updater.
+#   wren-update --check   prints "available <tag>" or "current <tag>" (no root needed)
+#   wren-update --apply   installs the latest Wren release + Arch system updates (root)
+# Progress lines look like "@@ <percent> <message>" for the Software Update app.
+#
+# Older Wren installs without this tool can update with:
+#   curl -fsSL https://raw.githubusercontent.com/AwesomeGav/wren/main/rootfs/usr/local/bin/wren-update | sudo bash -s -- --apply
+set -Eeuo pipefail
+
+REPO="AwesomeGav/wren"
+API="https://api.github.com/repos/$REPO/releases/latest"
+step() { echo "@@ $1 $2"; }
+fail() { echo "@@ERROR $1"; exit 1; }
+
+current_build() {
+  local b=0
+  if [[ -r /etc/wren-release ]]; then
+    b=$(sed -n 's/^WREN_BUILD=//p' /etc/wren-release)
+  fi
+  echo "${b:-0}"
+}
+
+latest_tag() {
+  curl -fsSL --max-time 20 -H "Accept: application/vnd.github+json" "$API" |
+    sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n1
+}
+
+mode=${1:---check}
+
+if [[ $mode == --check ]]; then
+  tag=$(latest_tag) || { echo "offline"; exit 2; }
+  [[ -n $tag ]] || { echo "offline"; exit 2; }
+  latest=${tag#build-}
+  if [[ $latest =~ ^[0-9]+$ ]] && ((latest > $(current_build))); then
+    echo "available $tag"
+  else
+    echo "current build-$(current_build)"
+  fi
+  exit 0
+fi
+
+[[ $mode == --apply ]] || { echo "usage: wren-update --check | --apply"; exit 1; }
+[[ $EUID -eq 0 ]] || fail "Updating needs administrator rights."
+[[ ! -d /run/archiso ]] || fail "Updates aren't available on the live USB."
+trap 'echo "@@ERROR Update stopped while running: ${BASH_COMMAND}"' ERR
+
+step 2 "Checking for the latest Wren release"
+tag=$(latest_tag)
+[[ -n $tag ]] || fail "Couldn't reach GitHub. Check your internet connection."
+latest=${tag#build-}
+
+step 6 "Downloading Wren $tag"
+src=$(mktemp -d)
+trap 'rm -rf "$src"' EXIT
+curl -fsSL --max-time 300 "https://github.com/$REPO/archive/refs/tags/$tag.tar.gz" |
+  tar xz -C "$src" --strip-components=1
+[[ -f $src/packages.txt && -d $src/rootfs ]] || fail "The downloaded release looks incomplete."
+
+step 12 "Refreshing package signing keys"
+pacman -Sy --noconfirm --needed archlinux-keyring
+
+step 20 "Installing system updates (this can take a while)"
+pacman -Su --noconfirm
+
+step 70 "Adding new Wren apps"
+pkgs=()
+while read -r p; do
+  [[ -z $p ]] && continue
+  if pacman -Si "$p" >/dev/null 2>&1; then pkgs+=("$p"); fi
+done < <(sed 's/#.*//; s/[[:space:]]//g' "$src/packages.txt")
+pacman -S --noconfirm --needed "${pkgs[@]}"
+
+step 85 "Applying the new Wren desktop"
+# Keep this computer's keyboard layout across updates
+keep=$(grep '^XKB_' /etc/xdg/labwc/environment 2>/dev/null || true)
+cp -r "$src/rootfs/." /
+if [[ -n $keep ]]; then echo "$keep" >> /etc/xdg/labwc/environment; fi
+chmod 755 /usr/local/bin/wren-* /usr/lib/wren/*.py 2>/dev/null || true
+mkdir -p /etc/greetd
+cp "$src/rootfs/usr/share/wren/greetd/regreet.toml" "$src/rootfs/usr/share/wren/greetd/regreet.css" /etc/greetd/
+
+# One-off upgrade steps added in later releases
+if [[ -d $src/migrations ]]; then
+  for m in "$src"/migrations/*.sh; do
+    [[ -f $m ]] || continue
+    n=$(basename "$m" .sh)
+    if [[ ! -e /var/lib/wren/migrations/$n ]]; then
+      step 92 "Running upgrade step $n"
+      bash "$m"
+      mkdir -p /var/lib/wren/migrations && touch "/var/lib/wren/migrations/$n"
+    fi
+  done
+fi
+
+printf 'WREN_BUILD=%s\nWREN_TAG=%s\n' "$latest" "$tag" > /etc/wren-release
+step 100 "Wren is up to date ($tag). Restart to finish."

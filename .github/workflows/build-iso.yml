@@ -3,7 +3,13 @@ name: Build Wren ISO
 on:
   push:
     branches: [main]
+    paths-ignore: ['README.md']
   workflow_dispatch:
+
+# A newer push cancels an older build that's still running
+concurrency:
+  group: build-iso
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -17,13 +23,22 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Reuse downloaded packages from earlier builds
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/pacman/pkg
+          key: pacman-${{ hashFiles('packages.txt') }}-${{ github.run_id }}
+          restore-keys: |
+            pacman-${{ hashFiles('packages.txt') }}-
+            pacman-
+
       - name: Install build tools
-        run: pacman -Syu --noconfirm archiso python
+        run: pacman -Syu --noconfirm archiso python zstd
 
       - name: Check scripts for syntax errors
         run: |
           for f in build.sh wren-setup live/usr/lib/wren/install-backend.sh tests/test-install.sh; do bash -n "$f"; done
-          python -m py_compile rootfs/usr/lib/wren/shell.py live/usr/lib/wren/installer.py
+          python -m py_compile rootfs/usr/lib/wren/*.py live/usr/lib/wren/installer.py
 
       - name: Build the ISO
         run: bash build.sh
@@ -43,6 +58,11 @@ jobs:
 
       - name: Test the installer on a virtual disk
         run: bash tests/test-install.sh
+
+      - name: Keep only the newest package versions in the cache
+        run: |
+          pacman -S --noconfirm --needed pacman-contrib >/dev/null
+          paccache -rk1 -c /var/cache/pacman/pkg || true
 
       - name: Publish as a download (Releases page)
         uses: softprops/action-gh-release@v2

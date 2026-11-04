@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Software Update
+Comment=Check for and install Wren updates
+Exec=wren-updater
+Icon=/usr/share/wren/logo-256.png
+Terminal=false
+Categories=System;Settings;
+Keywords=update;upgrade;software;
+StartupWMClass=org.wrenlinux.Update

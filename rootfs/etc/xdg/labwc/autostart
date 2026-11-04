@@ -27,6 +27,7 @@ if [ -d /run/archiso ]; then
   # Live USB: open the installer welcome screen
   (sleep 2; wren-installer) >/dev/null 2>&1 &
 else
+  wren-update-notify >/dev/null 2>&1 &
   # Lock after 10 idle minutes and before sleeping
   swayidle -w \
     timeout 600 'pidof hyprlock || hyprlock -c /etc/xdg/wren/hypr/hyprlock.conf &' \

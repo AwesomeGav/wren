@@ -62,6 +62,19 @@ def run(cmd, timeout=10):
         return ""
 
 
+def restart_now():
+    """Reboot right away. A normal shutdown can hang on the live USB (it runs from
+    the stick), and the new system is already safely written and unmounted."""
+    os.sync()
+    try:
+        with open("/proc/sys/kernel/sysrq", "w") as f:
+            f.write("1")
+        with open("/proc/sysrq-trigger", "w") as f:
+            f.write("b")
+    except OSError:
+        subprocess.Popen(["systemctl", "reboot", "--force"])
+
+
 def human_size(n):
     for unit in ("B", "KB", "MB", "GB", "TB"):
         if n < 1000 or unit == "TB":
@@ -582,12 +595,12 @@ class Window(Adw.ApplicationWindow):
         p.actions.set_visible(True)
         if success:
             p.heading.set_text("Wren is installed")
-            p.status.set_text("Remove the USB stick, then restart to start using your new computer.")
+            p.status.set_text("Click Restart Now. When the screen goes dark, remove the USB stick.")
             p.bar.set_fraction(1.0)
             btn = Gtk.Button(label="Restart Now")
             btn.add_css_class("big-button")
             btn.add_css_class("suggested-action")
-            btn.connect("clicked", lambda *_: subprocess.Popen(["systemctl", "reboot"]))
+            btn.connect("clicked", lambda *_: restart_now())
             later = Gtk.Button(label="Later")
             later.add_css_class("big-button")
             later.connect("clicked", lambda *_: self.close())

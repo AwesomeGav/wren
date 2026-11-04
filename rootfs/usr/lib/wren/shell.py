@@ -325,10 +325,16 @@ class Control(Sheet):
         self.dnd = Tile("notifications-disabled-symbolic", "Do Not Disturb", self.toggle_dnd)
         self.shot = Tile("camera-photo-symbolic", "Screenshot", self.screenshot)
         self.shot.set_state(False, "Whole screen")
+        self.upd = Tile("software-update-available-symbolic", "Updates", self.open_updates)
+        self.files = Tile("folder-symbolic", "Files", lambda: self.open_app(["nautilus", "--new-window"]))
+        self.files.set_state(False, "Your documents")
         grid.attach(self.wifi, 0, 0, 1, 1)
         grid.attach(self.bt, 1, 0, 1, 1)
         grid.attach(self.dnd, 0, 1, 1, 1)
         grid.attach(self.shot, 1, 1, 1, 1)
+        if not LIVE:
+            grid.attach(self.upd, 0, 2, 1, 1)
+            grid.attach(self.files, 1, 2, 1, 1)
         self.card.append(grid)
 
         # Wi-Fi network picker
@@ -398,6 +404,8 @@ class Control(Sheet):
         self.clock.set_text(now.format("%-I:%M %p"))
         self.date.set_text(now.format("%A, %B %-d"))
         self.battery.set_text(self._battery_text())
+        pending = os.path.exists(os.path.expanduser("~/.cache/wren/update-available"))
+        self.upd.set_state(pending, "Update ready" if pending else "Up to date")
         self.net_reveal.set_reveal_child(False)
         self._reset_confirm()
         in_thread(self._read_state, self._apply_state)
@@ -474,6 +482,13 @@ class Control(Sheet):
         in_thread(lambda: run(["makoctl", "mode", "-t", "do-not-disturb"]),
                   lambda _r: in_thread(self._read_state, self._apply_state))
 
+    def open_app(self, cmd):
+        self.hide_sheet()
+        spawn(cmd)
+
+    def open_updates(self):
+        self.open_app(["wren-updater"])
+
     def screenshot(self):
         self.hide_sheet()
         GLib.timeout_add(350, lambda: spawn(["wren-screenshot"]) or False)
@@ -504,6 +519,16 @@ class Control(Sheet):
             spawn(LOCK_CMD)
         elif action == "logout":
             spawn(["labwc", "--exit"])
+        elif LIVE and os.geteuid() == 0:
+            # The live USB runs from the stick; switch off/restart instantly so it can't hang
+            os.sync()
+            try:
+                with open("/proc/sys/kernel/sysrq", "w") as f:
+                    f.write("1")
+                with open("/proc/sysrq-trigger", "w") as f:
+                    f.write("b" if action == "reboot" else "o")
+            except OSError:
+                spawn(["systemctl", action, "--force"])
         else:
             spawn(["systemctl", action])
 

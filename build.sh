@@ -24,6 +24,23 @@ sed -i \
 grep -rlI "Arch Linux install medium" "$PROFILE" | xargs -r sed -i 's/Arch Linux install medium/Wren Linux/g'
 echo "wren" > "$ROOT/etc/hostname"
 
+echo ":: Faster compression (quicker builds, and quicker start-up on slow computers)"
+sed -i "s/^airootfs_image_tool_options=.*/airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '17' '-b' '1M')/" "$PROFILE/profiledef.sh"
+
+echo ":: Silence the boot menu start-up beep"
+find "$PROFILE" -name '*.cfg' -path '*grub*' -exec sed -i '/^[[:space:]]*play[[:space:]]/d' {} +
+find "$PROFILE" -name 'loader.conf' -exec sed -i '/^[[:space:]]*beep[[:space:]]/d' {} +
+if grep -rqE '^[[:space:]]*(play|beep)[[:space:]]' "$PROFILE"/grub "$PROFILE"/efiboot 2>/dev/null; then
+  echo "::warning::A boot menu beep line is still present"
+fi
+
+echo ":: Version stamp (used by the updater)"
+mkdir -p "$ROOT/etc"
+cat > "$ROOT/etc/wren-release" <<EOF
+WREN_BUILD=${GITHUB_RUN_NUMBER:-0}
+WREN_TAG=build-${GITHUB_RUN_NUMBER:-0}
+EOF
+
 echo ":: Adding Wren packages"
 while read -r p; do
   [[ -z $p ]] && continue
