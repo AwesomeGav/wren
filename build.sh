@@ -58,7 +58,9 @@ cp -r live/. "$ROOT/"
 install -Dm755 wren-setup "$ROOT/usr/local/bin/wren-setup"
 mkdir -p "$ROOT/usr/share/xsessions" "$ROOT/usr/share/wren/migrations"
 cp migrations/*.sh "$ROOT/usr/share/wren/migrations/"
-for f in "$ROOT"/usr/local/bin/wren-* "$ROOT"/usr/lib/wren/*.sh "$ROOT"/usr/lib/wren/*.py "$ROOT"/usr/lib/wren/live-power; do
+# (mkarchiso resets file modes, so every executable must be listed here)
+for f in "$ROOT"/usr/local/bin/wren-* "$ROOT"/usr/lib/wren/*.sh "$ROOT"/usr/lib/wren/*.py "$ROOT"/usr/lib/wren/live-power \
+         "$ROOT"/etc/grub.d/35_wren_windows; do
   chmod 755 "$f"
   rel="/${f#"$ROOT"/}"
   sed -i "/^file_permissions=(/a\\  [\"$rel\"]=\"0:0:755\"" "$PROFILE/profiledef.sh"

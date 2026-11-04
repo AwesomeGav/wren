@@ -48,6 +48,9 @@ else
   grep -q "echo.*'Loading " /mnt/check/boot/grub/grub.cfg && problems+=("Boot menu still prints Loading messages")
   grep -q 'Theme=wren' /mnt/check/etc/plymouth/plymouthd.conf || problems+=("Start-up theme not selected")
   grep -q 'wren-greeter' /mnt/check/etc/greetd/config.toml || problems+=("Wren Login not set as the login screen")
+  for x in etc/grub.d/35_wren_windows usr/local/bin/wren-settings usr/lib/wren/setup-boot-splash.sh; do
+    [[ -x /mnt/check/$x ]] || problems+=("Not executable after install: /$x")
+  done
   awk '$1 !~ /^#/ && $3 == "swap"' /mnt/check/etc/fstab | grep -q . && problems+=("fstab lists a swap device (slows start-up)")
   for u in cloud-init.target.wants/cloud-init-main.service sysinit.target.wants/systemd-time-wait-sync.service \
            multi-user.target.wants/ModemManager.service network-online.target.wants/systemd-networkd-wait-online.service; do

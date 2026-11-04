@@ -32,7 +32,12 @@ menuentry 'Windows' --class windows --class os {
 ENTRY
 }
 
-if [ -d /sys/firmware/efi ] || [ -n "${WREN_FORCE_UEFI:-}" ]; then
+# The installer records which kind of computer Wren was installed for
+kind=$(cat /etc/wren/dual-boot 2>/dev/null || true)
+if [ -z "$kind" ]; then
+  if [ -d /sys/firmware/efi ]; then kind=uefi; else kind=bios; fi
+fi
+if [ "$kind" = uefi ]; then
   for esp in /efi /boot/efi /boot; do
     if [ -f "$esp/EFI/Microsoft/Boot/bootmgfw.efi" ]; then
       dev=$(findmnt -no SOURCE "$esp" 2>/dev/null || true)

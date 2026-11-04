@@ -231,7 +231,7 @@ fi
 # Alongside another system: show a boot menu and keep the clock the way Windows expects
 if [[ $MODE != erase ]]; then
   mkdir -p "$T/etc/wren"
-  touch "$T/etc/wren/dual-boot"
+  if ((UEFI)); then echo uefi > "$T/etc/wren/dual-boot"; else echo bios > "$T/etc/wren/dual-boot"; fi
   printf '0.0 0 0.0\n0\nLOCAL\n' > "$T/etc/adjtime"
 fi
 
