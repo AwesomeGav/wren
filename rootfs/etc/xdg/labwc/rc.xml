@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!-- Wren Linux window manager settings (labwc). Everything works with the mouse;
+     shortcuts below are optional extras. -->
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+    <gap>4</gap>
+    <adaptiveSync>no</adaptiveSync>
+  </core>
+
+  <theme>
+    <cornerRadius>8</cornerRadius>
+    <font place="ActiveWindow"><name>Inter</name><size>10</size><weight>bold</weight></font>
+    <font place="InactiveWindow"><name>Inter</name><size>10</size></font>
+    <font place="MenuItem"><name>Inter</name><size>11</size></font>
+  </theme>
+
+  <!-- Drag a window to the top edge to maximize, to a side to fill half the screen -->
+  <snapping>
+    <range>12</range>
+    <topMaximize>yes</topMaximize>
+  </snapping>
+
+  <placement>
+    <policy>center</policy>
+  </placement>
+
+  <keyboard>
+    <default />
+    <keybind key="Super_L" onRelease="yes"><action name="Execute" command="wren-apps" /></keybind>
+    <keybind key="W-space"><action name="Execute" command="wren-apps" /></keybind>
+    <keybind key="W-Return"><action name="Execute" command="foot" /></keybind>
+    <keybind key="W-e"><action name="Execute" command="thunar" /></keybind>
+    <keybind key="W-l"><action name="Execute" command="swaylock -f -c 1e1e2e" /></keybind>
+    <keybind key="Print"><action name="Execute" command="wren-screenshot" /></keybind>
+    <keybind key="XF86AudioRaiseVolume"><action name="Execute" command="wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+" /></keybind>
+    <keybind key="XF86AudioLowerVolume"><action name="Execute" command="wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-" /></keybind>
+    <keybind key="XF86AudioMute"><action name="Execute" command="wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle" /></keybind>
+    <keybind key="XF86MonBrightnessUp"><action name="Execute" command="brightnessctl set +5%" /></keybind>
+    <keybind key="XF86MonBrightnessDown"><action name="Execute" command="brightnessctl set 5%-" /></keybind>
+  </keyboard>
+
+  <libinput>
+    <device category="touchpad">
+      <tap>yes</tap>
+      <naturalScroll>yes</naturalScroll>
+      <disableWhileTyping>yes</disableWhileTyping>
+    </device>
+  </libinput>
+</labwc_config>

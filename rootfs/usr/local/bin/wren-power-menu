@@ -1,0 +1,12 @@
+#!/bin/sh
+# Clickable power menu shown from the taskbar's power button.
+pkill -x fuzzel && exit 0
+choice=$(printf 'Lock\nSleep\nLog out\nRestart\nShut down\n' |
+  fuzzel --dmenu --anchor bottom-right --lines 5 --width 16 --prompt 'Power  ')
+case "$choice" in
+  Lock) swaylock -f -c 1e1e2e ;;
+  Sleep) systemctl suspend ;;
+  "Log out") labwc --exit ;;
+  Restart) systemctl reboot ;;
+  "Shut down") systemctl poweroff ;;
+esac

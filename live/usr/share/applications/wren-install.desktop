@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Install Wren Linux
+Comment=Install Wren Linux on this computer
+Exec=foot -e wren-install
+Icon=system-software-install
+Terminal=false
+Categories=System;

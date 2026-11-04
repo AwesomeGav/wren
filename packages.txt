@@ -1,0 +1,73 @@
+# Wren Linux packages (added on top of the Arch base).
+# Names that aren't in the Arch repos are skipped automatically at build time.
+
+# --- Desktop core -------------------------------------------------------
+labwc
+xorg-xwayland
+waybar
+fuzzel
+foot
+mako
+swaybg
+swaylock
+swayidle
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+polkit-gnome
+xdg-user-dirs
+wl-clipboard
+libnotify
+grim
+slurp
+brightnessctl
+greetd
+greetd-tuigreet
+
+# --- Look & feel --------------------------------------------------------
+adw-gtk-theme
+papirus-icon-theme
+inter-font
+noto-fonts
+noto-fonts-emoji
+ttf-nerd-fonts-symbols
+gnome-themes-extra
+
+# --- Everyday apps ------------------------------------------------------
+firefox
+thunar
+thunar-volman
+thunar-archive-plugin
+gvfs
+gvfs-mtp
+tumbler
+ffmpegthumbnailer
+file-roller
+mousepad
+ristretto
+pavucontrol
+wdisplays
+network-manager-applet
+blueman
+
+# --- Audio --------------------------------------------------------------
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+
+# --- Hardware & drivers -------------------------------------------------
+networkmanager
+bluez
+bluez-utils
+mesa
+vulkan-intel
+vulkan-radeon
+intel-media-driver
+libva-intel-driver
+libva-mesa-driver
+sof-firmware
+
+# --- Low-power performance ----------------------------------------------
+zram-generator
+earlyoom
+tlp

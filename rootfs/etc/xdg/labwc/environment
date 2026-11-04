@@ -1,0 +1,6 @@
+XDG_CURRENT_DESKTOP=labwc:wlroots
+XDG_CONFIG_DIRS=/etc/xdg/wren:/etc/xdg
+MOZ_ENABLE_WAYLAND=1
+QT_QPA_PLATFORM=wayland;xcb
+XCURSOR_THEME=Adwaita
+XCURSOR_SIZE=24

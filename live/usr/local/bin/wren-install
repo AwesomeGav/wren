@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Wren Linux installer (live USB only).
+# Uses Arch's guided installer for disks and accounts, then applies the Wren desktop.
+set -uo pipefail
+
+SETUP_URL="https://raw.githubusercontent.com/AwesomeGav/wren/main/wren-setup"
+
+clear
+cat <<'EOF'
+  ==============================================
+            Welcome to the Wren installer
+  ==============================================
+
+  First, make sure you're online: click the network
+  icon in the bottom bar and pick your Wi-Fi.
+
+  A menu will open. Use the arrow keys and Enter:
+
+    1. Disk configuration -> pick your disk
+       -> "Use a best-effort default partition layout"
+       (this ERASES that disk)
+    2. Authentication -> User account -> add a user
+       and say YES to making them a superuser (sudo)
+    3. Profile -> Type -> Minimal
+    4. Network configuration -> NetworkManager
+    5. Choose "Install"
+
+  When it asks whether to chroot into the new system,
+  choose "no". The Wren desktop is added automatically.
+
+EOF
+
+until ping -c1 -W3 archlinux.org >/dev/null 2>&1; do
+  read -rp "  Not connected to the internet yet. Connect, then press Enter to retry... "
+done
+
+read -rp "  Press Enter to start the installer... "
+
+cfg="$(mktemp --suffix=.json)"
+cat > "$cfg" <<EOF
+{
+  "custom_commands": [
+    "curl -fsSL $SETUP_URL -o /tmp/wren-setup && bash /tmp/wren-setup"
+  ]
+}
+EOF
+
+if archinstall --config "$cfg"; then
+  echo
+  echo "  All done! Remove the USB stick and restart the computer."
+else
+  echo
+  echo "  The installer stopped before finishing. You can run it again from the Apps menu."
+fi
+read -rp "  Press Enter to close this window... "

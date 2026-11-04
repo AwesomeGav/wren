@@ -1,0 +1,11 @@
+{
+  "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "Preferences": {
+      "media.ffmpeg.vaapi.enabled": { "Value": true, "Status": "default" },
+      "gfx.webrender.all": { "Value": true, "Status": "default" },
+      "browser.cache.disk.capacity": { "Value": 262144, "Status": "default" }
+    }
+  }
+}

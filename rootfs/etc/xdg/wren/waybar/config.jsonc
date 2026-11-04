@@ -1,0 +1,60 @@
+{
+  "layer": "top",
+  "position": "bottom",
+  "height": 38,
+  "spacing": 4,
+  "modules-left": ["custom/apps", "wlr/taskbar"],
+  "modules-right": ["tray", "pulseaudio", "backlight", "battery", "clock", "custom/power"],
+
+  "custom/apps": {
+    "format": "  Apps",
+    "tooltip": false,
+    "on-click": "wren-apps"
+  },
+
+  "wlr/taskbar": {
+    "format": "{icon} {title:.22}",
+    "icon-size": 18,
+    "icon-theme": "Papirus-Dark",
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close",
+    "on-click-right": "minimize-raise"
+  },
+
+  "tray": { "icon-size": 18, "spacing": 8 },
+
+  "pulseaudio": {
+    "format": "{icon}  {volume}%",
+    "format-muted": "  Muted",
+    "format-icons": { "default": ["", "", ""] },
+    "on-click": "pavucontrol",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "scroll-step": 5
+  },
+
+  "backlight": {
+    "format": "  {percent}%",
+    "on-scroll-up": "brightnessctl set +5%",
+    "on-scroll-down": "brightnessctl set 5%-"
+  },
+
+  "battery": {
+    "states": { "warning": 25, "critical": 10 },
+    "format": "{icon}  {capacity}%",
+    "format-charging": "  {capacity}%",
+    "format-icons": ["", "", "", "", ""],
+    "tooltip-format": "{timeTo}"
+  },
+
+  "clock": {
+    "format": "{:%a %b %d   %I:%M %p}",
+    "tooltip-format": "<tt>{calendar}</tt>"
+  },
+
+  "custom/power": {
+    "format": "",
+    "tooltip": false,
+    "on-click": "wren-power-menu"
+  }
+}

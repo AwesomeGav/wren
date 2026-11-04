@@ -1,0 +1,35 @@
+name: Build Wren ISO
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: pacman -Syu --noconfirm archiso
+
+      - name: Build the ISO
+        run: bash build.sh
+
+      - name: Publish as a download (Releases page)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Wren Linux (build ${{ github.run_number }})
+          body: |
+            Download the .iso below, flash it to a USB stick with balenaEtcher or Ventoy, and boot from it.
+            Click **Apps → Install Wren Linux** to install.
+          files: out/*.iso
+          make_latest: true

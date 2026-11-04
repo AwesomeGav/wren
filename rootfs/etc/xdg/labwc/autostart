@@ -1,0 +1,15 @@
+# Started once when the Wren desktop starts.
+xdg-user-dirs-update >/dev/null 2>&1
+swaybg -c '#1e1e2e' >/dev/null 2>&1 &
+waybar -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/dev/null 2>&1 &
+mako -c /etc/xdg/wren/mako/config >/dev/null 2>&1 &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 >/dev/null 2>&1 &
+nm-applet --indicator >/dev/null 2>&1 &
+blueman-applet >/dev/null 2>&1 &
+
+# Lock the screen after 10 idle minutes (not on the live USB, which has no password)
+if [ ! -d /run/archiso ]; then
+  swayidle -w \
+    timeout 600 'swaylock -f -c 1e1e2e' \
+    before-sleep 'swaylock -f -c 1e1e2e' >/dev/null 2>&1 &
+fi

@@ -1,0 +1,6 @@
+#!/bin/sh
+# Save a full-screen screenshot to ~/Pictures and copy it to the clipboard.
+dir="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
+mkdir -p "$dir"
+file="$dir/Screenshot-$(date +%Y-%m-%d_%H-%M-%S).png"
+grim "$file" && wl-copy < "$file" && notify-send "Screenshot saved" "$file"

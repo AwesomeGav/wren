@@ -1,0 +1,18 @@
+# Wren dark theme for window frames and menus
+border.width: 1
+padding.height: 6
+
+window.active.border.color: #89b4fa
+window.inactive.border.color: #313244
+window.active.title.bg.color: #1e1e2e
+window.inactive.title.bg.color: #181825
+window.active.label.text.color: #cdd6f4
+window.inactive.label.text.color: #6c7086
+window.active.button.unpressed.image.color: #cdd6f4
+window.inactive.button.unpressed.image.color: #6c7086
+
+menu.items.bg.color: #1e1e2e
+menu.items.text.color: #cdd6f4
+menu.items.active.bg.color: #89b4fa
+menu.items.active.text.color: #1e1e2e
+menu.separator.color: #45475a

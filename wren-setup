@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Turns a fresh Arch Linux install into Wren Linux.
+# Run as root on the installed system (the Wren installer does this for you).
+set -euo pipefail
+
+REPO_TARBALL="https://github.com/AwesomeGav/wren/archive/refs/heads/main.tar.gz"
+
+[[ $EUID -eq 0 ]] || { echo "Please run as root (sudo wren-setup)."; exit 1; }
+
+echo ":: Downloading Wren files..."
+src="$(mktemp -d)"
+trap 'rm -rf "$src"' EXIT
+curl -fsSL "$REPO_TARBALL" | tar xz -C "$src" --strip-components=1
+
+echo ":: Installing the Wren desktop..."
+pacman -Sy --noconfirm
+pkgs=()
+while read -r p; do
+  [[ -z $p ]] && continue
+  if pacman -Si "$p" >/dev/null 2>&1; then pkgs+=("$p"); else echo "   (skipping unavailable package: $p)"; fi
+done < <(sed 's/#.*//; s/[[:space:]]//g' "$src/packages.txt")
+pacman -S --needed --noconfirm "${pkgs[@]}"
+
+echo ":: Applying Wren settings..."
+cp -r "$src/rootfs/." /
+chmod 755 /usr/local/bin/wren-*
+install -Dm755 "$src/wren-setup" /usr/local/bin/wren-setup
+
+mkdir -p /etc/greetd
+cat > /etc/greetd/config.toml <<'EOF'
+[terminal]
+vt = 1
+
+[default_session]
+command = "tuigreet --time --remember --asterisks --greeting 'Welcome to Wren Linux' --cmd labwc"
+user = "greeter"
+EOF
+
+echo ":: Switching on services..."
+# Avoid two network managers fighting each other
+systemctl disable systemd-networkd.service iwd.service 2>/dev/null || true
+for svc in NetworkManager.service bluetooth.service earlyoom.service tlp.service fstrim.timer greetd.service; do
+  systemctl enable "$svc" 2>/dev/null || echo "   (could not enable $svc)"
+done
+# TLP manages radios itself
+systemctl mask systemd-rfkill.service systemd-rfkill.socket 2>/dev/null || true
+
+echo ":: Wren Linux is ready. Restart the computer to start using it."
