@@ -8,6 +8,9 @@ OUT=$PWD/screenshots
 rm -rf "$OUT" "$R/var/tmp/shots"
 mkdir -p "$OUT" "$R/var/tmp/shots"
 
+mkdir -p "$R/var/tmp/variants"
+python3 tests/panel-variants.py "$R/var/tmp/variants"
+
 cat > "$R/var/tmp/scenes.sh" <<'EOF'
 shot() { sleep "$2"; grim "/var/tmp/shots/$1.png"; }
 # Restart the panel and shell with logging, to diagnose display problems
@@ -15,8 +18,19 @@ sleep 3
 pkill -x waybar; pkill -f /usr/lib/wren/shell.py; sleep 1
 waybar -l debug -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/var/tmp/shots/waybar.log 2>&1 &
 wren-shell --service >/var/tmp/shots/shell.log 2>&1 &
-(sleep 3; pkill -USR2 -x waybar) &
 shot 1-desktop 8
+# Try each panel variant on its own
+for cfg in /var/tmp/variants/*.json; do
+  name=$(basename "$cfg" .json)
+  css=/etc/xdg/wren/waybar/style.css
+  [ "$name" = e-old-build6 ] && css=/var/tmp/variants/old.css
+  pkill -x waybar; sleep 1
+  waybar -l debug -c "$cfg" -s "$css" >"/var/tmp/shots/panel-$name.log" 2>&1 &
+  shot "panel-$name" 4
+done
+pkill -x waybar; sleep 1
+waybar -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/dev/null 2>&1 &
+sleep 2
 wren-shell launcher; shot 2-launcher 3; wren-shell launcher
 wren-shell control;  shot 3-quick-settings 3; wren-shell control
 for page in 0 1 3 4; do
@@ -35,6 +49,8 @@ mkdir -p -m 700 "$XDG_RUNTIME_DIR"
 export WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_LIBINPUT_NO_DEVICES=1
 export GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1
 timeout 150 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
+# Login screen, in demo mode (no real logins), inside the same kiosk compositor greetd uses
+timeout 40 dbus-run-session -- cage -s -- sh -c 'regreet --demo --config /usr/share/wren/greetd/regreet.toml --style /usr/share/wren/greetd/regreet.css & sleep 8; grim /var/tmp/shots/7-login.png; kill %1' >/var/tmp/shots/login.log 2>&1
 EOF
 
 arch-chroot "$R" bash /var/tmp/run-desktop.sh >"$OUT/chroot.log" 2>&1 || echo "desktop exited with $?" >>"$OUT/chroot.log"

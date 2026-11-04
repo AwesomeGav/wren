@@ -1,4 +1,4 @@
-/* Wren panel: a floating dock-style bar */
+/* Wren panel */
 * {
   font-family: "Inter", "Symbols Nerd Font", sans-serif;
   font-size: 13px;
@@ -10,22 +10,26 @@
 }
 
 window#waybar {
-  background: rgba(28, 25, 22, 0.95);
-  border: 1px solid rgba(255, 240, 225, 0.07);
-  border-radius: 16px;
+  background: #1C1916;
+  border-top: 1px solid #2E2924;
   color: #F1EBE3;
 }
 
-#image.wren {
-  padding: 0 12px 0 16px;
+#custom-apps {
+  background: #E0894A;
+  color: #1A120B;
+  font-size: 18px;
+  padding: 0 13px;
+  margin: 6px 6px 6px 8px;
+  border-radius: 10px;
+}
+#custom-apps:hover {
+  background: #EC9A5E;
 }
 
-#taskbar {
-  margin-left: 2px;
-}
 #taskbar button {
-  padding: 3px 9px 1px 9px;
-  margin: 6px 2px;
+  padding: 2px 9px 0 9px;
+  margin: 5px 2px;
   border-radius: 10px;
   border-bottom: 2px solid transparent;
   background: transparent;
@@ -44,33 +48,31 @@ window#waybar {
 #tray {
   padding: 0 8px;
 }
-#tray > .needs-attention {
-  color: #E0894A;
-}
 
-#status {
-  background: rgba(255, 240, 225, 0.06);
-  border-radius: 10px;
-  margin: 7px 4px;
-  padding: 0 6px;
-}
-#status:hover {
-  background: rgba(255, 240, 225, 0.11);
-}
-#network, #pulseaudio, #battery {
-  padding: 0 7px;
-  font-size: 15px;
+#network, #pulseaudio, #battery, #custom-power {
+  font-size: 16px;
+  padding: 0 9px;
+  margin: 7px 1px;
+  border-radius: 9px;
 }
 #battery {
   font-size: 13px;
+}
+#network:hover, #pulseaudio:hover, #battery:hover, #clock:hover, #custom-power:hover {
+  background: rgba(255, 240, 225, 0.08);
 }
 #battery.warning:not(.charging) { color: #E9C46A; }
 #battery.critical:not(.charging) { color: #F08A78; }
 
 #clock {
-  padding: 0 16px 0 8px;
   font-weight: 600;
-  font-feature-settings: "tnum";
+  padding: 0 10px;
+  margin: 7px 1px;
+  border-radius: 9px;
+}
+#custom-power {
+  color: #F0A06A;
+  margin-right: 8px;
 }
 
 tooltip {

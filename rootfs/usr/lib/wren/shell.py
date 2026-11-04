@@ -313,7 +313,7 @@ class Control(Sheet):
         self.card.set_halign(Gtk.Align.END)
         self.card.set_valign(Gtk.Align.END)
         self.card.set_margin_end(10)
-        self.card.set_margin_bottom(62)
+        self.card.set_margin_bottom(54)
         self.card.set_size_request(380, -1)
         self.state = {}
         self._quiet = False

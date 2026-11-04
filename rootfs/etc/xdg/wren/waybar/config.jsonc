@@ -1,25 +1,24 @@
 {
   "layer": "top",
   "position": "bottom",
-  "height": 46,
-  "margin-left": 10,
-  "margin-right": 10,
-  "margin-bottom": 8,
+  "height": 44,
   "spacing": 0,
   "modules-left": [
-    "image#wren",
+    "custom/apps",
     "wlr/taskbar"
   ],
   "modules-right": [
     "tray",
-    "group/status",
-    "clock"
+    "network",
+    "pulseaudio",
+    "battery",
+    "clock",
+    "custom/power"
   ],
-  "image#wren": {
-    "path": "/usr/share/wren/logo-64.png",
-    "size": 24,
-    "on-click": "wren-shell launcher",
-    "tooltip": false
+  "custom/apps": {
+    "format": "󰀻",
+    "tooltip": false,
+    "on-click": "wren-shell launcher"
   },
   "wlr/taskbar": {
     "format": "{icon}",
@@ -32,14 +31,6 @@
   "tray": {
     "icon-size": 18,
     "spacing": 10
-  },
-  "group/status": {
-    "orientation": "horizontal",
-    "modules": [
-      "network",
-      "pulseaudio",
-      "battery"
-    ]
   },
   "network": {
     "format-wifi": "󰖩",
@@ -70,9 +61,9 @@
       "warning": 20,
       "critical": 10
     },
-    "format": "{icon}  {capacity}%",
-    "format-charging": "󰂄  {capacity}%",
-    "format-full": "󰁹  {capacity}%",
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-full": "󰁹 {capacity}%",
     "format-icons": [
       "󰂎",
       "󰁺",
@@ -92,6 +83,11 @@
   "clock": {
     "format": "{:%I:%M %p}",
     "tooltip-format": "{:%A, %B %d, %Y}",
+    "on-click": "wren-shell control"
+  },
+  "custom/power": {
+    "format": "󰐥",
+    "tooltip": false,
     "on-click": "wren-shell control"
   }
 }
