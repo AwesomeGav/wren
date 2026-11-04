@@ -31,13 +31,9 @@ mknodes() {  # partition device nodes (no udev in containers)
 debug_windows() {  # <label> <esp device or ""> [env...]: trace the Windows detection step
   local label=$1 esp=$2; shift 2
   {
-    ls -l /mnt/wren/etc/grub.d/ | tail -n 6
-    grep -n "35_wren_windows" /mnt/wren/boot/grub/grub.cfg || echo "(35_wren_windows section not in grub.cfg)"
     [[ -n $esp ]] && mkdir -p /mnt/wren/efi && mount "$esp" /mnt/wren/efi
-    env "$@" arch-chroot /mnt/wren sh -x /etc/grub.d/35_wren_windows 2>&1 | head -n 25
+    env "$@" arch-chroot /mnt/wren sh -x /etc/grub.d/35_wren_windows 2>&1 | tail -n 7
     [[ -n $esp ]] && umount /mnt/wren/efi
-    for d in $(blkid -p -o device -t TYPE=ntfs 2>/dev/null; ls /dev/loop*p* 2>/dev/null); do :; done
-    ls /dev/loop*p* 2>/dev/null | tr '\n' ' '
   } 2>&1 | while IFS= read -r l; do echo "::error title=$label Windows detection::$l"; done
 }
 
@@ -119,9 +115,20 @@ loop=$(losetup -fP --show "$img"); mknodes "$loop"
 mkfs.ntfs -Q -L "System Reserved" "${loop}p1" >/dev/null
 mkfs.ntfs -Q -L Windows "${loop}p2" >/dev/null
 echo "fake bootmgr" > /tmp/bootmgr
-ntfscp -f "${loop}p1" /tmp/bootmgr bootmgr >/dev/null 2>&1 || true
-mkdir -p /tmp/bcd && echo x > /tmp/bcd/BCD
-ntfscp -f "${loop}p1" /tmp/bcd/BCD "Boot/BCD" >/dev/null 2>&1 || true
+mkdir -p /mnt/ntfs
+if mount -t ntfs3 "${loop}p1" /mnt/ntfs 2>/dev/null || ntfs-3g "${loop}p1" /mnt/ntfs 2>/dev/null; then
+  cp /tmp/bootmgr /mnt/ntfs/bootmgr && mkdir -p /mnt/ntfs/Boot && echo x > /mnt/ntfs/Boot/BCD
+  umount /mnt/ntfs
+else
+  ntfscp -f "${loop}p1" /tmp/bootmgr bootmgr >/dev/null 2>&1 || true
+fi
+fake_windows_ok=1
+if ntfscat "${loop}p1" bootmgr 2>/dev/null | grep -q "fake bootmgr"; then
+  note "BIOS: fake Windows has a bootmgr file"
+else
+  fake_windows_ok=0
+  warnmsg "BIOS: couldn't write bootmgr into the fake Windows here; skipping the Windows menu check"
+fi
 sysr_uuid=$(blkid -p -s UUID -o value "${loop}p1"); win_uuid=$(blkid -p -s UUID -o value "${loop}p2")
 
 if install_alongside "$loop" WREN_FORCE_BIOS=1; then
@@ -132,7 +139,7 @@ if install_alongside "$loop" WREN_FORCE_BIOS=1; then
   dd if="$loop" bs=512 count=1 2>/dev/null | grep -aq GRUB || fail "BIOS: GRUB not installed in the boot sector"
   mkdir -p /mnt/wren && mount "${loop}p3" /mnt/wren
   grep -q 'set timeout=5' /mnt/wren/boot/grub/grub.cfg || fail "BIOS: boot menu isn't shown"
-  if ! grep -q "menuentry 'Windows'" /mnt/wren/boot/grub/grub.cfg; then
+  if ((fake_windows_ok)) && ! grep -q "menuentry 'Windows'" /mnt/wren/boot/grub/grub.cfg; then
     fail "BIOS: Windows isn't in the boot menu"
     debug_windows BIOS ""
   fi
