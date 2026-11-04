@@ -19,9 +19,9 @@ CACHE = os.path.expanduser("~/.cache/wren/update-available")
 CSS = """
 .title { font-size: 24px; font-weight: 800; }
 .dim { color: alpha(currentColor, 0.7); }
-.big-button { padding: 10px 26px; border-radius: 12px; font-weight: 600; }
+.big-button { padding: 10px 26px; border-radius: 0; font-weight: 600; }
 .error-text { color: #F08A78; }
-progressbar trough, progressbar progress { min-height: 10px; border-radius: 10px; }
+progressbar trough, progressbar progress { min-height: 10px; border-radius: 0; }
 """
 
 

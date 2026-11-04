@@ -11,8 +11,8 @@ window.active.title.bg.color: #221E1A
 window.inactive.title.bg.color: #1C1916
 window.active.label.text.color: #F1EBE3
 window.inactive.label.text.color: #8A8178
-window.active.border.color: #2E2924
-window.inactive.border.color: #26221E
+window.active.border.color: #E0894A
+window.inactive.border.color: #2E2924
 window.active.button.unpressed.image.color: #D9D1C7
 window.inactive.button.unpressed.image.color: #6E665D
 window.active.button.close.unpressed.image.color: #F0A06A

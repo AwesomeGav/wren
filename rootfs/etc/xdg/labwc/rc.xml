@@ -9,7 +9,7 @@
   </core>
 
   <theme>
-    <cornerRadius>12</cornerRadius>
+    <cornerRadius>0</cornerRadius>
     <dropShadows>yes</dropShadows>
     <titlebar>
       <layout>icon:iconify,max,close</layout>

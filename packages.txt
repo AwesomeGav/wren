@@ -55,7 +55,6 @@ file-roller
 pavucontrol
 wdisplays
 network-manager-applet
-blueman
 
 # --- Audio --------------------------------------------------------------
 pipewire

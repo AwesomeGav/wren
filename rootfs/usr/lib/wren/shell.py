@@ -29,7 +29,7 @@ LIVE = os.path.isdir("/run/archiso")
 HIDDEN_APPS = {
     "foot-server.desktop", "footclient.desktop", "lftp.desktop", "qv4l2.desktop", "qvidcap.desktop",
     "vim.desktop", "gvim.desktop", "nm-connection-editor.desktop", "avahi-discover.desktop",
-    "bssh.desktop", "bvnc.desktop", "xgps.desktop", "xgpsspeed.desktop", "lstopo.desktop",
+    "bssh.desktop", "bvnc.desktop", "blueman-manager.desktop", "blueman-adapters.desktop", "xgps.desktop", "xgpsspeed.desktop", "lstopo.desktop",
     "org.freedesktop.IBus.Setup.desktop", "cmake-gui.desktop", "htop.desktop", "btop.desktop",
     "nvim.desktop", "mpv.desktop", "uxterm.desktop", "xterm.desktop", "gcr-prompter.desktop",
 }
@@ -42,16 +42,16 @@ window.wren-layer { background: transparent; }
 .sheet {
   background-color: #1F1B18;
   border: 1px solid rgba(255, 240, 225, 0.08);
-  border-radius: 22px;
+  border-radius: 0;
   padding: 20px;
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
   color: #F1EBE3;
 }
 .search {
-  min-height: 46px; border-radius: 14px; font-size: 15px;
+  min-height: 46px; border-radius: 0; font-size: 15px;
   background: rgba(255, 240, 225, 0.06);
 }
-flowboxchild { border-radius: 16px; padding: 0; outline: none; }
+flowboxchild { border-radius: 0; padding: 0; outline: none; }
 flowboxchild:hover { background: rgba(255, 240, 225, 0.06); }
 flowboxchild:selected, flowboxchild:focus-visible { background: rgba(224, 137, 74, 0.18); }
 .app-tile { padding: 14px 6px 12px 6px; }
@@ -60,7 +60,7 @@ flowboxchild:selected, flowboxchild:focus-visible { background: rgba(224, 137, 7
 .empty { color: #8A8178; font-size: 14px; }
 .big-clock { font-size: 36px; font-weight: 300; }
 .tile {
-  border-radius: 16px; padding: 12px 14px; min-height: 40px;
+  border-radius: 0; padding: 12px 14px; min-height: 40px;
   background: rgba(255, 240, 225, 0.06); color: #F1EBE3;
   box-shadow: none; border: none;
 }
@@ -71,16 +71,16 @@ flowboxchild:selected, flowboxchild:focus-visible { background: rgba(224, 137, 7
 .tile .sub { font-size: 11px; opacity: 0.75; }
 .row-icon { color: #A89F94; }
 .pill-btn {
-  border-radius: 12px; padding: 8px 10px; background: rgba(255, 240, 225, 0.06);
+  border-radius: 0; padding: 8px 10px; background: rgba(255, 240, 225, 0.06);
   box-shadow: none; border: none; color: #F1EBE3;
 }
 .pill-btn:hover { background: rgba(255, 240, 225, 0.12); }
 .pill-btn.danger:hover, .pill-btn.confirm { background: #C4513F; color: #FFFFFF; }
-.net-row { border-radius: 10px; padding: 8px 10px; background: transparent; box-shadow: none; border: none; color: #F1EBE3; }
+.net-row { border-radius: 0; padding: 8px 10px; background: transparent; box-shadow: none; border: none; color: #F1EBE3; }
 .net-row:hover { background: rgba(255, 240, 225, 0.07); }
-.net-list { background: rgba(0, 0, 0, 0.18); border-radius: 14px; padding: 6px; }
-scale trough { min-height: 6px; border-radius: 6px; background: rgba(255, 240, 225, 0.10); }
-scale highlight { background: #E0894A; border-radius: 6px; }
+.net-list { background: rgba(0, 0, 0, 0.18); border-radius: 0; padding: 6px; }
+scale trough { min-height: 6px; border-radius: 0; background: rgba(255, 240, 225, 0.10); }
+scale highlight { background: #E0894A; border-radius: 0; }
 scale slider { min-width: 18px; min-height: 18px; background: #F1EBE3; box-shadow: none; border: none; }
 """
 
@@ -128,6 +128,7 @@ class Sheet(Gtk.Window):
     def __init__(self, app, name):
         super().__init__(application=app)
         self.add_css_class("wren-layer")
+        self.set_decorated(False)
         Layer.init_for_window(self)
         Layer.set_namespace(self, "wren-" + name)
         Layer.set_layer(self, Layer.Layer.OVERLAY)
@@ -363,6 +364,10 @@ class Control(Sheet):
         net_scroll.set_child(self.net_box)
         self.net_reveal.set_child(net_scroll)
         self.card.append(self.net_reveal)
+        self.bt_btn = Gtk.Button(label="Bluetooth devices…")
+        self.bt_btn.add_css_class("pill-btn")
+        self.bt_btn.connect("clicked", lambda *_: self.open_app(["wren-bluetooth"]))
+        self.card.append(self.bt_btn)
 
         # Sliders
         self.vol_row, self.vol = self._slider("audio-volume-high-symbolic", self.set_volume)
@@ -466,6 +471,7 @@ class Control(Sheet):
         self.net_btn.set_visible(s["wifi_on"])
         self.bt.set_sensitive(s["bt_present"])
         self.bt.set_state(s["bt_on"], "On" if s["bt_on"] else ("Off" if s["bt_present"] else "Not available"))
+        self.bt_btn.set_visible(s["bt_present"])
         self.dnd.set_state(s["dnd"], "On" if s["dnd"] else "Off")
         self._quiet = True
         self.vol_row.set_visible(s["volume"] is not None)

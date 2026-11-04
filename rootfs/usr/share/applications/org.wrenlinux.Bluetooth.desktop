@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Bluetooth
+Comment=Pair and connect wireless devices
+Exec=wren-bluetooth
+Icon=/usr/share/wren/icons/bluetooth.png
+Terminal=false
+Categories=System;Settings;HardwareSettings;
+Keywords=bluetooth;headphones;headset;mouse;keyboard;speaker;pair;wireless;
+StartupWMClass=org.wrenlinux.Bluetooth
