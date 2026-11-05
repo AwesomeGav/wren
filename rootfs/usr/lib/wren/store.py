@@ -5,9 +5,13 @@ import hashlib
 import html
 import json
 import os
+import pty
 import re
+import select
+import signal
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -119,6 +123,88 @@ CSS = """
 .row-item { padding: 12px 16px; border-bottom: 1px solid #2A2520; }
 progressbar trough, progressbar progress { min-height: 6px; }
 """
+
+
+# ------------------------------------------------------------------ flatpak
+PROGRESS_RE = re.compile(r"(?:Installing|Updating|Uninstalling)\s+(\d+)/(\d+)\D*?(\d{1,3})%"
+                         r"(?:\s+([\d.,]+\s*[kMG]?B/s))?(?:\s+(\d{1,2}:\d\d(?::\d\d)?))?")
+ANSI_RE = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
+
+
+class FlatpakJob:
+    """Runs a flatpak command in a pseudo-terminal so it reports real progress
+    (piped output has none), and reports (fraction, status text) as it goes."""
+
+    def __init__(self, cmd, on_progress):
+        self.cmd = cmd
+        self.on_progress = on_progress
+        self.proc = None
+        self.cancelled = False
+        self.error = ""
+
+    def cancel(self):
+        self.cancelled = True
+        if self.proc and self.proc.poll() is None:
+            try:
+                os.killpg(self.proc.pid, signal.SIGTERM)
+            except OSError:
+                pass
+
+    def run(self):
+        os.makedirs(CACHE, exist_ok=True)
+        log = open(os.path.join(CACHE, "last-run.log"), "w")
+        log.write("$ " + " ".join(self.cmd) + "\n")
+        master, slave = pty.openpty()
+        env = dict(os.environ, COLUMNS="160", LINES="50", TERM="xterm", LANG="C.UTF-8", LC_ALL="C.UTF-8")
+        try:
+            self.proc = subprocess.Popen(self.cmd, stdin=subprocess.DEVNULL, stdout=slave, stderr=slave,
+                                         env=env, start_new_session=True)
+        except OSError as e:
+            os.close(master)
+            os.close(slave)
+            self.error = str(e)
+            return False
+        os.close(slave)
+        pending, last = "", (None, None)
+        errors = []
+        while True:
+            ready, _, _ = select.select([master], [], [], 1.0)
+            if ready:
+                try:
+                    data = os.read(master, 4096)
+                except OSError:
+                    data = b""
+                if not data:
+                    break
+                text = ANSI_RE.sub("", data.decode(errors="replace"))
+                log.write(text)
+                pending += text
+                parts = re.split(r"[\r\n]", pending)
+                pending = parts.pop()
+                for line in parts + [pending]:
+                    m = PROGRESS_RE.search(line)
+                    if m:
+                        i, n, pct = int(m.group(1)), int(m.group(2)), min(int(m.group(3)), 100)
+                        frac = ((i - 1) + pct / 100) / max(n, 1)
+                        status = f"Downloading part {i} of {n}" if n > 1 else "Downloading"
+                        if m.group(4):
+                            status += f" · {m.group(4).replace(chr(160), ' ')}"
+                        if m.group(5) and m.group(5) not in ("00:00", "0:00"):
+                            status += f" · {m.group(5)} left"
+                        if (round(frac, 2), status) != last:
+                            last = (round(frac, 2), status)
+                            self.on_progress(frac, status)
+                    elif line.lower().startswith("error:"):
+                        errors.append(line[6:].strip())
+            elif self.proc.poll() is not None:
+                break
+        code = self.proc.wait()
+        os.close(master)
+        log.write(f"\n[exit {code}]\n")
+        log.close()
+        if errors:
+            self.error = errors[-1]
+        return code == 0 and not self.cancelled
 
 
 # ------------------------------------------------------------------ data
@@ -249,7 +335,9 @@ class Window(Adw.ApplicationWindow):
         super().__init__(application=app, title="App Store", default_width=1120, default_height=740)
         self.add_css_class("store")
         self.installed = {}
-        self.busy = {}          # app_id -> progress (0..1) or None
+        self.busy = {}          # app_id -> progress (0..1), or -1 while removing
+        self.busy_text = {}     # app_id -> status line ("Downloading part 2 of 4 · 1.2 MB/s")
+        self.jobs = {}          # app_id -> running FlatpakJob
         self.watchers = {}      # app_id -> [callbacks]
         self.history = []
 
@@ -601,12 +689,18 @@ class Window(Adw.ApplicationWindow):
                 box.remove(child)
                 child = nxt
             if app_id in self.busy:
-                col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, width_request=150)
+                col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, width_request=220 if big else 180)
                 p = self.busy[app_id]
-                col.append(label("Installing…" if p is not None and p >= 0 else "Removing…", "dim"))
-                bar = Gtk.ProgressBar(fraction=max(p or 0, 0))
-                col.append(bar)
+                removing = p is not None and p < 0
+                col.append(label("Removing…" if removing else self.busy_text.get(app_id, "Installing…"),
+                                 "dim", ellipsize=3))
+                col.append(Gtk.ProgressBar(fraction=max(p or 0, 0)))
                 box.append(col)
+                if not removing and app_id in self.jobs:
+                    stop = Gtk.Button(icon_name="process-stop-symbolic", tooltip_text="Cancel")
+                    stop.add_css_class("btn")
+                    stop.connect("clicked", lambda *_: self.jobs[app_id].cancel() if app_id in self.jobs else None)
+                    box.append(stop)
             elif app_id in self.installed:
                 open_btn = Gtk.Button(label="Open")
                 open_btn.add_css_class("btn")
@@ -655,49 +749,44 @@ class Window(Adw.ApplicationWindow):
     # ------------------------------------------------------------ actions
     @staticmethod
     def flatpak_stream(cmd, progress):
-        try:
-            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
-        except OSError:
-            return False
-        buf = ""
-        while True:
-            ch = proc.stdout.read(1)
-            if not ch:
-                break
-            if ch in "\r\n":
-                m = re.findall(r"(\d{1,3})%", buf)
-                if m:
-                    progress(min(int(m[-1]), 100) / 100)
-                buf = ""
-            else:
-                buf += ch
-        return proc.wait() == 0
+        cmd = [c for c in cmd if c != "--noninteractive"]
+        return FlatpakJob(cmd, lambda frac, _status: progress(frac)).run()
 
     def install(self, app_id):
         self.busy[app_id] = 0.0
+        self.busy_text[app_id] = "Getting ready…"
         self.notify(app_id)
+
+        def progress(frac, status):
+            self.busy[app_id] = frac
+            self.busy_text[app_id] = status
+            GLib.idle_add(lambda: self.notify(app_id) or False)
+
+        job = FlatpakJob(["flatpak", "install", "--user", "-y", "flathub", app_id], progress)
+        self.jobs[app_id] = job
 
         def work():
             run(["flatpak", "remote-add", "--user", "--if-not-exists", "flathub", REMOTE_URL], 60)
-
-            def progress(p):
-                self.busy[app_id] = p
-                GLib.idle_add(lambda: self.notify(app_id) or False)
-            return self.flatpak_stream(["flatpak", "install", "--user", "-y", "--noninteractive", "flathub", app_id],
-                                       progress)
+            ok = job.run()
+            GLib.idle_add(lambda: done(ok) or False)
 
         def done(ok):
             self.busy.pop(app_id, None)
+            self.busy_text.pop(app_id, None)
+            self.jobs.pop(app_id, None)
             info = appstream_cached(app_id) or {}
             nice = info.get("name") or app_id
             if ok:
                 self.toast(f"{nice} is installed. Find it in your apps.")
                 subprocess.Popen(["notify-send", "-a", "App Store", f"{nice} installed", "It's ready in your apps."],
                                  stderr=subprocess.DEVNULL)
+            elif job.cancelled:
+                self.toast(f"Stopped installing {nice}")
             else:
-                self.toast(f"Couldn't install {nice}. Check your connection and try again.")
+                why = f": {job.error}" if job.error else ". Check your connection and try again."
+                self.toast(f"Couldn't install {nice}{why}")
             self.refresh_installed(lambda: self.notify(app_id))
-        in_background(work, done)
+        threading.Thread(target=work, daemon=True).start()
 
     def confirm_remove(self, app_id):
         info = appstream_cached(app_id) or {}
