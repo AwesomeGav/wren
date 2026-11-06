@@ -47,11 +47,11 @@
     <keybind key="W-e"><action name="Execute" command="nautilus --new-window" /></keybind>
     <keybind key="W-l"><action name="Execute" command="wren-lock" /></keybind>
     <keybind key="Print"><action name="Execute" command="wren-screenshot" /></keybind>
-    <keybind key="XF86AudioRaiseVolume"><action name="Execute" command="wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+" /></keybind>
-    <keybind key="XF86AudioLowerVolume"><action name="Execute" command="wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-" /></keybind>
-    <keybind key="XF86AudioMute"><action name="Execute" command="wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle" /></keybind>
-    <keybind key="XF86MonBrightnessUp"><action name="Execute" command="brightnessctl set +5%" /></keybind>
-    <keybind key="XF86MonBrightnessDown"><action name="Execute" command="brightnessctl set 5%-" /></keybind>
+    <keybind key="XF86AudioRaiseVolume"><action name="Execute" command="wren-osd volume up" /></keybind>
+    <keybind key="XF86AudioLowerVolume"><action name="Execute" command="wren-osd volume down" /></keybind>
+    <keybind key="XF86AudioMute"><action name="Execute" command="wren-osd volume mute" /></keybind>
+    <keybind key="XF86MonBrightnessUp"><action name="Execute" command="wren-osd brightness up" /></keybind>
+    <keybind key="XF86MonBrightnessDown"><action name="Execute" command="wren-osd brightness down" /></keybind>
   </keyboard>
 
   <libinput>

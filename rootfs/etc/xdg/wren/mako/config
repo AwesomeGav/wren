@@ -4,6 +4,7 @@ text-color=#1C2230
 border-color=#C7CFDA
 border-size=1
 border-radius=18
+progress-color=over #3B82F640
 padding=14,16
 margin=14
 outer-margin=6

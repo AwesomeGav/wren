@@ -25,7 +25,7 @@ SHARE = "/usr/share/wren"
 PREFS = os.path.join(CFG, "wren", "settings.json")
 ICON_SRC = "/usr/share/icons/Wren"
 WAYBAR_BASE = "/etc/xdg/wren/waybar/config.jsonc"
-THEME_VERSION = 6  # bump when the generated files change, so every account picks them up
+THEME_VERSION = 7  # bump when the generated files change, so every account picks them up
 
 
 def rgb(hexstr):
@@ -220,6 +220,7 @@ def apply_settings(theme, pal, icons):
     gset("color-scheme", "prefer-light" if light else "prefer-dark")
     gset("gtk-theme", "adw-gtk3" if light else "adw-gtk3-dark")
     gset("icon-theme", icons)
+    gset("cursor-theme", "Wren-Cursor")
     gset("accent-color", pal["adw_accent"])
     gset("enable-animations", "true" if theme["animations"] else "false")
     gset("style-variant", "light" if light else "dark", "org.gnome.TextEditor")

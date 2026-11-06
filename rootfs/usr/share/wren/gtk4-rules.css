@@ -198,3 +198,83 @@ scale trough, progressbar trough, progressbar progress, scale highlight {
 .disk-space-used {
   color: @wren_accent;
 }
+
+/* ============================================================ small details */
+/* Slim scrollbars that widen when you reach for them */
+scrollbar { background: transparent; border: none; }
+scrollbar slider {
+  min-width: 6px; min-height: 6px; margin: 3px; border-radius: 999px;
+  background-color: alpha(@wren_text, 0.28); border: none;
+  transition: min-width 160ms ease, min-height 160ms ease, background-color 160ms ease;
+}
+scrollbar:hover slider, scrollbar.dragging slider { min-width: 9px; min-height: 9px; background-color: alpha(@wren_text, 0.42); }
+scrollbar slider:active { background-color: @wren_accent; }
+scrollbar.overlay-indicator:not(.hovering) slider { min-width: 4px; min-height: 4px; margin: 4px; }
+
+/* Tooltips: small frosted pills */
+tooltip, tooltip.background {
+  background-color: @wren_glass_strong; color: @wren_text;
+  border: 1px solid @wren_glass_border; border-radius: 10px; padding: 5px 10px;
+  box-shadow: 0 6px 18px @wren_shadow;
+}
+tooltip > box > label { color: @wren_text; font-weight: 500; }
+
+/* Menus: rounded rows with a soft accent highlight */
+popover.menu modelbutton, popover.menu > contents > stack > box > modelbutton {
+  border-radius: 9px; padding: 7px 12px; min-height: 20px;
+}
+popover.menu modelbutton:hover, popover.menu modelbutton:selected {
+  background-color: @wren_accent_glass; color: @wren_text;
+}
+popover.menu separator { margin: 5px 8px; background-color: @wren_line; }
+popover > arrow { background: none; border: none; }
+
+/* Check boxes and radio buttons */
+checkbutton check { border-radius: 7px; min-width: 18px; min-height: 18px; }
+checkbutton radio { min-width: 18px; min-height: 18px; }
+checkbutton check:checked, checkbutton radio:checked {
+  background-color: @wren_accent; color: @wren_on_accent; box-shadow: 0 2px 6px alpha(@wren_accent, 0.35);
+}
+
+/* Switches: white knob with a soft shadow */
+switch { min-width: 42px; min-height: 24px; padding: 2px; }
+switch > slider { background-color: #FFFFFF; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25); min-width: 20px; min-height: 20px; }
+switch:checked { background-color: @wren_accent; }
+
+/* Sliders */
+scale slider { background-color: #FFFFFF; box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28); min-width: 20px; min-height: 20px; }
+scale trough { background-color: alpha(@wren_text, 0.12); min-height: 6px; }
+scale highlight { background-color: @wren_accent; }
+
+/* Keyboard focus: a soft accent halo instead of a dotted box */
+*:focus-visible { outline: 2px solid alpha(@wren_accent, 0.6); outline-offset: 2px; }
+
+/* Text selection and links */
+text selection, label selection, entry selection { background-color: alpha(@wren_accent, 0.28); color: @wren_text; }
+label.link, link, button.link { color: @wren_accent_text; }
+
+/* Progress and spinners in the accent color */
+progressbar progress { background-image: linear-gradient(90deg, @wren_accent, @wren_accent_hover); }
+spinner { color: @wren_accent; }
+
+/* Title bars: lighter titles, soft separators */
+headerbar .title, windowtitle .title { font-weight: 700; }
+headerbar .subtitle, windowtitle .subtitle { color: @wren_dim; }
+separator { background-color: @wren_line; }
+
+/* Dropdowns and combo boxes */
+dropdown > button, combobox > box > button { border-radius: 12px; }
+dropdown popover listview > row, dropdown popover list > row { border-radius: 9px; padding: 6px 10px; }
+dropdown popover listview > row:selected { background-color: @wren_accent_glass; color: @wren_text; }
+
+/* Toasts and banners */
+toast { background-color: @wren_glass_strong; color: @wren_text; border: 1px solid @wren_glass_border;
+        border-radius: 999px; box-shadow: 0 10px 28px @wren_shadow; }
+banner > revealer > widget { background-color: @wren_accent_glass; }
+
+/* Tabs */
+tabbar tab { border-radius: 10px; }
+tabbar tab:selected { background-color: @wren_surface; box-shadow: 0 1px 4px alpha(@wren_shadow, 0.7); }
+
+/* Empty states */
+statuspage > scrolledwindow > viewport > box > clamp > box > .icon { color: alpha(@wren_text, 0.35); }

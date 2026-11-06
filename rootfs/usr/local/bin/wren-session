@@ -5,12 +5,12 @@ export WREN_SESSION=1
 [ -r /etc/profile ] && . /etc/profile
 export XDG_CURRENT_DESKTOP=Wren:wlroots XDG_SESSION_DESKTOP=wren XDG_SESSION_TYPE=wayland
 export MOZ_ENABLE_WAYLAND=1 QT_QPA_PLATFORM="wayland;xcb" _JAVA_AWT_WM_NONREPARENTING=1
-export XCURSOR_THEME=Adwaita
+export XCURSOR_THEME=Wren-Cursor
 XCURSOR_SIZE=$(sed -n 's/.*"cursor_size": *\([0-9]*\).*/\1/p' "$HOME/.config/wren/settings.json" 2>/dev/null)
 export XCURSOR_SIZE="${XCURSOR_SIZE:-24}"
 
 # Colors, panel and window manager settings for this account (rewritten after Wren updates)
-grep -qs '"v": 6' "$HOME/.config/wren/theme/stamp" || wren-theme ensure >/dev/null 2>&1  # keep in step with THEME_VERSION
+grep -qs '"v": 7' "$HOME/.config/wren/theme/stamp" || wren-theme ensure >/dev/null 2>&1  # keep in step with THEME_VERSION
 CONF="$HOME/.config/wren/wayfire.ini"
 [ -r "$CONF" ] || CONF=/etc/xdg/wren/wayfire.ini
 

@@ -4,6 +4,7 @@ text-color=${text}
 border-color=${border2}
 border-size=1
 border-radius=18
+progress-color=over ${accent}40
 padding=14,16
 margin=14
 outer-margin=6

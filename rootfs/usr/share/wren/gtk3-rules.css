@@ -30,3 +30,12 @@ popover, popover.background {
   border: 1px solid @wren_border;
   border-radius: 14px;
 }
+
+/* Slim rounded scrollbars and soft tooltips for older apps */
+scrollbar slider { min-width: 6px; min-height: 6px; border-radius: 999px; background-color: alpha(@wren_text, 0.3); border: 3px solid transparent; }
+scrollbar:hover slider { background-color: alpha(@wren_text, 0.45); }
+tooltip.background { background-color: @wren_surface; border: 1px solid @wren_border; border-radius: 10px; }
+tooltip label { color: @wren_text; }
+menuitem, menu menuitem { border-radius: 8px; padding: 6px 10px; }
+menuitem:hover { background-color: @wren_accent; color: @wren_on_accent; }
+selection, *:selected { background-color: @wren_accent; color: @wren_on_accent; }

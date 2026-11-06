@@ -1,0 +1,26 @@
+#!/bin/sh
+# Volume and brightness keys: change the level, then show Wren's pop-up.
+#   wren-osd volume up|down|mute     wren-osd brightness up|down
+show() {
+  gdbus call --session --dest org.wrenlinux.Shell --object-path /org/wrenlinux/Shell \
+    --method org.freedesktop.Application.ActivateAction osd "[<'$1'>]" '{}' >/dev/null 2>&1
+}
+case "$1" in
+  volume)
+    case "$2" in
+      up) wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ ;;
+      down) wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
+      mute) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+    esac
+    out=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)   # "Volume: 0.45 [MUTED]"
+    lvl=$(echo "$out" | awk '{printf "%d", $2 * 100 + 0.5}')
+    case "$out" in *MUTED*) m=1 ;; *) m=0 ;; esac
+    show "volume:${lvl:-0}:$m" ;;
+  brightness)
+    case "$2" in
+      up) brightnessctl -q -c backlight set +5% ;;
+      down) brightnessctl -q -c backlight -n 1% set 5%- ;;
+    esac
+    lvl=$(brightnessctl -m -c backlight 2>/dev/null | cut -d, -f4 | tr -d %)
+    show "brightness:${lvl:-0}:0" ;;
+esac

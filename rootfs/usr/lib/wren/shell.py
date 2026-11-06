@@ -42,6 +42,16 @@ LOCK_CMD = ["wren-lock"]
 
 CSS = """
 window.wren-layer { background: transparent; }
+.osd { background-color: @wren_glass_strong; border: 1px solid @wren_glass_border; border-radius: 999px;
+       padding: 12px 20px; margin: 12px; color: @wren_text;
+       box-shadow: 0 12px 32px @wren_shadow, 0 0 0 1px @wren_glass_edge;
+       opacity: 0; transform: translateY(10px) scale(0.96);
+       transition: opacity 140ms ease-out, transform 220ms cubic-bezier(0.2, 0.9, 0.3, 1.1); }
+.osd.shown { opacity: 1; transform: none; }
+.osd levelbar trough { min-height: 6px; border-radius: 999px; background-color: alpha(@wren_text, 0.14); border: none; }
+.osd levelbar block.filled { background-color: @wren_accent; border-radius: 999px; }
+.osd levelbar block.empty { background-color: transparent; }
+.osd-value { font-weight: 700; font-size: 13px; color: @wren_text2; }
 .frost { opacity: 0; transition: opacity 120ms ease-out; }
 .frost.shown { opacity: 1; }
 .backdrop { background-color: transparent; transition: background-color 120ms ease-out; }
@@ -730,6 +740,67 @@ class Control(Sheet):
 
 # ------------------------------------------------------------------- app
 
+class Osd(Gtk.Window):
+    """Volume and brightness pop-up: a small frosted pill above the dock."""
+    ICONS = {
+        "volume": ("audio-volume-muted-symbolic", "audio-volume-low-symbolic", "audio-volume-medium-symbolic",
+                   "audio-volume-high-symbolic"),
+        "brightness": ("display-brightness-symbolic",) * 4,
+    }
+
+    def __init__(self, app):
+        super().__init__(application=app)
+        self.add_css_class("wren-layer")
+        self.set_decorated(False)
+        Layer.init_for_window(self)
+        Layer.set_namespace(self, "wren-osd")
+        Layer.set_layer(self, Layer.Layer.OVERLAY)
+        Layer.set_anchor(self, Layer.Edge.BOTTOM, True)
+        Layer.set_margin(self, Layer.Edge.BOTTOM, 96)
+        Layer.set_keyboard_mode(self, Layer.KeyboardMode.NONE)
+        self.set_can_target(False)
+        self.pill = Gtk.Box(spacing=14)
+        self.pill.add_css_class("osd")
+        self.icon = Gtk.Image(pixel_size=20)
+        self.bar = Gtk.LevelBar(min_value=0, max_value=1, hexpand=True, valign=Gtk.Align.CENTER)
+        self.bar.set_size_request(200, -1)
+        for name in ("low", "high", "full"):
+            self.bar.remove_offset_value(name)
+        self.value = Gtk.Label(width_chars=4, xalign=1)
+        self.value.add_css_class("osd-value")
+        self.pill.append(self.icon)
+        self.pill.append(self.bar)
+        self.pill.append(self.value)
+        self.set_child(self.pill)
+        self.timer = None
+
+    def show_level(self, kind, level, muted):
+        level = max(0, min(100, level))
+        icons = self.ICONS.get(kind, self.ICONS["volume"])
+        idx = 0 if (muted or level == 0) else (1 if level < 34 else 2 if level < 67 else 3)
+        self.icon.set_from_icon_name(icons[idx])
+        self.bar.set_value(0 if muted else level / 100)
+        self.value.set_text("Muted" if muted else f"{level}%")
+        if not self.get_visible():
+            self.pill.remove_css_class("shown")
+            self.present()
+            self.pill.add_tick_callback(lambda *_: (self.pill.add_css_class("shown"), False)[1])
+        if self.timer:
+            GLib.source_remove(self.timer)
+        self.timer = GLib.timeout_add(1400, self._fade)
+
+    def _fade(self):
+        self.timer = None
+        self.pill.remove_css_class("shown")
+        self.timer = GLib.timeout_add(220, self._hide)
+        return False
+
+    def _hide(self):
+        self.timer = None
+        self.set_visible(False)
+        return False
+
+
 class Shell(Adw.Application):
     def __init__(self):
         super().__init__(application_id="org.wrenlinux.Shell",
@@ -744,6 +815,21 @@ class Shell(Adw.Application):
             action = Gio.SimpleAction.new(name, None)
             action.connect("activate", lambda _a, _p, n=name: self.toggle_sheet(n))
             self.add_action(action)
+        # wren-osd sends "volume:45:0" or "brightness:80:0"
+        osd = Gio.SimpleAction.new("osd", GLib.VariantType.new("s"))
+        osd.connect("activate", self._on_osd)
+        self.add_action(osd)
+        self.osd = None
+
+    def _on_osd(self, _action, param):
+        try:
+            kind, level, muted = param.get_string().split(":")
+            level, muted = int(float(level)), muted == "1"
+        except ValueError:
+            return
+        if self.osd is None:
+            self.osd = Osd(self)
+        self.osd.show_level(kind, level, muted)
 
     def do_activate(self):
         pass
