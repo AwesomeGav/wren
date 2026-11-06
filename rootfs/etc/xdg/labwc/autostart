@@ -15,7 +15,7 @@ sed -i 's#/usr/share/wren/gtk.css#/usr/share/wren/gtk3.css#' "$HOME/.config/gtk-
 [ -f "$HOME/.config/gtk-4.0/gtk.css" ] || cp /etc/skel/.config/gtk-4.0/gtk.css "$HOME/.config/gtk-4.0/"
 
 # Theme files (colors, panel layout) for this user; only written when missing
-grep -qs '"v": 2' "$HOME/.config/wren/theme/stamp" || wren-theme ensure >/dev/null 2>&1  # keep in step with THEME_VERSION
+grep -qs '"v": 3' "$HOME/.config/wren/theme/stamp" || wren-theme ensure >/dev/null 2>&1  # keep in step with THEME_VERSION
 wren-wallpaper >/dev/null 2>&1 &
 # Display layout saved in Settings
 [ -x "$HOME/.config/wren/display.sh" ] && "$HOME/.config/wren/display.sh" >/dev/null 2>&1

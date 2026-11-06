@@ -79,7 +79,7 @@
     "on-click": "wren-shell control"
   },
   "clock": {
-    "format": "{:%a %-d   %I:%M %p}",
+    "format": "{:%a %d   %I:%M %p}",
     "tooltip-format": "{:%A, %B %d, %Y}",
     "on-click": "wren-shell control"
   },

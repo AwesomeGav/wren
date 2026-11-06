@@ -143,10 +143,10 @@ def main():
     entry.pw text placeholder { color: rgba(255, 255, 255, 0.7); }
     entry.pw image { color: rgba(255, 255, 255, 0.85); }
     button { box-shadow: none; border: none; font-family: Inter; }
-    button.roundbtn { background: rgba(255, 255, 255, 0.55); color: #2A3242; min-width: 48px; min-height: 48px;
+    .roundbtn > button { background: rgba(255, 255, 255, 0.55); color: #2A3242; min-width: 48px; min-height: 48px;
                       border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.8);
                       box-shadow: 0 6px 18px rgba(30, 45, 70, 0.18); }
-    button.roundbtn:hover { background: rgba(255, 255, 255, 0.8); }
+    .roundbtn > button:hover { background: rgba(255, 255, 255, 0.8); }
     button.menurow { background: transparent; color: #1C2230; padding: 9px 14px; border-radius: 10px; font-size: 14px; }
     button.menurow:hover { background: rgba(59, 130, 246, 0.14); }
     popover > contents { background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(255, 255, 255, 0.9);

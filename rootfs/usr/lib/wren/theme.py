@@ -24,7 +24,7 @@ SHARE = "/usr/share/wren"
 PREFS = os.path.join(CFG, "wren", "settings.json")
 ICON_SRC = "/usr/share/icons/Wren"
 WAYBAR_BASE = "/etc/xdg/wren/waybar/config.jsonc"
-THEME_VERSION = 2  # bump when the generated files change, so every account picks them up
+THEME_VERSION = 3  # bump when the generated files change, so every account picks them up
 
 
 def rgb(hexstr):
@@ -116,7 +116,7 @@ def panel_config(pal):
         cfg.pop("margin-bottom", None)
         cfg["margin-top"] = 10
     if p.get("clock_24h"):
-        cfg.setdefault("clock", {})["format"] = "{:%a %-d   %H:%M}"
+        cfg.setdefault("clock", {})["format"] = "{:%a %d   %H:%M}"
     return json.dumps(cfg, indent=2, ensure_ascii=False) + "\n"
 
 
