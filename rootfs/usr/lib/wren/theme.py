@@ -25,7 +25,7 @@ SHARE = "/usr/share/wren"
 PREFS = os.path.join(CFG, "wren", "settings.json")
 ICON_SRC = "/usr/share/icons/Wren"
 WAYBAR_BASE = "/etc/xdg/wren/waybar/config.jsonc"
-THEME_VERSION = 5  # bump when the generated files change, so every account picks them up
+THEME_VERSION = 6  # bump when the generated files change, so every account picks them up
 
 
 def rgb(hexstr):
@@ -188,7 +188,8 @@ def wm_config(theme=None, pal=None):
         lay, _, var = str(p["keyboard"]).partition(":")
     anim = bool(theme["animations"])
     vals = {
-        "bg_wf": pal["bg"] + "FF", "text_wf": pal["text"] + "FF", "window_wf": pal["window"] + "FF",
+        # Wayfire reads "#" as the start of a comment, so colors are written as "r g b a"
+        "bg_wf": _floats(pal["bg"], 1.0), "text_wf": _floats(pal["text"], 1.0), "window_wf": _floats(pal["window"], 1.0),
         "snap_fill": _floats(pal["accent"], 0.22), "snap_border": _floats(pal["accent"], 0.8),
         "xkb_layout": lay, "xkb_variant": var,
         "repeat_rate": int(p.get("repeat_rate", 25)), "repeat_delay": int(p.get("repeat_delay", 600)),
