@@ -22,7 +22,12 @@ sed -i 's#/usr/share/wren/gtk.css#/usr/share/wren/gtk3.css#' "$HOME/.config/gtk-
 # Theme files (colors, panel layout) for this user; only written when missing
 wren-wallpaper >/dev/null 2>&1 &
 # Display layout saved in Settings
-[ -x "$HOME/.config/wren/display.sh" ] && "$HOME/.config/wren/display.sh" >/dev/null 2>&1
+# (otherwise make sharp high-resolution screens readable, e.g. Surface: 200%)
+if [ -x "$HOME/.config/wren/display.sh" ]; then
+  "$HOME/.config/wren/display.sh" >/dev/null 2>&1
+else
+  PYTHONPATH=/usr/lib/wren python3 -m autoscale >/dev/null 2>&1
+fi
 wren-panel &
 MAKO=/etc/xdg/wren/mako/config
 [ -r "$HOME/.config/wren/theme/mako" ] && MAKO="$HOME/.config/wren/theme/mako"

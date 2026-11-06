@@ -9,6 +9,7 @@ import glob
 import json
 import os
 import pwd
+import re
 import socket
 import struct
 import subprocess
@@ -146,6 +147,7 @@ def main():
     .roundbtn > button { background: rgba(255, 255, 255, 0.55); color: #2A3242; min-width: 48px; min-height: 48px;
                       border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.8);
                       box-shadow: 0 6px 18px rgba(30, 45, 70, 0.18); }
+    .roundbtn image, entry.pw image { -gtk-icon-size: 18px; }
     .roundbtn > button:hover { background: rgba(255, 255, 255, 0.8); }
     button.menurow { background: transparent; color: #1C2230; padding: 9px 14px; border-radius: 10px; font-size: 14px; }
     button.menurow:hover { background: rgba(59, 130, 246, 0.14); }
@@ -159,6 +161,18 @@ def main():
     popover > contents { background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(255, 255, 255, 0.9);
                          border-radius: 16px; padding: 6px; box-shadow: 0 12px 32px rgba(30, 45, 70, 0.25); }
     """
+
+    # Sharp high-resolution screens (e.g. Surface): scale everything up so it isn't tiny.
+    # The login screen runs before any desktop, so it works this out from the screen itself.
+    try:
+        from autoscale import ui_scale
+        factor = float(os.environ.get("WREN_UI_SCALE") or ui_scale())
+    except Exception:
+        factor = 1.0
+    css = re.sub(r"(-?\d+)px", lambda m: f"{round(int(m.group(1)) * factor)}px", css)
+
+    def S(n):
+        return round(n * factor)
 
     users = list_users() or [{"user": "wren", "name": "Wren"}]
     chosen = next((u for u in users if u["user"] == last_user()), users[0])
@@ -186,23 +200,23 @@ def main():
 
         # Date and big time, top left
         corner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, halign=Gtk.Align.START, valign=Gtk.Align.START,
-                         margin_start=56, margin_top=44)
+                         margin_start=S(56), margin_top=S(44))
         date = Gtk.Label(xalign=0)
         date.add_css_class("date")
-        clock = Gtk.Label(xalign=0, margin_top=-6)
+        clock = Gtk.Label(xalign=0, margin_top=S(-6))
         clock.add_css_class("clock")
         corner.append(date)
         corner.append(clock)
         overlay.add_overlay(corner)
 
         # Wi-Fi and battery, top right
-        status = Gtk.Label(halign=Gtk.Align.END, valign=Gtk.Align.START, margin_end=44, margin_top=40)
+        status = Gtk.Label(halign=Gtk.Align.END, valign=Gtk.Align.START, margin_end=S(44), margin_top=S(40))
         status.add_css_class("status")
         overlay.add_overlay(status)
 
         # Name and password, bottom middle
         column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14,
-                         halign=Gtk.Align.CENTER, valign=Gtk.Align.END, margin_bottom=64)
+                         halign=Gtk.Align.CENTER, valign=Gtk.Align.END, margin_bottom=S(64))
         head = Gtk.Box(spacing=10)
         avatar = Gtk.Label()
         avatar.add_css_class("avatar")
@@ -220,7 +234,7 @@ def main():
             column.append(head)
         entry = Gtk.PasswordEntry(show_peek_icon=True, placeholder_text="Enter password")
         entry.add_css_class("pw")
-        entry.set_size_request(400, -1)
+        entry.set_size_request(S(400), -1)
         column.append(entry)
         message = Gtk.Label(halign=Gtk.Align.CENTER, wrap=True, visible=False)
         message.add_css_class("error")
@@ -229,7 +243,7 @@ def main():
 
         # Power, bottom right
         power = Gtk.MenuButton(icon_name="system-shutdown-symbolic", tooltip_text="Power",
-                               halign=Gtk.Align.END, valign=Gtk.Align.END, margin_end=32, margin_bottom=32)
+                               halign=Gtk.Align.END, valign=Gtk.Align.END, margin_end=S(32), margin_bottom=S(32))
         power.add_css_class("roundbtn")
         pmenu = Gtk.Popover()
         pbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)

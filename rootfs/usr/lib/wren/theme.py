@@ -25,7 +25,7 @@ SHARE = "/usr/share/wren"
 PREFS = os.path.join(CFG, "wren", "settings.json")
 ICON_SRC = "/usr/share/icons/Wren"
 WAYBAR_BASE = "/etc/xdg/wren/waybar/config.jsonc"
-THEME_VERSION = 4  # bump when the generated files change, so every account picks them up
+THEME_VERSION = 5  # bump when the generated files change, so every account picks them up
 
 
 def rgb(hexstr):

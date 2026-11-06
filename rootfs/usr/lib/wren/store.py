@@ -456,7 +456,7 @@ class Window(Adw.ApplicationWindow):
         clamp = Adw.Clamp(maximum_size=1000, margin_top=24, margin_bottom=32, margin_start=28, margin_end=28)
         clamp.set_child(child)
         s.set_child(clamp)
-        wrenlib.stagger(list(wrenlib.children(child)), step=30, cap=10)
+        wrenlib.stagger(list(wrenlib.children(child)), step=18, cap=8)
         return s
 
     # ------------------------------------------------------------ pages

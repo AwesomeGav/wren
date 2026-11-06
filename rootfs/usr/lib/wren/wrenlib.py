@@ -139,11 +139,11 @@ def palette(theme=None):
 
 # Entrance animation used across Wren's apps: things fade up into place, one after another
 ANIM_CSS = """
-.wren-enter { opacity: 0; transform: translateY(18px) scale(0.98);
-  transition: opacity 260ms ease-out, transform 420ms cubic-bezier(0.18, 0.9, 0.28, 1.08); }
+.wren-enter { opacity: 0; transform: translateY(16px) scale(0.985);
+  transition: opacity 180ms ease-out, transform 320ms cubic-bezier(0.18, 0.9, 0.28, 1.06); }
 .wren-enter.in { opacity: 1; transform: none; }
-.wren-pop { opacity: 0; transform: scale(0.86);
-  transition: opacity 200ms ease-out, transform 360ms cubic-bezier(0.2, 1.1, 0.3, 1.15); }
+.wren-pop { opacity: 0; transform: scale(0.88);
+  transition: opacity 140ms ease-out, transform 260ms cubic-bezier(0.2, 1.1, 0.3, 1.15); }
 .wren-pop.in { opacity: 1; transform: none; }
 button, .card, row, flowboxchild, switch, switch > slider, checkbutton, scale slider, entry {
   transition: background-color 160ms ease, box-shadow 200ms ease, color 160ms ease, border-color 160ms ease,
@@ -171,7 +171,7 @@ def animate_in(widget, delay=0, kind="wren-enter"):
     GLib.timeout_add(16 + delay, show)
 
 
-def stagger(widgets, step=24, start=0, cap=16, kind="wren-enter"):
+def stagger(widgets, step=16, start=0, cap=12, kind="wren-enter"):
     for i, w in enumerate(widgets):
         animate_in(w, start + min(i, cap) * step, kind)
 
@@ -235,16 +235,16 @@ def keep_warm(app, seconds=300):
         return False
 
     def tick():
-        # On battery, or with Battery saver on, closed apps really quit.
+        # With Battery saver on, closed apps really quit.
         state["left"] -= 15
-        if state["left"] <= 0 or on_battery() or saver_on():
+        if state["left"] <= 0 or saver_on():
             return release()
         return True
 
     def removed(_app, _win):
         if app.get_windows():
             return
-        if on_battery() or saver_on():
+        if saver_on():
             return
         if not state["held"]:
             app.hold()

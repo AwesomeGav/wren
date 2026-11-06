@@ -42,12 +42,12 @@ LOCK_CMD = ["wren-lock"]
 
 CSS = """
 window.wren-layer { background: transparent; }
-.frost { opacity: 0; transition: opacity 180ms ease-out; }
+.frost { opacity: 0; transition: opacity 120ms ease-out; }
 .frost.shown { opacity: 1; }
-.backdrop { background-color: transparent; transition: background-color 180ms ease-out; }
+.backdrop { background-color: transparent; transition: background-color 120ms ease-out; }
 .backdrop.shown { background-color: @wren_glass_tint; }
-.sheet { opacity: 0; transform: translateY(12px) scale(0.98);
-         transition: opacity 150ms ease-out, transform 220ms cubic-bezier(0.2, 0.9, 0.25, 1.05); }
+.sheet { opacity: 0; transform: translateY(14px) scale(0.97);
+         transition: opacity 90ms ease-out, transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1.06); }
 .sheet.shown { opacity: 1; transform: none; }
 flowboxchild, .tile, .pill-btn, .net-row { transition: background-color 120ms ease-out, box-shadow 120ms ease-out; }
 .sheet {
@@ -223,7 +223,7 @@ class Sheet(Gtk.Window):
             self.backdrop.add_css_class("shown")
             self.frost.add_css_class("shown")
             return False
-        GLib.timeout_add(16, show)
+        self.card.add_tick_callback(lambda *_: show())
 
     def hide_sheet(self):
         self.card.remove_css_class("shown")
@@ -286,7 +286,7 @@ class Launcher(Sheet):
         adj = self.scroller.get_vadjustment()
         adj.set_value(0)
         self.entry.grab_focus()
-        wrenlib.stagger(list(wrenlib.children(self.flow))[:30], step=14, start=40, cap=30, kind="wren-pop")
+        wrenlib.stagger(list(wrenlib.children(self.flow))[:30], step=6, cap=30, kind="wren-pop")
 
     def rebuild(self):
         self.dirty = False
@@ -513,7 +513,6 @@ class Control(Sheet):
         self.net_reveal.set_reveal_child(False)
         self._reset_confirm()
         in_thread(self._read_state, self._apply_state)
-        wrenlib.stagger(list(wrenlib.children(self.card)), step=35, start=30)
 
     def _battery_text(self):
         for bat in sorted(glob.glob("/sys/class/power_supply/BAT*")):

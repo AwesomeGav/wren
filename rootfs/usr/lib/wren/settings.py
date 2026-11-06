@@ -1191,7 +1191,7 @@ class Window(Adw.ApplicationWindow):
         clamp.set_child(page)
         self.scroll.set_child(clamp)
         # Page content glides up into place, section by section
-        wrenlib.stagger(list(wrenlib.children(page)), step=28, cap=12)
+        wrenlib.stagger(list(wrenlib.children(page)), step=16, cap=10)
 
     def toast(self, text):
         self.toasts.add_toast(Adw.Toast(title=text, timeout=3))
