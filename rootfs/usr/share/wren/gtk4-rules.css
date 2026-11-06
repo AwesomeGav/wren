@@ -1,0 +1,201 @@
+/* Wren GTK 4 rules. Colors come from palette.css (@wren_*), so themes can change them. */
+
+/* ------------------------------------------------------------ sharp corners */
+* {
+  border-radius: 0;
+}
+
+/* ------------------------------------------------------- window frames */
+window.csd:not(.wren-layer) {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45), 0 0 0 1px @wren_border;
+}
+window.csd:not(.wren-layer):not(:backdrop) {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 0 1px @wren_accent;
+}
+window.csd.maximized, window.csd.fullscreen, window.csd.tiled,
+window.csd.tiled-top, window.csd.tiled-left, window.csd.tiled-right, window.csd.tiled-bottom {
+  box-shadow: none;
+}
+
+headerbar {
+  box-shadow: inset 0 -1px @wren_border;
+}
+
+popover > contents, popover > arrow {
+  border: 1px solid @wren_border2;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Entries: ember underline when focused */
+entry:focus-within, .entry:focus-within, row.entry:focus-within {
+  outline: 1px solid @wren_accent;
+  outline-offset: -1px;
+}
+
+/* Window control buttons */
+windowcontrols > button > image {
+  background-color: transparent;
+}
+windowcontrols > button:hover > image {
+  background-color: alpha(@wren_text, 0.12);
+}
+windowcontrols > button.close:hover > image {
+  background-color: @wren_danger;
+  color: #FFFFFF;
+}
+
+/* Lists and cards: hairline borders instead of soft shadows */
+.boxed-list, .card, list.boxed-list, .boxed-list-separate > row {
+  box-shadow: none;
+  border: 1px solid @wren_border;
+}
+
+/* ================================================================ Files */
+/* Layout: dark index rail on the left, flat header with a breadcrumb trail,
+   square tiles that light up with an ember frame when selected. */
+
+.nautilus-window .sidebar-pane,
+.nautilus-window .navigation-sidebar {
+  background-color: @wren_deep;
+}
+.nautilus-window .sidebar-pane {
+  border-right: 1px solid @wren_border;
+  box-shadow: none;
+}
+.nautilus-window .sidebar-pane headerbar {
+  background-color: @wren_deep;
+  box-shadow: none;
+}
+.nautilus-window .navigation-sidebar {
+  padding: 6px 0;
+}
+.nautilus-window .navigation-sidebar > row {
+  margin: 0;
+  padding: 7px 16px 7px 14px;
+  min-height: 22px;
+  color: @wren_dim;
+  border-left: 3px solid transparent;
+}
+.nautilus-window .navigation-sidebar > row:hover {
+  background-color: alpha(@wren_text, 0.05);
+  color: @wren_text;
+}
+.nautilus-window .navigation-sidebar > row:selected {
+  background-color: alpha(@wren_accent, 0.13);
+  border-left-color: @wren_accent;
+  color: @wren_text;
+}
+.nautilus-window .navigation-sidebar > row:selected image {
+  color: @wren_accent_text;
+}
+.nautilus-window .navigation-sidebar > separator {
+  margin: 8px 16px;
+  background-color: @wren_border;
+}
+
+/* Content header */
+.nautilus-window .content-pane headerbar,
+.nautilus-window toolbarview > .top-bar headerbar {
+  background-color: @wren_window;
+}
+
+/* Breadcrumb path: square segments split by hairlines, current folder underlined */
+.nautilus-pathbar {
+  background-color: transparent;
+  border: 1px solid @wren_border;
+}
+.nautilus-path-button {
+  margin: 0;
+  padding: 0 12px;
+  min-height: 30px;
+  border-right: 1px solid @wren_border;
+  color: @wren_dim;
+}
+.nautilus-path-button:hover {
+  background-color: alpha(@wren_text, 0.06);
+  color: @wren_text;
+}
+.nautilus-path-button.current-dir {
+  color: @wren_accent_text;
+  font-weight: 700;
+  box-shadow: inset 0 -2px @wren_accent;
+}
+.nautilus-pathbar > scrolledwindow undershoot.left,
+.nautilus-pathbar > scrolledwindow undershoot.right {
+  border-radius: 0;
+}
+
+/* Main area */
+.nautilus-window .view,
+.nautilus-grid-view gridview,
+.nautilus-list-view columnview {
+  background-color: @wren_bg;
+}
+
+/* Grid of square tiles */
+.nautilus-grid-view gridview {
+  padding: 22px;
+  border-spacing: 2px;
+}
+.nautilus-grid-view gridview > child {
+  padding: 0;
+  border: 1px solid transparent;
+  transition: none;
+}
+.nautilus-grid-view gridview > child:hover {
+  background-color: alpha(@wren_text, 0.05);
+  border-color: @wren_border;
+}
+.nautilus-grid-view gridview > child:selected {
+  background-color: alpha(@wren_accent, 0.14);
+  border-color: alpha(@wren_accent, 0.7);
+}
+.nautilus-grid-view gridview > child:selected label {
+  color: @wren_text;
+}
+.nautilus-grid-view .nautilus-view-cell {
+  padding: 8px 6px;
+}
+.nautilus-grid-view label {
+  color: @wren_text2;
+}
+
+/* Thumbnails: framed like prints */
+.nautilus-image.file-thumbnail {
+  box-shadow: 0 0 0 1px @wren_border2, 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* List view: ember bar marks the selected row */
+.nautilus-list-view columnview > listview > row {
+  border-left: 3px solid transparent;
+}
+.nautilus-list-view columnview > listview > row:hover {
+  background-color: alpha(@wren_text, 0.04);
+}
+.nautilus-list-view columnview > listview > row:selected {
+  background-color: alpha(@wren_accent, 0.13);
+  border-left-color: @wren_accent;
+}
+.nautilus-list-view columnview > header > button {
+  color: @wren_muted;
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid @wren_border;
+}
+
+/* Status bubble and selection box */
+.floating-bar {
+  background-color: @wren_surface2;
+  border: 1px solid @wren_border2;
+  color: @wren_text;
+}
+.nautilus-window rubberband {
+  background-color: alpha(@wren_accent, 0.15);
+  border: 1px solid @wren_accent;
+}
+
+/* Disk space meter in the sidebar */
+.disk-space-used {
+  color: @wren_accent;
+}

@@ -25,6 +25,14 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
 
+sys.path.insert(0, "/usr/lib/wren")
+import wrenlib  # noqa: E402
+
+try:
+    import theme as wtheme  # noqa: E402
+except Exception:  # pragma: no cover
+    wtheme = None
+
 CONF = os.path.join(GLib.get_user_config_dir(), "wren")
 ENV_FILE = os.path.join(CONF, "settings.env")
 PREFS_FILE = os.path.join(CONF, "settings.json")
@@ -33,37 +41,52 @@ WALLPAPERS = "/usr/share/wren/wallpapers"
 LIVE = os.path.isdir("/run/archiso")
 
 CSS = """
-.settings { background-color: #181512; }
-.nav { background-color: #141210; border-right: 1px solid #2E2924; }
-.nav row { padding: 9px 14px; border-left: 3px solid transparent; color: #BDB4A9; }
-.nav row:hover { background-color: rgba(255, 240, 225, 0.05); color: #F1EBE3; }
-.nav row:selected { background-color: rgba(224, 137, 74, 0.13); border-left-color: #E0894A; color: #F1EBE3; }
-.nav row:selected image { color: #F0A06A; }
+.settings { background-color: @wren_bg; }
+.nav { background-color: @wren_deep; border-right: 1px solid @wren_border; }
+.nav row { padding: 9px 14px; border-left: 3px solid transparent; color: @wren_dim; }
+.nav row:hover { background-color: alpha(@wren_text, 0.05); color: @wren_text; }
+.nav row:selected { background-color: alpha(@wren_accent, 0.13); border-left-color: @wren_accent; color: @wren_text; }
+.nav row:selected image { color: @wren_accent_text; }
 .me { padding: 18px 16px 14px 16px; }
-.me-avatar { background: #E0894A; color: #1A120B; font-weight: 800; font-size: 20px; min-width: 48px; min-height: 48px; }
+.me-avatar { background: @wren_accent; color: @wren_on_accent; font-weight: 800; font-size: 20px; min-width: 48px; min-height: 48px; }
 .me-name { font-weight: 800; font-size: 15px; }
-.me-sub { color: #8A8178; font-size: 12px; }
+.me-sub { color: @wren_muted; font-size: 12px; }
 .page-title { font-size: 28px; font-weight: 800; }
-.crumb { color: #8A8178; font-size: 13px; }
-.group-title { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: #8A8178; margin: 14px 0 4px 2px; }
-.card { background-color: #1F1B18; border: 1px solid #2A2520; }
+.crumb { color: @wren_muted; font-size: 13px; }
+.group-title { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: @wren_muted; margin: 14px 0 4px 2px; }
+.card { background-color: @wren_surface; border: 1px solid @wren_line; }
 .card + .card { margin-top: 4px; }
 .row { padding: 14px 18px; min-height: 36px; }
-.row + .row { border-top: 1px solid #2A2520; }
-.row.link:hover { background-color: #26221E; }
-.row-icon { color: #D9D1C7; min-width: 36px; }
+.row + .row { border-top: 1px solid @wren_line; }
+.row.link:hover { background-color: @wren_surface2; }
+.row-icon { color: @wren_text2; min-width: 36px; }
 .row-title { font-weight: 600; }
-.row-sub { color: #A89F94; font-size: 12px; }
+.row-sub { color: @wren_dim; font-size: 12px; }
 .big-stat { font-size: 30px; font-weight: 800; }
 .btn { padding: 6px 14px; font-weight: 700; }
-.btn.primary { background-color: #E0894A; color: #1A120B; }
-.btn.primary:hover { background-color: #EC9A5E; }
+.btn.primary { background-color: @wren_accent; color: @wren_on_accent; }
+.btn.primary:hover { background-color: @wren_accent_hover; }
 .wall { border: 2px solid transparent; padding: 0; }
-.wall.chosen { border-color: #E0894A; }
+.wall.chosen { border-color: @wren_accent; }
 .tile-grid > flowboxchild { padding: 0; }
-levelbar trough { min-height: 10px; background-color: #2A2520; }
-levelbar block.filled { background-color: #E0894A; }
-levelbar block.empty { background-color: #2A2520; }
+.mode-tile { padding: 0; border: 2px solid @wren_line; background: none; }
+.mode-tile.chosen { border-color: @wren_accent; }
+.mode-tile .preview { min-width: 150px; min-height: 84px; }
+.mode-tile .preview.dark { background-color: #1C1916; }
+.mode-tile .preview.light { background-color: #F4EFE8; }
+.mode-tile .bar { min-height: 10px; margin: 8px 10px 0 10px; }
+.mode-tile .dark .bar { background-color: #2E2924; }
+.mode-tile .light .bar { background-color: #DDD3C6; }
+.mode-tile .blob { min-width: 46px; min-height: 8px; margin: 8px 10px 0 10px; background-color: @wren_accent; }
+.mode-tile .dark .line2 { background-color: #3A342E; min-width: 80px; min-height: 6px; margin: 6px 10px 0 10px; }
+.mode-tile .light .line2 { background-color: #CFC4B5; min-width: 80px; min-height: 6px; margin: 6px 10px 0 10px; }
+.mode-name { padding: 8px 10px; font-weight: 700; }
+.swatch { min-width: 34px; min-height: 34px; padding: 0; border: 2px solid transparent; }
+.swatch.chosen { border-color: @wren_text; }
+.swatch > box { margin: 3px; }
+levelbar trough { min-height: 10px; background-color: @wren_line; }
+levelbar block.filled { background-color: @wren_accent; }
+levelbar block.empty { background-color: @wren_line; }
 """
 
 
@@ -143,15 +166,26 @@ def write_labwc_user_config(prefs):
       <leftHanded>{yn(prefs.get("left_handed", False))}</leftHanded>
     </device>
   </libinput>
+  <keyboard>
+    <repeatRate>{int(prefs.get("repeat_rate", 25))}</repeatRate>
+    <repeatDelay>{int(prefs.get("repeat_delay", 600))}</repeatDelay>
+  </keyboard>
 </labwc_config>
 """
     with open(os.path.join(LABWC_DIR, "rc.xml"), "w") as f:
         f.write(rc)
-    layout = prefs.get("keyboard")
     env_path = os.path.join(LABWC_DIR, "environment")
-    if layout:
-        with open(env_path, "w") as f:
-            f.write(f"XKB_DEFAULT_LAYOUT={escape(layout)}\n")
+    try:
+        keep = [l for l in open(env_path).read().splitlines()
+                if l.strip() and not l.startswith(("XKB_DEFAULT_LAYOUT=", "XCURSOR_SIZE="))]
+    except OSError:
+        keep = []
+    if prefs.get("keyboard"):
+        keep.append(f"XKB_DEFAULT_LAYOUT={escape(prefs['keyboard'])}")
+    if prefs.get("cursor_size"):
+        keep.append(f"XCURSOR_SIZE={int(prefs['cursor_size'])}")
+    with open(env_path, "w") as f:
+        f.write("\n".join(keep) + ("\n" if keep else ""))
     spawn(["labwc", "--reconfigure"])
 
 
@@ -346,6 +380,25 @@ class Pages:
             card.row(None, "Apply changes", "", button("Apply", apply, primary=True))
         if not outputs:
             box.append(label("Display details aren't available right now.", "row-sub", margin_top=8))
+
+        night = self.group(box, "Night light")
+        temps = [(4500, "Mild"), (3800, "Warm"), (3200, "Warmer"), (2700, "Warmest")]
+        scheds = [("always", "All the time"), ("evening", "7 PM to 7 AM"), ("late", "9 PM to 7 AM")]
+
+        def setn(key, value):
+            self.prefs[key] = value
+            self.save()
+            spawn(["wren-nightlight"])
+        cur_t = self.prefs.get("night_temp", 3800)
+        cur_s = self.prefs.get("night_schedule", "evening")
+        night.row("night-light-symbolic", "Night light", "Warmer colors that are easier on your eyes at night",
+                  switch(self.prefs.get("night_light", False), lambda v: setn("night_light", v)))
+        night.row(None, "Strength", "", dropdown([t for _, t in temps],
+                  next((i for i, (v, _) in enumerate(temps) if v == cur_t), 1),
+                  lambda i: setn("night_temp", temps[i][0])))
+        night.row(None, "When", "", dropdown([t for _, t in scheds],
+                  next((i for i, (v, _) in enumerate(scheds) if v == cur_s), 1),
+                  lambda i: setn("night_schedule", scheds[i][0])))
         more = self.group(box, "More")
         more.row("preferences-desktop-display-symbolic", "Arrange multiple displays", "Position, rotate and turn screens on or off",
                  on_click=lambda: spawn(["wdisplays"]))
@@ -636,6 +689,7 @@ class Pages:
     # -------------------------------------------------------- Personalization
     def personalization(self):
         box = self.page("Personalization")
+        self.colors(box)
         box.append(label("BACKGROUND", "group-title"))
         current = self.prefs.get("wallpaper", f"{WALLPAPERS}/topographic.jpg")
         flow = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, max_children_per_line=4, min_children_per_line=2,
@@ -647,6 +701,8 @@ class Pages:
             self.prefs["wallpaper"] = path
             self.save()
             spawn(["wren-wallpaper"])
+            if wtheme:  # the lock screen uses the same picture
+                background(lambda: wtheme.generate(reload=False))
             for b in buttons:
                 (b.add_css_class if b.path == path else b.remove_css_class)("chosen")
 
@@ -705,7 +761,100 @@ class Pages:
         sel = min(range(len(sizes)), key=lambda i: abs(sizes[i][0] - cur))
         text.row("format-text-larger-symbolic", "Text size", "Applies to apps",
                  dropdown([t for _, t in sizes], sel, lambda i: iface.set_double("text-scaling-factor", sizes[i][0])))
+        cursors = [(24, "Default"), (32, "Large"), (48, "Extra large")]
+        cur_c = self.prefs.get("cursor_size", 24)
+
+        def set_cursor(i):
+            self.prefs["cursor_size"] = cursors[i][0]
+            self.save()
+            iface.set_int("cursor-size", cursors[i][0])
+            write_labwc_user_config(self.prefs)
+            self.win.toast("Pointer size changes fully the next time you sign in")
+        text.row("input-mouse-symbolic", "Pointer size", "",
+                 dropdown([t for _, t in cursors], next((i for i, (v, _) in enumerate(cursors) if v == cur_c), 0),
+                          set_cursor))
+
+        bar = self.group(box, "Taskbar")
+
+        def setp(key, value):
+            self.prefs[key] = value
+            self.save()
+            spawn(["wren-theme", "panel"])
+        bar.row("view-dual-symbolic", "Taskbar position", "",
+                dropdown(["Bottom", "Top"], 1 if self.prefs.get("panel_position") == "top" else 0,
+                         lambda i: setp("panel_position", "top" if i else "bottom")))
+        bar.row("preferences-system-time-symbolic", "24-hour clock", "Show 18:30 instead of 6:30 PM",
+                switch(bool(self.prefs.get("clock_24h")), lambda v: setp("clock_24h", v)))
         return box
+
+    def colors(self, box):
+        t = wrenlib.load_theme()
+        box.append(label("COLORS", "group-title"))
+        modes = Gtk.Box(spacing=10)
+        mode_buttons = []
+
+        def set_theme(**kw):
+            if not wtheme:
+                return
+            background(lambda: wtheme.set_theme(**kw))
+
+        def pick_mode(m):
+            for b in mode_buttons:
+                (b.add_css_class if b.mode == m else b.remove_css_class)("chosen")
+            set_theme(mode=m)
+        for m, name in (("dark", "Dark"), ("light", "Light")):
+            prev = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            prev.add_css_class("preview")
+            prev.add_css_class(m)
+            for css in ("bar", "blob", "line2"):
+                part = Gtk.Box(halign=Gtk.Align.FILL if css == "bar" else Gtk.Align.START)
+                part.add_css_class(css)
+                prev.append(part)
+            tile = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            tile.append(prev)
+            tile.append(label(name, "mode-name"))
+            b = Gtk.Button(child=tile)
+            b.add_css_class("mode-tile")
+            b.mode = m
+            if t["mode"] == m:
+                b.add_css_class("chosen")
+            b.connect("clicked", lambda _b, m=m: pick_mode(m))
+            mode_buttons.append(b)
+            modes.append(b)
+        box.append(modes)
+
+        card = Card()
+        card.set_margin_top(8)
+        swatches = Gtk.Box(spacing=6, valign=Gtk.Align.CENTER)
+        sw_buttons = []
+        acc_row = None
+
+        def pick_accent(a):
+            for b in sw_buttons:
+                (b.add_css_class if b.accent == a else b.remove_css_class)("chosen")
+            acc_row.subtitle.set_text(wrenlib.ACCENTS[a][6])
+            set_theme(accent=a)
+        provider = Gtk.CssProvider()
+        provider.load_from_string("".join(f".sw-{k} {{ background-color: {v[0]}; }}\n"
+                                          for k, v in wrenlib.ACCENTS.items()))
+        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
+                                                  Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        for key, val in wrenlib.ACCENTS.items():
+            dot = Gtk.Box(hexpand=True, vexpand=True)
+            dot.add_css_class(f"sw-{key}")
+            b = Gtk.Button(child=dot, tooltip_text=val[6])
+            b.add_css_class("swatch")
+            b.add_css_class("flat")
+            b.accent = key
+            if key == t["accent"]:
+                b.add_css_class("chosen")
+            b.connect("clicked", lambda _b, k=key: pick_accent(k))
+            sw_buttons.append(b)
+            swatches.append(b)
+        acc_row = card.row("applications-graphics-symbolic", "Accent color", wrenlib.ACCENTS[t["accent"]][6], swatches)
+        card.row("view-reveal-symbolic", "Animations", "Smooth fades and slides when things open",
+                 switch(bool(t["animations"]), lambda v: set_theme(animations=v)))
+        box.append(card)
 
     # -------------------------------------------------------- Apps
     def apps(self):
@@ -825,6 +974,29 @@ class Pages:
             write_labwc_user_config(self.prefs)
             self.win.toast(f"Keyboard set to {layouts[i][0]}")
         kb.row("input-keyboard-symbolic", "Keyboard layout", "", dropdown([n for n, _ in layouts], sel, set_kb))
+
+        def key_scale(key, lo, hi, default, step):
+            s = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, lo, hi, step)
+            s.set_value(self.prefs.get(key, default))
+            s.set_size_request(220, -1)
+            s.set_draw_value(False)
+            pending = {"src": None}
+
+            def changed(w):
+                self.prefs[key] = int(w.get_value())
+                if pending["src"]:
+                    GLib.source_remove(pending["src"])
+
+                def commit():
+                    pending["src"] = None
+                    self.save()
+                    write_labwc_user_config(self.prefs)
+                    return False
+                pending["src"] = GLib.timeout_add(400, commit)
+            s.connect("value-changed", changed)
+            return s
+        kb.row(None, "Repeat delay", "How long to hold a key before it repeats", key_scale("repeat_delay", 200, 1000, 600, 50))
+        kb.row(None, "Repeat speed", "How fast a held key repeats", key_scale("repeat_rate", 10, 60, 25, 1))
         return box
 
     # -------------------------------------------------------- Update
@@ -988,21 +1160,30 @@ class App(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
-        provider = Gtk.CssProvider()
-        provider.load_from_string(CSS)
-        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
-                                                  Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.restyle = wrenlib.setup_app_style(CSS)
+        wrenlib.keep_warm(self)
+        action = Gio.SimpleAction.new("open-page", GLib.VariantType.new("s"))
+        action.connect("activate", lambda _a, param: self.show_page(param.get_string()))
+        self.add_action(action)
 
-    def do_command_line(self, cmdline):
-        args = cmdline.get_arguments()[1:]
-        page = args[0] if args else "system"
+    def show_page(self, page="system"):
         win = self.get_active_window()
         if win:
             win.open(page)
         else:
             win = Window(self, page)
         win.present()
+
+    def do_activate(self):
+        win = self.get_active_window()
+        if win:
+            win.present()
+        else:
+            self.show_page("system")
+
+    def do_command_line(self, cmdline):
+        args = cmdline.get_arguments()[1:]
+        self.show_page(args[0] if args else "system")
         return 0
 
 

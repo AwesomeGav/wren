@@ -1,2 +1,2 @@
 #!/bin/sh
-exec python3 /usr/lib/wren/updater.py "$@"
+exec env PYTHONPATH=/usr/lib/wren python3 -m updater "$@"

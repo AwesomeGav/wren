@@ -257,6 +257,7 @@ for svc in greetd.service NetworkManager.service bluetooth.service earlyoom.serv
 done
 systemctl mask systemd-rfkill.service systemd-rfkill.socket 2>/dev/null || true
 systemctl --global mask localsearch-3.service tracker-miner-fs-3.service 2>/dev/null || true
+systemctl mask man-db.timer plocate-updatedb.timer archlinux-keyring-wkd-sync.timer 2>/dev/null || true
 pacman-key --init >/dev/null 2>&1
 pacman-key --populate archlinux >/dev/null 2>&1
 EOF

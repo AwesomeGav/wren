@@ -1,5 +1,5 @@
 #!/bin/sh
 # Wren Login. If it ever fails to start, fall back to the standard login screen
 # so nobody gets locked out.
-python3 /usr/lib/wren/greeter.py && exit 0
+env PYTHONPATH=/usr/lib/wren python3 -m greeter && exit 0
 exec regreet

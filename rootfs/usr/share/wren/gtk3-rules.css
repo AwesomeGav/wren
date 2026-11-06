@@ -1,0 +1,27 @@
+/* Wren GTK 3 rules. Colors come from palette.css (@wren_*). */
+
+* {
+  border-radius: 0;
+  -gtk-outline-radius: 0;
+}
+
+decoration {
+  border-radius: 0;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45), 0 0 0 1px @wren_border;
+}
+window.csd:not(:backdrop) decoration {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 0 1px @wren_accent;
+}
+window.maximized decoration,
+window.fullscreen decoration,
+window.tiled decoration {
+  box-shadow: none;
+}
+
+headerbar {
+  box-shadow: inset 0 -1px @wren_border;
+}
+
+menu, .menu, .context-menu, popover, popover.background {
+  border: 1px solid @wren_border2;
+}

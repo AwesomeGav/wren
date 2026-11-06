@@ -1,0 +1,40 @@
+# Wren window style: warm graphite title bars, centered titles, soft shadows
+border.width: 1
+padding.height: 7
+window.titlebar.padding.width: 8
+window.titlebar.padding.height: 2
+window.button.width: 30
+window.button.spacing: 2
+window.label.text.justify: center
+
+window.active.title.bg.color: ${surface2}
+window.inactive.title.bg.color: ${window}
+window.active.label.text.color: ${text}
+window.inactive.label.text.color: ${muted}
+window.active.border.color: ${accent}
+window.inactive.border.color: ${border}
+window.active.button.unpressed.image.color: ${text2}
+window.inactive.button.unpressed.image.color: ${muted}
+window.active.button.close.unpressed.image.color: ${accent_text}
+
+window.active.shadow.size: 28
+window.inactive.shadow.size: 14
+window.active.shadow.color: #00000077
+window.inactive.shadow.color: #00000044
+
+menu.border.width: 1
+menu.border.color: ${border2}
+menu.items.padding.x: 12
+menu.items.padding.y: 6
+menu.items.bg.color: ${surface2}
+menu.items.text.color: ${text}
+menu.items.active.bg.color: ${accent}
+menu.items.active.text.color: ${on_accent}
+menu.separator.color: ${border2}
+menu.title.bg.color: ${surface2}
+
+osd.bg.color: ${surface2}
+osd.border.color: ${border2}
+osd.border.width: 1
+osd.label.text.color: ${text}
+osd.window-switcher.item.active.border.color: ${accent}

@@ -1,2 +1,9 @@
 #!/bin/sh
-exec python3 /usr/lib/wren/shell.py "$@"
+# Panel buttons call this. Toggling goes straight to the running shell over D-Bus
+# (a few milliseconds) instead of starting Python for every click.
+case "$1" in
+  launcher|control)
+    gdbus call --session --dest org.wrenlinux.Shell --object-path /org/wrenlinux/Shell \
+      --method org.freedesktop.Application.ActivateAction "$1" '[]' '{}' >/dev/null 2>&1 && exit 0 ;;
+esac
+exec env PYTHONPATH=/usr/lib/wren python3 -m shell "$@"

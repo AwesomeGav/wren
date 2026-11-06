@@ -66,6 +66,13 @@ for f in "$ROOT"/usr/local/bin/wren-* "$ROOT"/usr/lib/wren/*.sh "$ROOT"/usr/lib/
   sed -i "/^file_permissions=(/a\\  [\"$rel\"]=\"0:0:755\"" "$PROFILE/profiledef.sh"
 done
 
+echo ":: Precompiling Wren's apps so they start faster"
+python -m compileall -q -f -j0 --invalidation-mode unchecked-hash "$ROOT/usr/lib/wren"
+# Timers that wake the disk on slow computers soon after start-up
+for t in man-db.timer plocate-updatedb.timer archlinux-keyring-wkd-sync.timer shadow.timer; do
+  rm -f "$ROOT/etc/systemd/system/timers.target.wants/$t"
+done
+
 echo ":: Wren theme for the live session's user (root)"
 cp -r rootfs/etc/skel/. "$ROOT/root/"
 

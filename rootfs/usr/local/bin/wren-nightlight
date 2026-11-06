@@ -1,0 +1,22 @@
+#!/bin/sh
+# Wren night light: reads Settings (~/.config/wren/settings.json) and runs wlsunset.
+pkill -x wlsunset 2>/dev/null
+command -v wlsunset >/dev/null || exit 0
+eval "$(python3 - <<'PY'
+import json, os
+try:
+    p = json.load(open(os.path.expanduser("~/.config/wren/settings.json")))
+except Exception:
+    p = {}
+on = bool(p.get("night_light"))
+t = int(p.get("night_temp", 3800))
+s = p.get("night_schedule", "evening")
+print(f"ON={1 if on else 0} TEMP={t} SCHED={s}")
+PY
+)"
+[ "$ON" = 1 ] || exit 0
+case "$SCHED" in
+    always) exec setsid wlsunset -t "$TEMP" -T "$((TEMP + 1))" -S 07:00 -s 19:00 >/dev/null 2>&1 & ;;
+    late)   exec setsid wlsunset -t "$TEMP" -T 6500 -S 07:00 -s 21:00 -d 1800 >/dev/null 2>&1 & ;;
+    *)      exec setsid wlsunset -t "$TEMP" -T 6500 -S 07:00 -s 19:00 -d 1800 >/dev/null 2>&1 & ;;
+esac

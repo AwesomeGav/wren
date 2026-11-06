@@ -1,0 +1,6 @@
+#!/bin/sh
+# Lock the screen with the current theme's lock screen.
+pidof hyprlock >/dev/null && exit 0
+CONF=/etc/xdg/wren/hypr/hyprlock.conf
+[ -r "$HOME/.config/wren/theme/hyprlock.conf" ] && CONF="$HOME/.config/wren/theme/hyprlock.conf"
+exec hyprlock -c "$CONF"

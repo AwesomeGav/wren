@@ -16,6 +16,9 @@ gi.require_version("Adw", "1")
 gi.require_version("Vte", "3.91")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk, Pango, Vte  # noqa: E402
 
+sys.path.insert(0, "/usr/lib/wren")
+import wrenlib  # noqa: E402
+
 FONT = "Monospace 11"
 BG = "#181512"
 FG = "#F1EBE3"
@@ -26,12 +29,12 @@ PALETTE = [
 ]
 
 CSS = """
-.wren-terminal { background-color: #181512; }
+.wren-terminal { background-color: @wren_bg; }
 vte-terminal { padding: 10px 12px; }
-tabbar .box { background-color: #1C1916; }
+tabbar .box { background-color: @wren_window; }
 tabbar tab { border-radius: 0; margin: 0; padding: 0 6px; min-height: 32px; }
-tabbar tab:selected { background-color: #181512; box-shadow: inset 0 2px #E0894A; }
-tabbar tab:not(:selected) { color: #8A8178; }
+tabbar tab:selected { background-color: @wren_bg; box-shadow: inset 0 2px @wren_accent; }
+tabbar tab:not(:selected) { color: @wren_muted; }
 """
 
 
@@ -39,6 +42,13 @@ def rgba(hexstr):
     c = Gdk.RGBA()
     c.parse(hexstr)
     return c
+
+
+def apply_colors(term):
+    pal = wrenlib.palette()
+    term.set_colors(rgba(pal["text"]), rgba(pal["bg"]), [rgba(c) for c in pal["ansi"]])
+    term.set_color_cursor(rgba(pal["accent"]))
+    term.set_color_cursor_foreground(rgba(pal["bg"]))
 
 
 def user_shell():
@@ -93,9 +103,7 @@ class Window(Adw.ApplicationWindow):
             cwd = self._cwd_of(current) if current else None
         term = Vte.Terminal()
         term.set_font(Pango.FontDescription.from_string(FONT))
-        term.set_colors(rgba(FG), rgba(BG), [rgba(c) for c in PALETTE])
-        term.set_color_cursor(rgba(CURSOR))
-        term.set_color_cursor_foreground(rgba(BG))
+        apply_colors(term)
         term.set_cursor_blink_mode(Vte.CursorBlinkMode.OFF)
         term.set_scrollback_lines(10000)
         term.set_audible_bell(False)
@@ -201,11 +209,8 @@ class App(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
-        provider = Gtk.CssProvider()
-        provider.load_from_string(CSS)
-        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
-                                                  Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.restyle = wrenlib.setup_app_style(CSS, self.recolor)
+        wrenlib.keep_warm(self, 600)
         new_window = Gio.SimpleAction.new("new-window", None)
         new_window.connect("activate", lambda *_: Window(self).present())
         self.add_action(new_window)
@@ -215,6 +220,16 @@ class App(Adw.Application):
                              ("win.zoom-reset", ["<Ctrl>0"]), ("app.new-window", ["<Ctrl><Shift>n"]),
                              ("win.next-tab", ["<Ctrl>Page_Down"]), ("win.prev-tab", ["<Ctrl>Page_Up"])):
             self.set_accels_for_action(action, keys)
+
+    def recolor(self, _theme=None):
+        for win in self.get_windows():
+            for i in range(win.tabs.get_n_pages()) if hasattr(win, "tabs") else []:
+                term = getattr(win.tabs.get_nth_page(i), "term", None)
+                if term:
+                    apply_colors(term)
+
+    def do_activate(self):
+        Window(self).present()
 
     def do_command_line(self, cmdline):
         args = cmdline.get_arguments()[1:]

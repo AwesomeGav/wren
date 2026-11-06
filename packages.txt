@@ -8,6 +8,7 @@ waybar
 mako
 swaybg
 swayidle
+wlsunset
 hyprlock
 xdg-desktop-portal-wlr
 xdg-desktop-portal-gtk

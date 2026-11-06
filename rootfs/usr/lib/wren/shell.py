@@ -21,6 +21,9 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 gi.require_version("Gtk4LayerShell", "1.0")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
+
+sys.path.insert(0, "/usr/lib/wren")
+import wrenlib  # noqa: E402
 from gi.repository import Gtk4LayerShell as Layer  # noqa: E402
 
 LIVE = os.path.isdir("/run/archiso")
@@ -35,55 +38,69 @@ HIDDEN_APPS = {
     "nvim.desktop", "mpv.desktop", "uxterm.desktop", "xterm.desktop", "gcr-prompter.desktop",
 }
 HIDDEN_PREFIXES = ("stoken", "org.gnome.Tecla", "electron", "jshell", "java")
-LOCK_CMD = ["hyprlock", "-c", "/etc/xdg/wren/hypr/hyprlock.conf"]
+LOCK_CMD = ["wren-lock"]
 
 CSS = """
 window.wren-layer { background: transparent; }
-.backdrop { background-color: rgba(10, 8, 7, 0.42); }
+.backdrop { transition: background-color 140ms ease-out; }
+.sheet { opacity: 0; transform: translateY(10px) scale(0.985);
+         transition: opacity 130ms ease-out, transform 170ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.sheet.shown { opacity: 1; transform: none; }
+flowboxchild, .tile, .pill-btn, .net-row { transition: background-color 110ms ease-out; }
+.backdrop { background-color: rgba(10, 8, 7, 0); }
+.backdrop.shown { background-color: rgba(10, 8, 7, 0.42); }
 .sheet {
-  background-color: #1F1B18;
-  border: 1px solid rgba(255, 240, 225, 0.08);
+  background-color: @wren_surface;
+  border: 1px solid alpha(@wren_text, 0.08);
   border-radius: 0;
   padding: 20px;
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
-  color: #F1EBE3;
+  color: @wren_text;
 }
 .search {
   min-height: 46px; border-radius: 0; font-size: 15px;
-  background: rgba(255, 240, 225, 0.06);
+  background: alpha(@wren_text, 0.06);
 }
 flowboxchild { border-radius: 0; padding: 0; outline: none; }
-flowboxchild:hover { background: rgba(255, 240, 225, 0.06); }
-flowboxchild:selected, flowboxchild:focus-visible { background: rgba(224, 137, 74, 0.18); }
+flowboxchild:hover { background: alpha(@wren_text, 0.06); }
+flowboxchild:selected, flowboxchild:focus-visible { background: alpha(@wren_accent, 0.18); }
 .app-tile { padding: 14px 6px 12px 6px; }
-.app-name { font-size: 12px; color: #E6DED4; }
-.muted { color: #A89F94; }
-.empty { color: #8A8178; font-size: 14px; }
+.app-name { font-size: 12px; color: @wren_text2; }
+.muted { color: @wren_dim; }
+.empty { color: @wren_muted; font-size: 14px; }
 .big-clock { font-size: 36px; font-weight: 300; }
 .tile {
   border-radius: 0; padding: 12px 14px; min-height: 40px;
-  background: rgba(255, 240, 225, 0.06); color: #F1EBE3;
+  background: alpha(@wren_text, 0.06); color: @wren_text;
   box-shadow: none; border: none;
 }
-.tile:hover { background: rgba(255, 240, 225, 0.10); }
-.tile.on { background: #E0894A; color: #1A120B; }
-.tile.on:hover { background: #EC9A5E; }
+.tile:hover { background: alpha(@wren_text, 0.10); }
+.tile.on { background: @wren_accent; color: @wren_on_accent; }
+.tile.on:hover { background: @wren_accent_hover; }
 .tile .title { font-weight: 600; }
 .tile .sub { font-size: 11px; opacity: 0.75; }
-.row-icon { color: #A89F94; }
+.row-icon { color: @wren_dim; }
 .pill-btn {
-  border-radius: 0; padding: 8px 10px; background: rgba(255, 240, 225, 0.06);
-  box-shadow: none; border: none; color: #F1EBE3;
+  border-radius: 0; padding: 8px 10px; background: alpha(@wren_text, 0.06);
+  box-shadow: none; border: none; color: @wren_text;
 }
-.pill-btn:hover { background: rgba(255, 240, 225, 0.12); }
-.pill-btn.danger:hover, .pill-btn.confirm { background: #C4513F; color: #FFFFFF; }
-.net-row { border-radius: 0; padding: 8px 10px; background: transparent; box-shadow: none; border: none; color: #F1EBE3; }
-.net-row:hover { background: rgba(255, 240, 225, 0.07); }
+.pill-btn:hover { background: alpha(@wren_text, 0.12); }
+.pill-btn.danger:hover, .pill-btn.confirm { background: @wren_danger; color: #FFFFFF; }
+.net-row { border-radius: 0; padding: 8px 10px; background: transparent; box-shadow: none; border: none; color: @wren_text; }
+.net-row:hover { background: alpha(@wren_text, 0.07); }
 .net-list { background: rgba(0, 0, 0, 0.18); border-radius: 0; padding: 6px; }
-scale trough { min-height: 6px; border-radius: 0; background: rgba(255, 240, 225, 0.10); }
-scale highlight { background: #E0894A; border-radius: 0; }
-scale slider { min-width: 18px; min-height: 18px; background: #F1EBE3; box-shadow: none; border: none; }
+scale trough { min-height: 6px; border-radius: 0; background: alpha(@wren_text, 0.10); }
+scale highlight { background: @wren_accent; border-radius: 0; }
+scale slider { min-width: 18px; min-height: 18px; background: @wren_text; box-shadow: none; border: none; }
 """
+
+
+def load_prefs():
+    try:
+        import json
+        return json.load(open(os.path.expanduser("~/.config/wren/settings.json")))
+    except (OSError, ValueError):
+        return {}
 
 
 def run(cmd, timeout=5):
@@ -171,10 +188,23 @@ class Sheet(Gtk.Window):
         if self.get_visible():
             self.hide_sheet()
         else:
-            self.refresh()
-            self.present()
+            self.open_sheet()
+
+    def open_sheet(self):
+        self.card.remove_css_class("shown")
+        self.backdrop.remove_css_class("shown")
+        self.refresh()
+        self.present()
+
+        def show():
+            self.card.add_css_class("shown")
+            self.backdrop.add_css_class("shown")
+            return False
+        GLib.timeout_add(16, show)
 
     def hide_sheet(self):
+        self.card.remove_css_class("shown")
+        self.backdrop.remove_css_class("shown")
         self.set_visible(False)
 
     def refresh(self):
@@ -204,15 +234,37 @@ class Launcher(Sheet):
             activate_on_single_click=True)
         self.flow.set_filter_func(self._filter)
         self.flow.connect("child-activated", lambda _f, child: self._launch(child))
-        scroller = Gtk.ScrolledWindow(vexpand=True, hscrollbar_policy=Gtk.PolicyType.NEVER)
-        scroller.set_child(self.flow)
-        self.card.append(scroller)
+        self.scroller = Gtk.ScrolledWindow(vexpand=True, hscrollbar_policy=Gtk.PolicyType.NEVER)
+        self.scroller.set_child(self.flow)
+        self.card.append(self.scroller)
 
         self.empty = label("No apps match your search", "empty", xalign=0.5, visible=False)
         self.card.append(self.empty)
         self.apps = {}
 
+        self.dirty = True
+        self.monitor = Gio.AppInfoMonitor.get()
+        self.monitor.connect("changed", lambda *_: self._mark_dirty())
+        Gtk.Settings.get_default().connect("notify::gtk-icon-theme-name", lambda *_: self._mark_dirty())
+        GLib.idle_add(lambda: self.rebuild() or False)  # build ahead of time, while idle
+
+    def _mark_dirty(self):
+        self.dirty = True
+        if not self.get_visible():
+            GLib.idle_add(lambda: self.rebuild() or False)
+
     def refresh(self):
+        if self.dirty:
+            self.rebuild()
+        self.entry.set_text("")
+        self.flow.invalidate_filter()
+        self.empty.set_visible(False)
+        adj = self.scroller.get_vadjustment()
+        adj.set_value(0)
+        self.entry.grab_focus()
+
+    def rebuild(self):
+        self.dirty = False
         self.flow.remove_all()
         self.apps = {}
         infos = [a for a in Gio.AppInfo.get_all() if a.should_show()
@@ -239,9 +291,6 @@ class Launcher(Sheet):
                 words += [info.get_generic_name() or ""]
             self.apps[child] = (info, " ".join(words).lower())
             self.flow.append(child)
-        self.entry.set_text("")
-        self.empty.set_visible(False)
-        self.entry.grab_focus()
 
     def _filter(self, child):
         query = self.entry.get_text().strip().lower()
@@ -315,6 +364,7 @@ class Control(Sheet):
         self.card.set_halign(Gtk.Align.END)
         self.card.set_valign(Gtk.Align.END)
         self.card.set_margin_end(10)
+        self.card.set_margin_top(10)
         self.card.set_margin_bottom(62)
         self.card.set_size_request(380, -1)
         self.state = {}
@@ -420,8 +470,13 @@ class Control(Sheet):
 
     # -- state
     def refresh(self):
+        prefs = load_prefs()
+        top = prefs.get("panel_position") == "top"
+        self.card.set_valign(Gtk.Align.START if top else Gtk.Align.END)
+        self.card.set_margin_top(62 if top else 10)
+        self.card.set_margin_bottom(10 if top else 62)
         now = GLib.DateTime.new_now_local()
-        self.clock.set_text(now.format("%-I:%M %p"))
+        self.clock.set_text(now.format("%H:%M" if prefs.get("clock_24h") else "%-I:%M %p"))
         self.date.set_text(now.format("%A, %B %-d"))
         self.battery.set_text(self._battery_text())
         pending = os.path.exists(os.path.expanduser("~/.cache/wren/update-available"))
@@ -647,11 +702,20 @@ class Shell(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
-        provider = Gtk.CssProvider()
-        provider.load_from_string(CSS)
-        Gtk.StyleContext.add_provider_for_display(
-            Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.restyle = wrenlib.setup_app_style(CSS)
+        for name in ("launcher", "control"):
+            action = Gio.SimpleAction.new(name, None)
+            action.connect("activate", lambda _a, _p, n=name: self.toggle_sheet(n))
+            self.add_action(action)
+
+    def do_activate(self):
+        pass
+
+    def toggle_sheet(self, what):
+        for name, sheet in self.sheets.items():
+            if name != what:
+                sheet.hide_sheet()
+        self.sheet(what).toggle()
 
     def sheet(self, name):
         if name not in self.sheets:
@@ -665,10 +729,7 @@ class Shell(Adw.Application):
         args = cmdline.get_arguments()[1:]
         what = args[0] if args else "--service"
         if what in ("launcher", "control"):
-            for name, sheet in self.sheets.items():
-                if name != what:
-                    sheet.hide_sheet()
-            self.sheet(what).toggle()
+            self.toggle_sheet(what)
         elif what == "--service":
             # build both ahead of time so the first open is instant
             self.sheet("launcher")

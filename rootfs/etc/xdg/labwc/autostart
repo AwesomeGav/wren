@@ -2,18 +2,18 @@
 xdg-user-dirs-update >/dev/null 2>&1
 
 # First login: tell GNOME/libadwaita apps to use Wren's dark style and fonts
-if [ ! -f "$HOME/.config/wren/defaults-v3" ]; then
+if [ ! -f "$HOME/.config/wren/defaults-v4" ]; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
   gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
   gsettings set org.gnome.desktop.interface icon-theme Wren
   gsettings set org.gnome.desktop.interface font-name 'Inter 10'
   gsettings set org.gnome.desktop.interface document-font-name 'Inter 10'
   gsettings set org.gnome.desktop.interface accent-color orange
-  gsettings set org.gnome.desktop.interface enable-animations false
+  gsettings set org.gnome.desktop.interface enable-animations true
   gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
   gsettings set org.gnome.TextEditor style-scheme 'wren-dark'
   gsettings set org.gnome.TextEditor style-variant 'dark'
-  mkdir -p "$HOME/.config/wren" && touch "$HOME/.config/wren/defaults-v3"
+  mkdir -p "$HOME/.config/wren" && touch "$HOME/.config/wren/defaults-v4"
 fi
 mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
 [ -f "$HOME/.config/gtk-3.0/gtk.css" ] || cp /etc/skel/.config/gtk-3.0/gtk.css "$HOME/.config/gtk-3.0/"
@@ -21,12 +21,17 @@ mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
 sed -i 's#/usr/share/wren/gtk.css#/usr/share/wren/gtk3.css#' "$HOME/.config/gtk-3.0/gtk.css" 2>/dev/null
 [ -f "$HOME/.config/gtk-4.0/gtk.css" ] || cp /etc/skel/.config/gtk-4.0/gtk.css "$HOME/.config/gtk-4.0/"
 
+# Theme files (colors, panel layout) for this user; only written when missing
+[ -f "$HOME/.config/wren/theme/stamp" ] || wren-theme ensure >/dev/null 2>&1
 wren-wallpaper >/dev/null 2>&1 &
 # Display layout saved in Settings
 [ -x "$HOME/.config/wren/display.sh" ] && "$HOME/.config/wren/display.sh" >/dev/null 2>&1
-waybar -c /etc/xdg/wren/waybar/config.jsonc -s /etc/xdg/wren/waybar/style.css >/dev/null 2>&1 &
-mako -c /etc/xdg/wren/mako/config >/dev/null 2>&1 &
+wren-panel &
+MAKO=/etc/xdg/wren/mako/config
+[ -r "$HOME/.config/wren/theme/mako" ] && MAKO="$HOME/.config/wren/theme/mako"
+mako -c "$MAKO" >/dev/null 2>&1 &
 wren-shell --service >/dev/null 2>&1 &
+[ -x /usr/local/bin/wren-nightlight ] && wren-nightlight >/dev/null 2>&1 &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 >/dev/null 2>&1 &
 
 if [ -d /run/archiso ]; then

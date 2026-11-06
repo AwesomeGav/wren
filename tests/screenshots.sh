@@ -39,10 +39,20 @@ WREN_STORE_PAGE=cat:Game wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; sh
 WREN_STORE_PAGE=app:org.gimp.GIMP wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-app 15; kill $pid; sleep 2
 WREN_STORE_PAGE=search:minecraft wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-search 15; kill $pid; sleep 2
 wren-settings system >/var/tmp/shots/settings.log 2>&1 & pid=$!; shot 11-settings-system 5
-for page in about devices personalization apps time power; do
+for page in about devices personalization apps time power display; do
   wren-settings $page >>/var/tmp/shots/settings.log 2>&1; shot "11-settings-$page" 4
 done
+# Light mode with the Sky accent, switched live while Settings stays open
+wren-theme set light sky >/var/tmp/shots/theme.log 2>&1; shot 12-light-settings 5
 kill $pid; sleep 1
+shot 12-light-desktop 2
+wren-shell launcher; shot 12-light-launcher 3; wren-shell launcher
+wren-shell control;  shot 12-light-quick-settings 3; wren-shell control
+nautilus --new-window "$HOME" >/dev/null 2>&1 & shot 12-light-files 8
+nautilus -q; sleep 1
+wren-terminal >/dev/null 2>&1 & pid=$!; shot 12-light-terminal 5; kill $pid; sleep 1
+wren-theme set dark violet >>/var/tmp/shots/theme.log 2>&1
+wren-shell launcher; shot 13-dark-violet-launcher 4; wren-shell launcher
 labwc --exit
 EOF
 
@@ -61,7 +71,7 @@ install -d -m 700 -o wren -g wren /tmp/xdg-wren
 
 COMMON="WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
 runuser -u wren -- env HOME=$H USER=wren XDG_RUNTIME_DIR=/tmp/xdg-wren $COMMON \
-  timeout 360 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
+  timeout 540 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
 
 # Wren Login, in demo mode, inside the same kiosk compositor greetd uses
 mkdir -p -m 700 /tmp/xdg-root

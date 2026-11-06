@@ -1,0 +1,9 @@
+#!/bin/sh
+# (Re)starts the taskbar with the current theme and layout.
+T="$HOME/.config/wren/theme"
+CFG=/etc/xdg/wren/waybar/config.jsonc
+CSS=/etc/xdg/wren/waybar/style.css
+[ -r "$T/waybar.jsonc" ] && CFG="$T/waybar.jsonc"
+[ -r "$T/waybar.css" ] && CSS="$T/waybar.css"
+pkill -x waybar 2>/dev/null && sleep 0.2
+exec waybar -c "$CFG" -s "$CSS" >/dev/null 2>&1

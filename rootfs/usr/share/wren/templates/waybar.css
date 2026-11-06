@@ -1,0 +1,95 @@
+/* Wren panel */
+* {
+  font-family: "Inter", "Symbols Nerd Font", sans-serif;
+  font-size: 13px;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+window#waybar {
+  background: rgba(${window_rgb}, 0.96);
+  border: 1px solid rgba(${text_rgb}, 0.07);
+  border-radius: 0;
+  color: ${text};
+}
+
+#custom-apps {
+  background: ${accent};
+  color: ${on_accent};
+  font-size: 18px;
+  padding: 0 13px;
+  margin: 6px 6px 6px 8px;
+  border-radius: 0;
+}
+#custom-apps:hover {
+  background: ${accent_hover};
+}
+
+#taskbar button {
+  padding: 2px 9px 0 9px;
+  margin: 5px 2px;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+}
+#taskbar button:hover {
+  background: rgba(${text_rgb}, 0.06);
+}
+#taskbar button.active {
+  background: rgba(${text_rgb}, 0.09);
+  border-bottom: 2px solid ${accent};
+}
+#taskbar button.minimized {
+  opacity: 0.55;
+}
+
+#tray {
+  padding: 0 8px;
+}
+
+#status {
+  background: rgba(${text_rgb}, 0.06);
+  border-radius: 0;
+  margin: 7px 4px;
+  padding: 0 4px;
+}
+#network, #pulseaudio, #battery, #custom-power {
+  font-size: 16px;
+  padding: 0 8px;
+  margin: 0;
+  border-radius: 0;
+}
+#custom-power {
+  margin: 7px 8px 7px 2px;
+}
+#battery {
+  font-size: 13px;
+}
+#network:hover, #pulseaudio:hover, #battery:hover, #clock:hover, #custom-power:hover {
+  background: rgba(${text_rgb}, 0.08);
+}
+#battery.warning:not(.charging) { color: #E9C46A; }
+#battery.critical:not(.charging) { color: #F08A78; }
+
+#clock {
+  font-weight: 600;
+  padding: 0 10px;
+  margin: 7px 1px;
+  border-radius: 0;
+}
+#custom-power {
+  color: ${accent_text};
+}
+
+tooltip {
+  background: ${surface2};
+  border: 1px solid ${border2};
+  border-radius: 0;
+}
+tooltip label {
+  color: ${text};
+  padding: 2px 4px;
+}

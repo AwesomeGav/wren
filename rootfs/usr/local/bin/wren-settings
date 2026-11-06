@@ -1,2 +1,11 @@
 #!/bin/sh
-exec python3 /usr/lib/wren/settings.py "$@"
+# Reuses the running Settings app when there is one (instant), otherwise starts it.
+OBJ=/org/wrenlinux/Settings
+if [ $# -eq 0 ]; then
+  gdbus call --session --dest org.wrenlinux.Settings --object-path $OBJ \
+    --method org.freedesktop.Application.Activate '{}' >/dev/null 2>&1 && exit 0
+else
+  gdbus call --session --dest org.wrenlinux.Settings --object-path $OBJ \
+    --method org.freedesktop.Application.ActivateAction open-page "[<'$1'>]" '{}' >/dev/null 2>&1 && exit 0
+fi
+exec env PYTHONPATH=/usr/lib/wren python3 -m settings "$@"

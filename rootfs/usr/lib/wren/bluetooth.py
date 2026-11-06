@@ -11,7 +11,10 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
+from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
+
+sys.path.insert(0, "/usr/lib/wren")
+import wrenlib  # noqa: E402
 
 BLUEZ = "org.bluez"
 ADAPTER = "org.bluez.Adapter1"
@@ -35,29 +38,29 @@ AGENT_XML = """<node><interface name="org.bluez.Agent1">
 </interface></node>"""
 
 CSS = """
-.bt-window { background-color: #181512; }
-.bt-hero { padding: 22px 24px 18px 24px; background-color: #1C1916; border-bottom: 1px solid #2E2924; }
+.bt-window { background-color: @wren_bg; }
+.bt-hero { padding: 22px 24px 18px 24px; background-color: @wren_window; border-bottom: 1px solid @wren_border; }
 .bt-hero-title { font-size: 22px; font-weight: 800; }
-.bt-hero-sub { color: #A89F94; }
-.bt-section { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: #8A8178;
+.bt-hero-sub { color: @wren_dim; }
+.bt-section { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: @wren_muted;
               margin: 18px 24px 8px 24px; }
 .bt-list { background-color: transparent; }
-.bt-list > row { padding: 0; border-left: 3px solid transparent; border-bottom: 1px solid #2A2520; }
-.bt-list > row:hover { background-color: rgba(255, 240, 225, 0.04); }
-.bt-list > row.connected { border-left-color: #E0894A; background-color: rgba(224, 137, 74, 0.08); }
+.bt-list > row { padding: 0; border-left: 3px solid transparent; border-bottom: 1px solid @wren_line; }
+.bt-list > row:hover { background-color: alpha(@wren_text, 0.04); }
+.bt-list > row.connected { border-left-color: @wren_accent; background-color: alpha(@wren_accent, 0.08); }
 .bt-row { padding: 12px 20px 12px 18px; }
-.bt-icon { min-width: 40px; min-height: 40px; background-color: #26221E; color: #D9D1C7; }
-.connected .bt-icon { background-color: #E0894A; color: #1A120B; }
+.bt-icon { min-width: 40px; min-height: 40px; background-color: @wren_surface2; color: @wren_text2; }
+.connected .bt-icon { background-color: @wren_accent; color: @wren_on_accent; }
 .bt-name { font-weight: 700; }
-.bt-status { color: #A89F94; font-size: 12px; }
-.connected .bt-status { color: #F0A06A; }
+.bt-status { color: @wren_dim; font-size: 12px; }
+.connected .bt-status { color: @wren_accent_text; }
 .bt-btn { padding: 6px 14px; font-weight: 700; }
-.bt-btn.primary { background-color: #E0894A; color: #1A120B; }
-.bt-btn.primary:hover { background-color: #EC9A5E; }
-.bt-empty { color: #8A8178; padding: 18px 24px; }
+.bt-btn.primary { background-color: @wren_accent; color: @wren_on_accent; }
+.bt-btn.primary:hover { background-color: @wren_accent_hover; }
+.bt-empty { color: @wren_muted; padding: 18px 24px; }
 .bt-power { padding: 6px 16px; font-weight: 800; }
-.bt-power.on { background-color: #E0894A; color: #1A120B; }
-.bt-power.on:hover { background-color: #EC9A5E; }
+.bt-power.on { background-color: @wren_accent; color: @wren_on_accent; }
+.bt-power.on:hover { background-color: @wren_accent_hover; }
 """
 
 
@@ -554,11 +557,8 @@ class App(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
-        provider = Gtk.CssProvider()
-        provider.load_from_string(CSS)
-        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
-                                                  Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.restyle = wrenlib.setup_app_style(CSS)
+        wrenlib.keep_warm(self)
 
     def do_activate(self):
         (self.get_active_window() or Window(self)).present()

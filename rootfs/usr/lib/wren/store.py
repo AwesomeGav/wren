@@ -20,7 +20,10 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
+from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
+
+sys.path.insert(0, "/usr/lib/wren")
+import wrenlib  # noqa: E402
 
 API = "https://flathub.org/api/v2"
 REMOTE_URL = "https://dl.flathub.org/repo/flathub.flatpakrepo"
@@ -91,36 +94,36 @@ CATEGORIES = [
 ]
 
 CSS = """
-.store { background-color: #181512; }
-.side { background-color: #141210; border-right: 1px solid #2E2924; }
-.side row { padding: 9px 16px 9px 14px; border-left: 3px solid transparent; color: #BDB4A9; }
-.side row:hover { background-color: rgba(255, 240, 225, 0.05); color: #F1EBE3; }
-.side row:selected { background-color: rgba(224, 137, 74, 0.13); border-left-color: #E0894A; color: #F1EBE3; }
-.side row:selected image { color: #F0A06A; }
-.side-sep { margin: 8px 16px; background-color: #2E2924; min-height: 1px; }
-.side-title { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: #8A8178; margin: 16px 18px 6px 18px; }
+.store { background-color: @wren_bg; }
+.side { background-color: @wren_deep; border-right: 1px solid @wren_border; }
+.side row { padding: 9px 16px 9px 14px; border-left: 3px solid transparent; color: @wren_dim; }
+.side row:hover { background-color: alpha(@wren_text, 0.05); color: @wren_text; }
+.side row:selected { background-color: alpha(@wren_accent, 0.13); border-left-color: @wren_accent; color: @wren_text; }
+.side row:selected image { color: @wren_accent_text; }
+.side-sep { margin: 8px 16px; background-color: @wren_border; min-height: 1px; }
+.side-title { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: @wren_muted; margin: 16px 18px 6px 18px; }
 .page-title { font-size: 26px; font-weight: 800; }
-.section { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: #8A8178; margin-top: 18px; }
-.hero { background-image: linear-gradient(110deg, #3A2414 0%, #1F1712 55%, #1C1916 100%);
-        border: 1px solid #3A2C22; padding: 28px; }
-.hero-tag { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; color: #F0A06A; }
+.section { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: @wren_muted; margin-top: 18px; }
+.hero { background-image: linear-gradient(110deg, alpha(@wren_accent, 0.24) 0%, alpha(@wren_accent, 0.06) 55%, @wren_window 100%);
+        border: 1px solid alpha(@wren_accent, 0.25); padding: 28px; }
+.hero-tag { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; color: @wren_accent_text; }
 .hero-name { font-size: 30px; font-weight: 800; }
-.hero-sum { color: #D9CFC3; font-size: 14px; }
-.card { background-color: #1F1B18; border: 1px solid #2A2520; padding: 14px; }
-.card:hover { background-color: #26221E; border-color: #3A342E; }
+.hero-sum { color: @wren_text2; font-size: 14px; }
+.card { background-color: @wren_surface; border: 1px solid @wren_line; padding: 14px; }
+.card:hover { background-color: @wren_surface2; border-color: @wren_border2; }
 .card-name { font-weight: 700; }
-.card-sum { color: #A89F94; font-size: 12px; }
-.chip { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #F0A06A; }
-.dim { color: #A89F94; }
+.card-sum { color: @wren_dim; font-size: 12px; }
+.chip { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: @wren_accent_text; }
+.dim { color: @wren_dim; }
 .detail-name { font-size: 28px; font-weight: 800; }
-.detail-dev { color: #A89F94; }
-.detail-desc { font-size: 14px; color: #E6DED4; }
-.shot { border: 1px solid #2E2924; }
+.detail-dev { color: @wren_dim; }
+.detail-desc { font-size: 14px; color: @wren_text2; }
+.shot { border: 1px solid @wren_border; }
 .btn { padding: 8px 18px; font-weight: 800; }
-.btn.primary { background-color: #E0894A; color: #1A120B; }
-.btn.primary:hover { background-color: #EC9A5E; }
-.btn.danger:hover { background-color: #C4513F; color: #FFFFFF; }
-.row-item { padding: 12px 16px; border-bottom: 1px solid #2A2520; }
+.btn.primary { background-color: @wren_accent; color: @wren_on_accent; }
+.btn.primary:hover { background-color: @wren_accent_hover; }
+.btn.danger:hover { background-color: @wren_danger; color: #FFFFFF; }
+.row-item { padding: 12px 16px; border-bottom: 1px solid @wren_line; }
 progressbar trough, progressbar progress { min-height: 6px; }
 """
 
@@ -824,11 +827,8 @@ class App(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
-        provider = Gtk.CssProvider()
-        provider.load_from_string(CSS)
-        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
-                                                  Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.restyle = wrenlib.setup_app_style(CSS)
+        wrenlib.keep_warm(self)
 
     def do_activate(self):
         (self.get_active_window() or Window(self)).present()

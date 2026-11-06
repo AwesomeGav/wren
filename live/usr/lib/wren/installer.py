@@ -11,7 +11,10 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
+from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
+
+sys.path.insert(0, "/usr/lib/wren")
+import wrenlib  # noqa: E402
 
 BACKEND = "/usr/lib/wren/install-backend.sh"
 LOGO = "/usr/share/wren/logo-256.png"
@@ -47,7 +50,7 @@ CSS = """
 .warn { color: #E9C46A; }
 .error-text { color: #F08A78; }
 .steps label { font-size: 12px; color: alpha(currentColor, 0.45); }
-.steps label.current { color: #F0A06A; font-weight: 700; }
+.steps label.current { color: @wren_accent_text; font-weight: 700; }
 .steps label.done { color: alpha(currentColor, 0.75); }
 progressbar trough { min-height: 10px; border-radius: 0; }
 progressbar progress { min-height: 10px; border-radius: 0; }
@@ -850,11 +853,7 @@ class Installer(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
-        provider = Gtk.CssProvider()
-        provider.load_from_string(CSS)
-        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
-                                                  Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.restyle = wrenlib.setup_app_style(CSS)
 
     def do_activate(self):
         win = self.get_active_window() or Window(self)

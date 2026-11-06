@@ -6,7 +6,7 @@ WREN_SLEEP_AFTER=0
 [ -r "$HOME/.config/wren/settings.env" ] && . "$HOME/.config/wren/settings.env"
 [ -d /run/archiso ] && exit 0
 pkill -x swayidle 2>/dev/null
-LOCK='pidof hyprlock || hyprlock -c /etc/xdg/wren/hypr/hyprlock.conf &'
+LOCK='wren-lock &'
 set -- -w
 [ "$WREN_LOCK_AFTER" -gt 0 ] 2>/dev/null && set -- "$@" timeout "$WREN_LOCK_AFTER" "$LOCK"
 [ "$WREN_SLEEP_AFTER" -gt 0 ] 2>/dev/null && set -- "$@" timeout "$WREN_SLEEP_AFTER" 'systemctl suspend'
