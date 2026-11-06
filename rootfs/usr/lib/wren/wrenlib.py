@@ -137,6 +137,45 @@ def palette(theme=None):
     return base
 
 
+# Entrance animation used across Wren's apps: things fade up into place, one after another
+ANIM_CSS = """
+.wren-enter { opacity: 0; transform: translateY(18px) scale(0.98);
+  transition: opacity 260ms ease-out, transform 420ms cubic-bezier(0.18, 0.9, 0.28, 1.08); }
+.wren-enter.in { opacity: 1; transform: none; }
+.wren-pop { opacity: 0; transform: scale(0.86);
+  transition: opacity 200ms ease-out, transform 360ms cubic-bezier(0.2, 1.1, 0.3, 1.15); }
+.wren-pop.in { opacity: 1; transform: none; }
+button, .card, row, flowboxchild, switch, switch > slider, checkbutton, scale slider, entry {
+  transition: background-color 160ms ease, box-shadow 200ms ease, color 160ms ease, border-color 160ms ease,
+              transform 180ms ease, opacity 160ms ease; }
+button:active { transform: scale(0.96); }
+"""
+
+
+def children(widget):
+    c = widget.get_first_child()
+    while c is not None:
+        yield c
+        c = c.get_next_sibling()
+
+
+def animate_in(widget, delay=0, kind="wren-enter"):
+    """Fade/slide a widget into place (after `delay` ms). Instant when animations are off."""
+    from gi.repository import GLib
+    widget.add_css_class(kind)
+    widget.remove_css_class("in")
+
+    def show():
+        widget.add_css_class("in")
+        return False
+    GLib.timeout_add(16 + delay, show)
+
+
+def stagger(widgets, step=24, start=0, cap=16, kind="wren-enter"):
+    for i, w in enumerate(widgets):
+        animate_in(w, start + min(i, cap) * step, kind)
+
+
 def setup_app_style(css=None, on_change=None):
     """Call from Adw.Application.do_startup: light/dark mode, app CSS, and a provider that
     re-reads the user's theme CSS whenever the theme changes (GTK doesn't do this itself)."""
@@ -168,6 +207,9 @@ def setup_app_style(css=None, on_change=None):
             on_change(t)
 
     apply()
+    anim = Gtk.CssProvider()
+    anim.load_from_string(ANIM_CSS)
+    Gtk.StyleContext.add_provider_for_display(display, anim, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION - 1)
     if css:
         provider = Gtk.CssProvider()
         provider.load_from_string(css)

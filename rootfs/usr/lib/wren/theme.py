@@ -5,6 +5,7 @@
   wren-theme apply             rewrite theme files from ~/.config/wren/theme.json and reload
   wren-theme set MODE ACCENT   e.g. wren-theme set light sky
   wren-theme panel             rewrite only the taskbar config and restart it
+  wren-theme wm                rewrite only the window manager config (Wayfire reloads it)
 """
 import glob
 import json
@@ -24,7 +25,7 @@ SHARE = "/usr/share/wren"
 PREFS = os.path.join(CFG, "wren", "settings.json")
 ICON_SRC = "/usr/share/icons/Wren"
 WAYBAR_BASE = "/etc/xdg/wren/waybar/config.jsonc"
-THEME_VERSION = 3  # bump when the generated files change, so every account picks them up
+THEME_VERSION = 4  # bump when the generated files change, so every account picks them up
 
 
 def rgb(hexstr):
@@ -157,6 +158,61 @@ def gset(key, value, schema="org.gnome.desktop.interface"):
     quiet(["gsettings", "set", schema, key, value])
 
 
+def _keyboard_default():
+    lay, var = "us", ""
+    try:
+        for line in open("/etc/xdg/labwc/environment"):
+            k, _, v = line.strip().partition("=")
+            if k == "XKB_DEFAULT_LAYOUT":
+                lay = v.strip("'\"") or lay
+            elif k == "XKB_DEFAULT_VARIANT":
+                var = v.strip("'\"")
+    except OSError:
+        pass
+    return lay, var
+
+
+def _floats(hexstr, alpha):
+    h = hexstr.lstrip("#")
+    return " ".join(f"{int(h[i:i + 2], 16) / 255:.3f}" for i in (0, 2, 4)) + f" {alpha}"
+
+
+def wm_config(theme=None, pal=None):
+    """The Wayfire config: colors, animations, and mouse/keyboard settings from Settings."""
+    theme = theme or load_theme()
+    pal = pal or palette(theme)
+    p = prefs()
+    yn = lambda b: "true" if b else "false"  # noqa: E731
+    lay, var = _keyboard_default()
+    if p.get("keyboard"):
+        lay, _, var = str(p["keyboard"]).partition(":")
+    anim = bool(theme["animations"])
+    vals = {
+        "bg_wf": pal["bg"] + "FF", "text_wf": pal["text"] + "FF", "window_wf": pal["window"] + "FF",
+        "snap_fill": _floats(pal["accent"], 0.22), "snap_border": _floats(pal["accent"], 0.8),
+        "xkb_layout": lay, "xkb_variant": var,
+        "repeat_rate": int(p.get("repeat_rate", 25)), "repeat_delay": int(p.get("repeat_delay", 600)),
+        "mouse_speed": f'{float(p.get("mouse_speed", 0.0)):.2f}', "mouse_natural": yn(p.get("mouse_natural", False)),
+        "left_handed": yn(p.get("left_handed", False)), "touchpad_natural": yn(p.get("touchpad_natural", True)),
+        "tap_to_click": yn(p.get("tap_to_click", True)), "dwt": yn(p.get("dwt", True)),
+        "touchpad_speed": f'{float(p.get("touchpad_speed", 0.0)):.2f}', "cursor_size": int(p.get("cursor_size", 24)),
+        "open_anim": "zoom" if anim else "none", "close_anim": "zoom" if anim else "none",
+        "min_anim": "squeezimize" if anim else "none", "grid_anim": "crossfade" if anim else "none",
+    }
+    text = fill(f"{SHARE}/templates/wayfire.ini", vals)
+    path = os.path.join(CFG, "wren", "wayfire.ini")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    try:
+        if open(path).read() == text:
+            return path
+    except OSError:
+        pass
+    # Written in place (same file), so the running Wayfire notices and reloads it
+    with open(path, "w") as f:
+        f.write(text)
+    return path
+
+
 def apply_settings(theme, pal, icons):
     """Light/dark, accent, icons and animations for GNOME and GTK 3 apps."""
     light = theme["mode"] == "light"
@@ -198,6 +254,7 @@ def generate(reload=False):
     write(os.path.join(OUT, "mako"), fill(f"{SHARE}/templates/mako", vals))
     write(os.path.join(OUT, "hyprlock.conf"), fill(f"{SHARE}/templates/hyprlock.conf", vals))
     write(os.path.join(CFG, "labwc", "themerc-override"), fill(f"{SHARE}/templates/themerc-override", vals))
+    wm_config(theme, pal)
     icons = accent_icons(theme)
     with open(os.path.join(OUT, "stamp"), "w") as f:
         f.write(json.dumps(dict(theme, v=THEME_VERSION)))
@@ -260,6 +317,8 @@ if __name__ == "__main__":
                 quiet(["labwc", "--reconfigure"])
     elif cmd == "blur":
         make_blur()
+    elif cmd == "wm":
+        wm_config()
     elif cmd == "panel":
         write(os.path.join(OUT, "waybar.jsonc"), panel_config(palette(load_theme())))
         quiet(["wren-panel"], background=True)

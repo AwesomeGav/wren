@@ -652,7 +652,7 @@ class Window(Adw.ApplicationWindow):
         self.index = 0
         self.installing = False
 
-        self.stack = Gtk.Stack(transition_type=Gtk.StackTransitionType.CROSSFADE, transition_duration=180,
+        self.stack = Gtk.Stack(transition_type=Gtk.StackTransitionType.SLIDE_LEFT_RIGHT, transition_duration=320,
                                vexpand=True)
         for i, page in enumerate(self.pages):
             self.stack.add_named(page.widget, str(i))

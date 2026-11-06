@@ -56,9 +56,14 @@ wren-terminal >/dev/null 2>&1 & pid=$!; shot 12-dark-terminal 5; kill $pid; slee
 wren-theme set light violet >>/var/tmp/shots/theme.log 2>&1
 wren-shell launcher; shot 13-light-violet-launcher 4; wren-shell launcher
 wren-theme set light sky >>/var/tmp/shots/theme.log 2>&1; sleep 2
+# A window zooming open, caught part-way through
+echo "compositor: $(pgrep -x wayfire >/dev/null && echo wayfire || echo labwc)" >/var/tmp/shots/compositor.txt
+gnome-calculator >/dev/null 2>&1 &
+for i in 1 2 3 4 5 6 7 8; do grim "/var/tmp/shots/15-open-anim-$i.png"; done
+sleep 2; pkill -x gnome-calculator; sleep 1
 # Lock screen last: a killed locker leaves the session locked
 wren-lock >/var/tmp/shots/lock.log 2>&1 & shot 14-lock-screen 5
-labwc --exit
+wren-logout
 EOF
 
 cat > "$R/var/tmp/run-desktop.sh" <<'EOF'
@@ -74,9 +79,22 @@ echo sample > "$H/notes.txt"
 chown -R wren:wren "$H"
 install -d -m 700 -o wren -g wren /tmp/xdg-wren
 
-COMMON="WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
-runuser -u wren -- env HOME=$H USER=wren XDG_RUNTIME_DIR=/tmp/xdg-wren $COMMON \
-  timeout 540 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop.log 2>&1
+COMMON="WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
+WAYFIRE_ENV="WLR_RENDERER=gles2 WLR_RENDERER_ALLOW_SOFTWARE=1 XDG_CURRENT_DESKTOP=Wren:wlroots"
+# The real Wren window manager (Wayfire), with the scenes added to its start-up list
+runuser -u wren -- env HOME=$H XDG_RUNTIME_DIR=/tmp/xdg-wren wren-theme ensure >/var/tmp/shots/theme-ensure.log 2>&1
+cp "$H/.config/wren/wayfire.ini" /var/tmp/wayfire-test.ini
+printf 'scenes = sh /var/tmp/scenes.sh\n' >>/var/tmp/wayfire-test.ini
+cp /var/tmp/wayfire-test.ini /var/tmp/shots/wayfire-test.ini.txt
+chmod 644 /var/tmp/wayfire-test.ini
+runuser -u wren -- env HOME=$H USER=wren XDG_RUNTIME_DIR=/tmp/xdg-wren $COMMON $WAYFIRE_ENV \
+  timeout 600 dbus-run-session -- wayfire -c /var/tmp/wayfire-test.ini >/var/tmp/shots/desktop.log 2>&1
+if [ ! -f /var/tmp/shots/1-desktop.png ]; then
+  # Wayfire couldn't start here: fall back like a real computer would
+  echo "Wayfire failed; using labwc" >>/var/tmp/shots/desktop.log
+  runuser -u wren -- env HOME=$H USER=wren XDG_RUNTIME_DIR=/tmp/xdg-wren $COMMON WLR_RENDERER=pixman \
+    timeout 540 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop-labwc.log 2>&1
+fi
 
 # Wren Login, in demo mode, inside the same kiosk compositor greetd uses
 mkdir -p -m 700 /tmp/xdg-root

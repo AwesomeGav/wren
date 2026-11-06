@@ -13,7 +13,7 @@ Built on Arch Linux, with its own desktop shell, look and installer. You never n
 - **Its own installer**: a point-and-click setup that opens when you boot the USB stick and
   works on both new (UEFI) and older (BIOS) computers, with no internet needed.
 - **Built for weak hardware**:
-  - Lightweight Wayland desktop (labwc) with animations off
+  - Wayland desktop on Wayfire (smooth window animations), with labwc as a fallback for computers without 3D graphics
   - Compressed RAM swap (zram) so 2–4 GB machines can keep more open
   - earlyoom keeps the system responsive when memory runs out
   - TLP battery tuning, hardware video decoding in Firefox

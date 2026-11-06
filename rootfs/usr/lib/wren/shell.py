@@ -286,6 +286,7 @@ class Launcher(Sheet):
         adj = self.scroller.get_vadjustment()
         adj.set_value(0)
         self.entry.grab_focus()
+        wrenlib.stagger(list(wrenlib.children(self.flow))[:30], step=14, start=40, cap=30, kind="wren-pop")
 
     def rebuild(self):
         self.dirty = False
@@ -512,6 +513,7 @@ class Control(Sheet):
         self.net_reveal.set_reveal_child(False)
         self._reset_confirm()
         in_thread(self._read_state, self._apply_state)
+        wrenlib.stagger(list(wrenlib.children(self.card)), step=35, start=30)
 
     def _battery_text(self):
         for bat in sorted(glob.glob("/sys/class/power_supply/BAT*")):
@@ -630,7 +632,7 @@ class Control(Sheet):
         if action == "lock":
             spawn(LOCK_CMD)
         elif action == "logout":
-            spawn(["labwc", "--exit"])
+            spawn(["wren-logout"])
         elif LIVE and os.path.exists("/usr/lib/wren/live-power"):
             # The live USB runs from the stick; switch off/restart instantly so it can't hang
             cmd = ["/usr/lib/wren/live-power", action]

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Signs out of the Wren desktop.
+pkill -TERM -x wayfire 2>/dev/null || pkill -TERM -x labwc 2>/dev/null || labwc --exit

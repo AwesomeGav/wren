@@ -149,6 +149,13 @@ def main():
     .roundbtn > button:hover { background: rgba(255, 255, 255, 0.8); }
     button.menurow { background: transparent; color: #1C2230; padding: 9px 14px; border-radius: 10px; font-size: 14px; }
     button.menurow:hover { background: rgba(59, 130, 246, 0.14); }
+    .intro { opacity: 0; transform: translateY(24px);
+             transition: opacity 500ms ease-out, transform 700ms cubic-bezier(0.18, 0.9, 0.28, 1.05); }
+    .intro.in { opacity: 1; transform: none; }
+    entry.pw { transition: transform 70ms ease-in-out, border-color 200ms ease, background-color 200ms ease; }
+    entry.pw.shake-l { transform: translateX(-12px); }
+    entry.pw.shake-r { transform: translateX(12px); }
+    .error { transition: opacity 250ms ease; }
     popover > contents { background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(255, 255, 255, 0.9);
                          border-radius: 16px; padding: 6px; box-shadow: 0 12px 32px rgba(30, 45, 70, 0.25); }
     """
@@ -288,6 +295,18 @@ def main():
         tick()
         GLib.timeout_add_seconds(5, tick)
 
+        def shake():
+            steps = ["shake-l", "shake-r", "shake-l", "shake-r", None]
+
+            def step(i=0):
+                entry.remove_css_class("shake-l")
+                entry.remove_css_class("shake-r")
+                if i < len(steps) and steps[i]:
+                    entry.add_css_class(steps[i])
+                    GLib.timeout_add(70, step, i + 1)
+                return False
+            step()
+
         def finish(result):
             if result is None:
                 save_last_user(chosen["user"])
@@ -295,6 +314,7 @@ def main():
                 return False
             message.set_text(result)
             message.set_visible(True)
+            shake()
             entry.set_sensitive(True)
             go.set_sensitive(True)
             entry.set_text("")
@@ -324,6 +344,10 @@ def main():
 
         entry.connect("activate", submit)
         show_user(chosen)
+        # Clock and password box glide in
+        for i, w in enumerate((corner, status, column, power)):
+            w.add_css_class("intro")
+            GLib.timeout_add(120 + i * 90, lambda w=w: w.add_css_class("in") or False)
         win.fullscreen()
         win.present()
         entry.grab_focus()

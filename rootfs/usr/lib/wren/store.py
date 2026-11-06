@@ -381,7 +381,7 @@ class Window(Adw.ApplicationWindow):
         body.append(side)
 
         self.content = Gtk.Stack(hexpand=True, vexpand=True, transition_type=Gtk.StackTransitionType.CROSSFADE,
-                                 transition_duration=120)
+                                 transition_duration=300)
         self.toasts.set_child(self.content)
         body.append(self.toasts)
 
@@ -430,9 +430,11 @@ class Window(Adw.ApplicationWindow):
         if remember and current:
             self.history.append(current)
         self.content.add_child(widget)
+        self.content.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT if remember
+                                         else Gtk.StackTransitionType.CROSSFADE)
         self.content.set_visible_child(widget)
         if current and not remember:
-            GLib.timeout_add(200, lambda: (self.content.remove(current) if current.get_parent() else None) or False)
+            GLib.timeout_add(320, lambda: (self.content.remove(current) if current.get_parent() else None) or False)
         self.back.set_visible(bool(self.history))
 
     def go_back(self):
@@ -440,8 +442,9 @@ class Window(Adw.ApplicationWindow):
             return
         current = self.content.get_visible_child()
         previous = self.history.pop()
+        self.content.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
         self.content.set_visible_child(previous)
-        GLib.timeout_add(200, lambda: (self.content.remove(current) if current.get_parent() else None) or False)
+        GLib.timeout_add(320, lambda: (self.content.remove(current) if current.get_parent() else None) or False)
         self.back.set_visible(bool(self.history))
 
     def toast(self, text):
@@ -453,6 +456,7 @@ class Window(Adw.ApplicationWindow):
         clamp = Adw.Clamp(maximum_size=1000, margin_top=24, margin_bottom=32, margin_start=28, margin_end=28)
         clamp.set_child(child)
         s.set_child(clamp)
+        wrenlib.stagger(list(wrenlib.children(child)), step=30, cap=10)
         return s
 
     # ------------------------------------------------------------ pages

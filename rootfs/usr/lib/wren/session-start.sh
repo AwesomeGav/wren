@@ -1,0 +1,40 @@
+#!/bin/sh
+# Started once when the Wren desktop starts (by Wayfire, or labwc in the fallback session).
+
+# Let D-Bus-started apps and portals find this desktop
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE \
+  XCURSOR_SIZE XCURSOR_THEME >/dev/null 2>&1
+xdg-user-dirs-update >/dev/null 2>&1
+
+# First login: fonts and window buttons for GNOME/libadwaita apps (colors come from wren-theme)
+if [ ! -f "$HOME/.config/wren/defaults-v5" ]; then
+  gsettings set org.gnome.desktop.interface font-name 'Inter 10'
+  gsettings set org.gnome.desktop.interface document-font-name 'Inter 10'
+  gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
+  mkdir -p "$HOME/.config/wren" && touch "$HOME/.config/wren/defaults-v5"
+fi
+mkdir -p "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
+[ -f "$HOME/.config/gtk-3.0/gtk.css" ] || cp /etc/skel/.config/gtk-3.0/gtk.css "$HOME/.config/gtk-3.0/"
+# GTK 3 apps get the GTK 3-only palette file (older installs pointed at the GTK 4 one)
+sed -i 's#/usr/share/wren/gtk.css#/usr/share/wren/gtk3.css#' "$HOME/.config/gtk-3.0/gtk.css" 2>/dev/null
+[ -f "$HOME/.config/gtk-4.0/gtk.css" ] || cp /etc/skel/.config/gtk-4.0/gtk.css "$HOME/.config/gtk-4.0/"
+
+# Theme files (colors, panel layout) for this user; only written when missing
+wren-wallpaper >/dev/null 2>&1 &
+# Display layout saved in Settings
+[ -x "$HOME/.config/wren/display.sh" ] && "$HOME/.config/wren/display.sh" >/dev/null 2>&1
+wren-panel &
+MAKO=/etc/xdg/wren/mako/config
+[ -r "$HOME/.config/wren/theme/mako" ] && MAKO="$HOME/.config/wren/theme/mako"
+mako -c "$MAKO" >/dev/null 2>&1 &
+wren-shell --service >/dev/null 2>&1 &
+[ -x /usr/local/bin/wren-nightlight ] && wren-nightlight >/dev/null 2>&1 &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 >/dev/null 2>&1 &
+
+if [ -d /run/archiso ]; then
+  # Live USB: open the installer welcome screen
+  (sleep 2; wren-installer) >/dev/null 2>&1 &
+else
+  wren-update-notify >/dev/null 2>&1 &
+  wren-idle >/dev/null 2>&1 &
+fi

@@ -227,7 +227,7 @@ class Window(Adw.ApplicationWindow):
         view.set_content(self.toasts)
         self.set_content(view)
 
-        self.stack = Gtk.Stack(transition_type=Gtk.StackTransitionType.CROSSFADE, transition_duration=120)
+        self.stack = Gtk.Stack(transition_type=Gtk.StackTransitionType.CROSSFADE, transition_duration=240)
         self.toasts.set_child(self.stack)
 
         # Hero strip with power button

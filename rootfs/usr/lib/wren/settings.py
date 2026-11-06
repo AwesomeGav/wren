@@ -151,7 +151,8 @@ def save_prefs(prefs):
 
 
 def write_labwc_user_config(prefs):
-    """User rc.xml merged on top of Wren's (labwc -m): mouse, touchpad, keyboard."""
+    """Mouse, touchpad and keyboard settings for the window manager: Wayfire's config, plus
+    the labwc files used by the fallback session on computers that can't run Wayfire."""
     os.makedirs(LABWC_DIR, exist_ok=True)
     yn = lambda b: "yes" if b else "no"  # noqa: E731
     rc = f"""<?xml version="1.0"?>
@@ -191,7 +192,14 @@ def write_labwc_user_config(prefs):
         keep.append(f"XCURSOR_SIZE={int(prefs['cursor_size'])}")
     with open(env_path, "w") as f:
         f.write("\n".join(keep) + ("\n" if keep else ""))
-    spawn(["labwc", "--reconfigure"])
+    # Wayfire (the normal window manager) reloads its config file by itself
+    if wtheme:
+        try:
+            wtheme.wm_config()
+        except Exception:
+            pass
+    if os.environ.get("LABWC_PID"):
+        spawn(["labwc", "--reconfigure"])
 
 
 def label(text, css="", **kw):
@@ -1179,8 +1187,11 @@ class Window(Adw.ApplicationWindow):
         if builder is None or key == "nav":
             builder = self.pages.system
         clamp = Adw.Clamp(maximum_size=860, margin_top=28, margin_bottom=40, margin_start=32, margin_end=32)
-        clamp.set_child(builder())
+        page = builder()
+        clamp.set_child(page)
         self.scroll.set_child(clamp)
+        # Page content glides up into place, section by section
+        wrenlib.stagger(list(wrenlib.children(page)), step=28, cap=12)
 
     def toast(self, text):
         self.toasts.add_toast(Adw.Toast(title=text, timeout=3))

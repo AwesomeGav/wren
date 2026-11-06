@@ -9,6 +9,8 @@ margin=14
 outer-margin=6
 width=370
 anchor=top-right
+# On the overlay layer, so they fade in and out
+layer=overlay
 default-timeout=5000
 max-visible=4
 icons=1

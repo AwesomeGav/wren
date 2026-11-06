@@ -1,6 +1,32 @@
 #!/bin/sh
 # Starts the Wren desktop with the full login environment (so apps installed
 # from the App Store show up in the app grid).
+export WREN_SESSION=1
 [ -r /etc/profile ] && . /etc/profile
-# -m: user settings (mouse, keyboard...) layer on top of Wren's defaults
+export XDG_CURRENT_DESKTOP=Wren:wlroots XDG_SESSION_DESKTOP=wren XDG_SESSION_TYPE=wayland
+export MOZ_ENABLE_WAYLAND=1 QT_QPA_PLATFORM="wayland;xcb" _JAVA_AWT_WM_NONREPARENTING=1
+export XCURSOR_THEME=Adwaita
+XCURSOR_SIZE=$(sed -n 's/.*"cursor_size": *\([0-9]*\).*/\1/p' "$HOME/.config/wren/settings.json" 2>/dev/null)
+export XCURSOR_SIZE="${XCURSOR_SIZE:-24}"
+
+# Colors, panel and window manager settings for this account (rewritten after Wren updates)
+grep -qs '"v": 4' "$HOME/.config/wren/theme/stamp" || wren-theme ensure >/dev/null 2>&1  # keep in step with THEME_VERSION
+CONF="$HOME/.config/wren/wayfire.ini"
+[ -r "$CONF" ] || CONF=/etc/xdg/wren/wayfire.ini
+
+mkdir -p "$HOME/.cache/wren"
+LOG="$HOME/.cache/wren/wayfire.log"
+[ -f "$LOG" ] && mv -f "$LOG" "$LOG.old"
+if command -v wayfire >/dev/null && [ ! -f "$HOME/.config/wren/use-labwc" ]; then
+  started=$(date +%s)
+  wayfire -c "$CONF" >"$LOG" 2>&1
+  code=$?
+  # Wayfire needs working 3D graphics. If it couldn't start, use the simpler
+  # window manager (no window animations) so the computer is still usable.
+  if [ "$code" -eq 0 ] || [ $(( $(date +%s) - started )) -ge 20 ]; then
+    exit "$code"
+  fi
+  echo "Wayfire stopped after $(( $(date +%s) - started ))s (code $code); starting labwc" >>"$LOG"
+fi
+export XDG_CURRENT_DESKTOP=Wren:labwc:wlroots
 exec labwc -m

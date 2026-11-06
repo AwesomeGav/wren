@@ -3,6 +3,7 @@
 
 # --- Desktop core -------------------------------------------------------
 labwc
+wayfire
 xorg-xwayland
 waybar
 mako
