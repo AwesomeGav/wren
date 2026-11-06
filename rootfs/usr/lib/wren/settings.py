@@ -85,9 +85,9 @@ CSS = """
 .mode-tile .dark .line2 { background-color: rgba(255, 255, 255, 0.22); min-width: 80px; min-height: 6px; margin: 6px 12px 0 12px; border-radius: 999px; }
 .mode-tile .light .line2 { background-color: rgba(30, 45, 70, 0.18); min-width: 80px; min-height: 6px; margin: 6px 12px 0 12px; border-radius: 999px; }
 .mode-name { padding: 8px 12px; font-weight: 700; }
-.swatch { min-width: 30px; min-height: 30px; padding: 0; border: 2px solid transparent; border-radius: 999px; }
+.swatch { min-width: 28px; min-height: 28px; padding: 3px; border: 2px solid transparent; border-radius: 999px; background: none; }
 .swatch.chosen { border-color: @wren_text; }
-.swatch > box { margin: 3px; border-radius: 999px; }
+.swatch > box { margin: 0; border-radius: 999px; }
 levelbar trough { min-height: 10px; background-color: @wren_line; border-radius: 999px; }
 levelbar block { border-radius: 999px; }
 levelbar block.filled { background-color: @wren_accent; }
@@ -870,9 +870,11 @@ class Pages:
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
                                                   Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         for key, val in wrenlib.ACCENTS.items():
-            dot = Gtk.Box(hexpand=True, vexpand=True)
+            dot = Gtk.Box(halign=Gtk.Align.CENTER, valign=Gtk.Align.CENTER)
+            dot.set_size_request(22, 22)
             dot.add_css_class(f"sw-{key}")
-            b = Gtk.Button(child=dot, tooltip_text=val[6])
+            b = Gtk.Button(child=dot, tooltip_text=val[6], valign=Gtk.Align.CENTER, halign=Gtk.Align.CENTER)
+            b.set_size_request(32, 32)
             b.add_css_class("swatch")
             b.add_css_class("flat")
             b.accent = key

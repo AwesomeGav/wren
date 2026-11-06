@@ -43,7 +43,7 @@ LOCK_CMD = ["wren-lock"]
 CSS = """
 window.wren-layer { background: transparent; }
 .osd { background-color: @wren_glass_strong; border: 1px solid @wren_glass_border; border-radius: 999px;
-       padding: 12px 20px; margin: 12px; color: @wren_text;
+       padding: 12px 20px; margin: 40px; color: @wren_text;
        box-shadow: 0 12px 32px @wren_shadow, 0 0 0 1px @wren_glass_edge;
        opacity: 0; transform: translateY(10px) scale(0.96);
        transition: opacity 140ms ease-out, transform 220ms cubic-bezier(0.2, 0.9, 0.3, 1.1); }
@@ -756,7 +756,7 @@ class Osd(Gtk.Window):
         Layer.set_namespace(self, "wren-osd")
         Layer.set_layer(self, Layer.Layer.OVERLAY)
         Layer.set_anchor(self, Layer.Edge.BOTTOM, True)
-        Layer.set_margin(self, Layer.Edge.BOTTOM, 96)
+        Layer.set_margin(self, Layer.Edge.BOTTOM, 64)
         Layer.set_keyboard_mode(self, Layer.KeyboardMode.NONE)
         self.set_can_target(False)
         self.pill = Gtk.Box(spacing=14)
