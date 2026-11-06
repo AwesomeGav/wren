@@ -118,9 +118,11 @@ def panel_config(pal):
 
 def accent_icons(theme):
     """Copy of the Wren icon theme with the accent color swapped in."""
-    dest = os.path.join(HOME, ".local", "share", "icons", "Wren-Accent")
     if theme["accent"] == "ember":
         return "Wren"
+    # A differently named theme per accent, so apps notice the change and reload icons
+    name = "Wren-" + theme["accent"].title()
+    dest = os.path.join(HOME, ".local", "share", "icons", name)
     acc = ACCENTS[theme["accent"]][0]
     for src in glob.glob(ICON_SRC + "/**/*", recursive=True):
         rel = os.path.relpath(src, ICON_SRC)
@@ -130,11 +132,11 @@ def accent_icons(theme):
         elif src.endswith(".svg"):
             write(out, open(src).read().replace("#E0894A", acc).replace("#e0894a", acc))
         elif rel == "index.theme":
-            write(out, open(src).read().replace("Name=Wren", "Name=Wren-Accent"))
+            write(out, open(src).read().replace("Name=Wren", "Name=" + name))
         else:
             os.makedirs(os.path.dirname(out), exist_ok=True)
             shutil.copyfile(src, out)
-    return "Wren-Accent"
+    return name
 
 
 def quiet(cmd, background=False):

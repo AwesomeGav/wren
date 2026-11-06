@@ -1,9 +1,18 @@
 #!/bin/sh
-# (Re)starts the taskbar with the current theme and layout.
+# (Re)starts the taskbar with the current theme and layout. Only one taskbar
+# ever runs: the old one is fully gone before the new one starts.
 T="$HOME/.config/wren/theme"
 CFG=/etc/xdg/wren/waybar/config.jsonc
 CSS=/etc/xdg/wren/waybar/style.css
 [ -r "$T/waybar.jsonc" ] && CFG="$T/waybar.jsonc"
 [ -r "$T/waybar.css" ] && CSS="$T/waybar.css"
-pkill -x waybar 2>/dev/null && sleep 0.2
-exec waybar -c "$CFG" -s "$CSS" >/dev/null 2>&1
+LOCK="${XDG_RUNTIME_DIR:-/tmp}/wren-panel.lock"
+{
+  flock -w 10 9
+  pkill -x waybar 2>/dev/null
+  i=0
+  while pgrep -x waybar >/dev/null && [ $i -lt 30 ]; do sleep 0.1; i=$((i + 1)); done
+  pkill -9 -x waybar 2>/dev/null
+  setsid -f waybar -c "$CFG" -s "$CSS" >/dev/null 2>&1 9>&-
+  sleep 0.5
+} 9>"$LOCK"
