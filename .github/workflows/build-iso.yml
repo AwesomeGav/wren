@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest
-      options: --privileged
+      options: --privileged -v /lib/modules:/lib/modules:ro
     steps:
       - uses: actions/checkout@v5
 
@@ -43,6 +43,12 @@ jobs:
 
       - name: Build the ISO
         run: bash build.sh
+
+      - name: Software graphics device for the window manager test
+        continue-on-error: true
+        run: |
+          pacman -S --noconfirm --needed kmod
+          modprobe vgem && ls -la /dev/dri || echo "vgem not available; the desktop test will use the fallback window manager"
 
       - name: Take screenshots of the desktop
         continue-on-error: true

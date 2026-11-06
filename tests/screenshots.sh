@@ -81,6 +81,10 @@ install -d -m 700 -o wren -g wren /tmp/xdg-wren
 
 COMMON="WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
 WAYFIRE_ENV="WLR_RENDERER=gles2 WLR_RENDERER_ALLOW_SOFTWARE=1 XDG_CURRENT_DESKTOP=Wren:wlroots"
+# vgem gives a render node backed by software (Mesa llvmpipe) on machines without a GPU
+RN=$(ls /dev/dri/renderD* 2>/dev/null | head -1)
+[ -n "$RN" ] && { chmod 666 "$RN"; WAYFIRE_ENV="$WAYFIRE_ENV WLR_RENDER_DRM_DEVICE=$RN"; }
+echo "render node: ${RN:-none}" >/var/tmp/shots/render-node.txt
 # The real Wren window manager (Wayfire), with the scenes added to its start-up list
 runuser -u wren -- env HOME=$H XDG_RUNTIME_DIR=/tmp/xdg-wren wren-theme ensure >/var/tmp/shots/theme-ensure.log 2>&1
 cp "$H/.config/wren/wayfire.ini" /var/tmp/wayfire-test.ini
