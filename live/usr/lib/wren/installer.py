@@ -46,14 +46,14 @@ CSS = """
 .page-title { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
 .page-body { color: alpha(currentColor, 0.7); }
 .footer { padding: 14px 18px; border-top: 1px solid alpha(currentColor, 0.07); }
-.big-button { padding: 10px 26px; border-radius: 0; font-weight: 600; }
-.warn { color: #E9C46A; }
-.error-text { color: #F08A78; }
+.big-button { padding: 10px 26px; border-radius: 999px; font-weight: 600; }
+.warn { color: #B45309; }
+.error-text { color: #DC2626; }
 .steps label { font-size: 12px; color: alpha(currentColor, 0.45); }
 .steps label.current { color: @wren_accent_text; font-weight: 700; }
 .steps label.done { color: alpha(currentColor, 0.75); }
-progressbar trough { min-height: 10px; border-radius: 0; }
-progressbar progress { min-height: 10px; border-radius: 0; }
+progressbar trough { min-height: 10px; border-radius: 999px; }
+progressbar progress { min-height: 10px; border-radius: 999px; }
 .log { font-family: monospace; font-size: 11px; }
 """
 

@@ -4,12 +4,12 @@
 <labwc_config>
   <core>
     <decoration>server</decoration>
-    <gap>6</gap>
+    <gap>8</gap>
     <adaptiveSync>no</adaptiveSync>
   </core>
 
   <theme>
-    <cornerRadius>0</cornerRadius>
+    <cornerRadius>14</cornerRadius>
     <dropShadows>yes</dropShadows>
     <titlebar>
       <layout>icon:iconify,max,close</layout>

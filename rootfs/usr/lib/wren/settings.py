@@ -42,49 +42,54 @@ LIVE = os.path.isdir("/run/archiso")
 
 CSS = """
 .settings { background-color: @wren_bg; }
-.nav { background-color: @wren_deep; border-right: 1px solid @wren_border; }
-.nav row { padding: 9px 14px; border-left: 3px solid transparent; color: @wren_dim; }
+.nav { background-color: @wren_deep; border-right: 1px solid @wren_line; padding: 0 10px; }
+.nav row { padding: 9px 12px; margin: 1px 0; border-radius: 12px; color: @wren_dim; }
 .nav row:hover { background-color: alpha(@wren_text, 0.05); color: @wren_text; }
-.nav row:selected { background-color: alpha(@wren_accent, 0.13); border-left-color: @wren_accent; color: @wren_text; }
-.nav row:selected image { color: @wren_accent_text; }
-.me { padding: 18px 16px 14px 16px; }
-.me-avatar { background: @wren_accent; color: @wren_on_accent; font-weight: 800; font-size: 20px; min-width: 48px; min-height: 48px; }
+.nav row:selected { background-color: @wren_surface; color: @wren_text; box-shadow: 0 1px 6px alpha(@wren_shadow, 0.6); }
+.nav row:selected image { color: @wren_accent; }
+.nav > row, .nav list { background: transparent; }
+.me { padding: 18px 8px 14px 8px; }
+.me-avatar { background-image: linear-gradient(135deg, @wren_accent_hover, @wren_accent); color: @wren_on_accent;
+             font-weight: 800; font-size: 20px; min-width: 48px; min-height: 48px; border-radius: 999px; }
 .me-name { font-weight: 800; font-size: 15px; }
 .me-sub { color: @wren_muted; font-size: 12px; }
-.page-title { font-size: 28px; font-weight: 800; }
+.page-title { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
 .crumb { color: @wren_muted; font-size: 13px; }
-.group-title { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: @wren_muted; margin: 14px 0 4px 2px; }
-.card { background-color: @wren_surface; border: 1px solid @wren_line; }
-.card + .card { margin-top: 4px; }
-.row { padding: 14px 18px; min-height: 36px; }
+.group-title { font-size: 12px; font-weight: 700; color: @wren_dim; margin: 16px 0 6px 6px; }
+.card { background-color: @wren_surface; border: 1px solid @wren_glass_edge; border-radius: 16px;
+        box-shadow: 0 2px 10px alpha(@wren_shadow, 0.45); }
+.card + .card { margin-top: 6px; }
+.row { padding: 13px 18px; min-height: 36px; }
 .row + .row { border-top: 1px solid @wren_line; }
-.row.link:hover { background-color: @wren_surface2; }
-.row-icon { color: @wren_text2; min-width: 36px; }
+.row.link:hover { background-color: alpha(@wren_text, 0.03); }
+.row-icon { color: @wren_accent; min-width: 36px; }
 .row-title { font-weight: 600; }
 .row-sub { color: @wren_dim; font-size: 12px; }
 .big-stat { font-size: 30px; font-weight: 800; }
-.btn { padding: 6px 14px; font-weight: 700; }
-.btn.primary { background-color: @wren_accent; color: @wren_on_accent; }
+.btn { padding: 6px 16px; font-weight: 700; border-radius: 999px; }
+.btn.primary { background-color: @wren_accent; color: @wren_on_accent; box-shadow: 0 4px 12px alpha(@wren_accent, 0.3); }
 .btn.primary:hover { background-color: @wren_accent_hover; }
-.wall { border: 2px solid transparent; padding: 0; }
+.wall { border: 3px solid transparent; padding: 0; border-radius: 16px; }
+.wall picture { border-radius: 12px; }
 .wall.chosen { border-color: @wren_accent; }
 .tile-grid > flowboxchild { padding: 0; }
-.mode-tile { padding: 0; border: 2px solid @wren_line; background: none; }
-.mode-tile.chosen { border-color: @wren_accent; }
-.mode-tile .preview { min-width: 150px; min-height: 84px; }
-.mode-tile .preview.dark { background-color: #1C1916; }
-.mode-tile .preview.light { background-color: #F4EFE8; }
-.mode-tile .bar { min-height: 10px; margin: 8px 10px 0 10px; }
-.mode-tile .dark .bar { background-color: #2E2924; }
-.mode-tile .light .bar { background-color: #DDD3C6; }
-.mode-tile .blob { min-width: 46px; min-height: 8px; margin: 8px 10px 0 10px; background-color: @wren_accent; }
-.mode-tile .dark .line2 { background-color: #3A342E; min-width: 80px; min-height: 6px; margin: 6px 10px 0 10px; }
-.mode-tile .light .line2 { background-color: #CFC4B5; min-width: 80px; min-height: 6px; margin: 6px 10px 0 10px; }
-.mode-name { padding: 8px 10px; font-weight: 700; }
-.swatch { min-width: 34px; min-height: 34px; padding: 0; border: 2px solid transparent; }
+.mode-tile { padding: 0; border: 2px solid @wren_line; background: @wren_surface; border-radius: 16px; }
+.mode-tile.chosen { border-color: @wren_accent; box-shadow: 0 0 0 3px @wren_accent_glass; }
+.mode-tile .preview { min-width: 150px; min-height: 84px; border-radius: 13px 13px 0 0; }
+.mode-tile .preview.dark { background-image: linear-gradient(160deg, #2A3140, #12151B); }
+.mode-tile .preview.light { background-image: linear-gradient(160deg, #FFFFFF, #DCE3EE); }
+.mode-tile .bar { min-height: 10px; margin: 10px 12px 0 12px; border-radius: 999px; }
+.mode-tile .dark .bar { background-color: rgba(255, 255, 255, 0.14); }
+.mode-tile .light .bar { background-color: rgba(30, 45, 70, 0.12); }
+.mode-tile .blob { min-width: 46px; min-height: 8px; margin: 8px 12px 0 12px; background-color: @wren_accent; border-radius: 999px; }
+.mode-tile .dark .line2 { background-color: rgba(255, 255, 255, 0.22); min-width: 80px; min-height: 6px; margin: 6px 12px 0 12px; border-radius: 999px; }
+.mode-tile .light .line2 { background-color: rgba(30, 45, 70, 0.18); min-width: 80px; min-height: 6px; margin: 6px 12px 0 12px; border-radius: 999px; }
+.mode-name { padding: 8px 12px; font-weight: 700; }
+.swatch { min-width: 30px; min-height: 30px; padding: 0; border: 2px solid transparent; border-radius: 999px; }
 .swatch.chosen { border-color: @wren_text; }
-.swatch > box { margin: 3px; }
-levelbar trough { min-height: 10px; background-color: @wren_line; }
+.swatch > box { margin: 3px; border-radius: 999px; }
+levelbar trough { min-height: 10px; background-color: @wren_line; border-radius: 999px; }
+levelbar block { border-radius: 999px; }
 levelbar block.filled { background-color: @wren_accent; }
 levelbar block.empty { background-color: @wren_line; }
 """
@@ -136,7 +141,7 @@ def save_prefs(prefs):
     with open(PREFS_FILE, "w") as f:
         json.dump(prefs, f, indent=2)
     env = {
-        "WREN_WALLPAPER": prefs.get("wallpaper", f"{WALLPAPERS}/topographic.jpg"),
+        "WREN_WALLPAPER": prefs.get("wallpaper", wrenlib.DEFAULT_WALLPAPER),
         "WREN_LOCK_AFTER": str(prefs.get("lock_after", 600)),
         "WREN_SLEEP_AFTER": str(prefs.get("sleep_after", 0)),
     }
@@ -708,7 +713,7 @@ class Pages:
         box = self.page("Personalization")
         self.colors(box)
         box.append(label("BACKGROUND", "group-title"))
-        current = self.prefs.get("wallpaper", f"{WALLPAPERS}/topographic.jpg")
+        current = self.prefs.get("wallpaper", wrenlib.DEFAULT_WALLPAPER)
         flow = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, max_children_per_line=4, min_children_per_line=2,
                            row_spacing=8, column_spacing=8, homogeneous=True)
         flow.add_css_class("tile-grid")
@@ -724,7 +729,7 @@ class Pages:
                 (b.add_css_class if b.path == path else b.remove_css_class)("chosen")
 
         walls = sorted(glob.glob(f"{WALLPAPERS}/*.jpg"))
-        walls = [w for w in walls if not w.endswith("-thumb.jpg")]
+        walls = [w for w in walls if not w.endswith(("-thumb.jpg", "-blur.jpg"))]
         if current not in walls and os.path.exists(current):
             walls.append(current)
         for w in walls:

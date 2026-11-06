@@ -42,56 +42,59 @@ LOCK_CMD = ["wren-lock"]
 
 CSS = """
 window.wren-layer { background: transparent; }
-.backdrop { transition: background-color 140ms ease-out; }
-.sheet { opacity: 0; transform: translateY(10px) scale(0.985);
-         transition: opacity 130ms ease-out, transform 170ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.frost { opacity: 0; transition: opacity 180ms ease-out; }
+.frost.shown { opacity: 1; }
+.backdrop { background-color: transparent; transition: background-color 180ms ease-out; }
+.backdrop.shown { background-color: @wren_glass_tint; }
+.sheet { opacity: 0; transform: translateY(12px) scale(0.98);
+         transition: opacity 150ms ease-out, transform 220ms cubic-bezier(0.2, 0.9, 0.25, 1.05); }
 .sheet.shown { opacity: 1; transform: none; }
-flowboxchild, .tile, .pill-btn, .net-row { transition: background-color 110ms ease-out; }
-.backdrop { background-color: rgba(10, 8, 7, 0); }
-.backdrop.shown { background-color: rgba(10, 8, 7, 0.42); }
+flowboxchild, .tile, .pill-btn, .net-row { transition: background-color 120ms ease-out, box-shadow 120ms ease-out; }
 .sheet {
-  background-color: @wren_surface;
-  border: 1px solid alpha(@wren_text, 0.08);
-  border-radius: 0;
-  padding: 20px;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  background-color: @wren_glass;
+  border: 1px solid @wren_glass_border;
+  border-radius: 26px;
+  padding: 22px;
+  box-shadow: 0 24px 60px @wren_shadow, 0 0 0 1px @wren_glass_edge, inset 0 1px 0 alpha(#FFFFFF, 0.35);
   color: @wren_text;
 }
 .search {
-  min-height: 46px; border-radius: 0; font-size: 15px;
-  background: alpha(@wren_text, 0.06);
+  min-height: 46px; border-radius: 999px; font-size: 15px; padding: 0 8px;
+  background: @wren_glass_hover; border: 1px solid @wren_glass_border; box-shadow: none;
 }
-flowboxchild { border-radius: 0; padding: 0; outline: none; }
-flowboxchild:hover { background: alpha(@wren_text, 0.06); }
-flowboxchild:selected, flowboxchild:focus-visible { background: alpha(@wren_accent, 0.18); }
+flowboxchild { border-radius: 18px; padding: 0; outline: none; }
+flowboxchild:hover { background: @wren_glass_hover; }
+flowboxchild:selected, flowboxchild:focus-visible { background: @wren_accent_glass; }
 .app-tile { padding: 14px 6px 12px 6px; }
-.app-name { font-size: 12px; color: @wren_text2; }
+.app-name { font-size: 12px; font-weight: 500; color: @wren_text2; }
 .muted { color: @wren_dim; }
 .empty { color: @wren_muted; font-size: 14px; }
-.big-clock { font-size: 36px; font-weight: 300; }
+.big-clock { font-size: 40px; font-weight: 600; letter-spacing: -1px; }
 .tile {
-  border-radius: 0; padding: 12px 14px; min-height: 40px;
-  background: alpha(@wren_text, 0.06); color: @wren_text;
-  box-shadow: none; border: none;
+  border-radius: 18px; padding: 12px 14px; min-height: 40px;
+  background: @wren_glass_hover; color: @wren_text;
+  border: 1px solid @wren_glass_border; box-shadow: none;
 }
 .tile:hover { background: alpha(@wren_text, 0.10); }
-.tile.on { background: @wren_accent; color: @wren_on_accent; }
+.tile.on { background: @wren_accent; color: @wren_on_accent; border-color: transparent;
+           box-shadow: 0 6px 16px alpha(@wren_accent, 0.35); }
 .tile.on:hover { background: @wren_accent_hover; }
 .tile .title { font-weight: 600; }
 .tile .sub { font-size: 11px; opacity: 0.75; }
 .row-icon { color: @wren_dim; }
 .pill-btn {
-  border-radius: 0; padding: 8px 10px; background: alpha(@wren_text, 0.06);
-  box-shadow: none; border: none; color: @wren_text;
+  border-radius: 16px; padding: 9px 10px; background: @wren_glass_hover;
+  border: 1px solid @wren_glass_border; box-shadow: none; color: @wren_text;
 }
-.pill-btn:hover { background: alpha(@wren_text, 0.12); }
-.pill-btn.danger:hover, .pill-btn.confirm { background: @wren_danger; color: #FFFFFF; }
-.net-row { border-radius: 0; padding: 8px 10px; background: transparent; box-shadow: none; border: none; color: @wren_text; }
+.pill-btn:hover { background: alpha(@wren_text, 0.10); }
+.pill-btn.danger:hover, .pill-btn.confirm { background: #E5484D; color: #FFFFFF; border-color: transparent; }
+.net-row { border-radius: 12px; padding: 8px 10px; background: transparent; box-shadow: none; border: none; color: @wren_text; }
 .net-row:hover { background: alpha(@wren_text, 0.07); }
-.net-list { background: rgba(0, 0, 0, 0.18); border-radius: 0; padding: 6px; }
-scale trough { min-height: 6px; border-radius: 0; background: alpha(@wren_text, 0.10); }
-scale highlight { background: @wren_accent; border-radius: 0; }
-scale slider { min-width: 18px; min-height: 18px; background: @wren_text; box-shadow: none; border: none; }
+.net-list { background: alpha(@wren_text, 0.05); border-radius: 16px; padding: 6px; }
+scale trough { min-height: 8px; border-radius: 999px; background: alpha(@wren_text, 0.12); }
+scale highlight { background: @wren_accent; border-radius: 999px; }
+scale slider { min-width: 22px; min-height: 22px; border-radius: 999px; background: #FFFFFF;
+               box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25); border: none; }
 """
 
 
@@ -155,9 +158,16 @@ class Sheet(Gtk.Window):
         Layer.set_exclusive_zone(self, -1)
         Layer.set_keyboard_mode(self, Layer.KeyboardMode.EXCLUSIVE)
 
+        # Frosted glass: a pre-blurred copy of the wallpaper fades in behind the card
+        overlay = Gtk.Overlay()
+        self.frost = Gtk.Picture(content_fit=Gtk.ContentFit.COVER, can_target=False)
+        self.frost.add_css_class("frost")
+        self.frost_src = None
+        overlay.set_child(self.frost)
         self.backdrop = Gtk.Box()
         self.backdrop.add_css_class("backdrop")
-        self.set_child(self.backdrop)
+        overlay.add_overlay(self.backdrop)
+        self.set_child(overlay)
         self.card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
         self.card.add_css_class("sheet")
         self.card.set_hexpand(True)
@@ -190,21 +200,35 @@ class Sheet(Gtk.Window):
         else:
             self.open_sheet()
 
+    def _load_frost(self):
+        src = wrenlib.wallpaper_blur()
+        try:
+            key = (src, os.path.getmtime(src))
+        except OSError:
+            key = (src, 0)
+        if key != self.frost_src:
+            self.frost_src = key
+            self.frost.set_filename(src)
+
     def open_sheet(self):
         self.card.remove_css_class("shown")
         self.backdrop.remove_css_class("shown")
+        self.frost.remove_css_class("shown")
+        self._load_frost()
         self.refresh()
         self.present()
 
         def show():
             self.card.add_css_class("shown")
             self.backdrop.add_css_class("shown")
+            self.frost.add_css_class("shown")
             return False
         GLib.timeout_add(16, show)
 
     def hide_sheet(self):
         self.card.remove_css_class("shown")
         self.backdrop.remove_css_class("shown")
+        self.frost.remove_css_class("shown")
         self.set_visible(False)
 
     def refresh(self):
@@ -363,9 +387,9 @@ class Control(Sheet):
         super().__init__(app, "control")
         self.card.set_halign(Gtk.Align.END)
         self.card.set_valign(Gtk.Align.END)
-        self.card.set_margin_end(10)
+        self.card.set_margin_end(12)
         self.card.set_margin_top(10)
-        self.card.set_margin_bottom(62)
+        self.card.set_margin_bottom(74)
         self.card.set_size_request(380, -1)
         self.state = {}
         self._quiet = False
@@ -476,8 +500,8 @@ class Control(Sheet):
         prefs = load_prefs()
         top = prefs.get("panel_position") == "top"
         self.card.set_valign(Gtk.Align.START if top else Gtk.Align.END)
-        self.card.set_margin_top(62 if top else 10)
-        self.card.set_margin_bottom(10 if top else 62)
+        self.card.set_margin_top(74 if top else 12)
+        self.card.set_margin_bottom(12 if top else 74)
         now = GLib.DateTime.new_now_local()
         self.clock.set_text(now.format("%H:%M" if prefs.get("clock_24h") else "%-I:%M %p"))
         self.date.set_text(now.format("%A, %B %-d"))

@@ -32,8 +32,8 @@ CSS = """
 .wren-terminal { background-color: @wren_bg; }
 vte-terminal { padding: 10px 12px; }
 tabbar .box { background-color: @wren_window; }
-tabbar tab { border-radius: 0; margin: 0; padding: 0 6px; min-height: 32px; }
-tabbar tab:selected { background-color: @wren_bg; box-shadow: inset 0 2px @wren_accent; }
+tabbar tab { border-radius: 10px; margin: 0; padding: 0 6px; min-height: 32px; }
+tabbar tab:selected { background-color: @wren_surface; box-shadow: 0 1px 4px alpha(@wren_shadow, 0.7); }
 tabbar tab:not(:selected) { color: @wren_muted; }
 """
 

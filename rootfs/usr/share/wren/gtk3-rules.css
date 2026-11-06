@@ -1,27 +1,32 @@
-/* Wren GTK 3 rules. Colors come from palette.css (@wren_*). */
-
-* {
-  border-radius: 0;
-  -gtk-outline-radius: 0;
-}
+/* Wren GTK 3 rules: rounded and soft. Colors come from palette.css (@wren_*). */
 
 decoration {
-  border-radius: 0;
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45), 0 0 0 1px @wren_border;
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 6px 20px alpha(@wren_shadow, 0.7), 0 0 0 1px @wren_glass_edge;
 }
 window.csd:not(:backdrop) decoration {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 0 1px @wren_accent;
+  box-shadow: 0 10px 34px @wren_shadow, 0 0 0 1px @wren_glass_edge;
 }
 window.maximized decoration,
 window.fullscreen decoration,
 window.tiled decoration {
+  border-radius: 0;
   box-shadow: none;
 }
 
 headerbar {
-  box-shadow: inset 0 -1px @wren_border;
+  box-shadow: none;
 }
 
-menu, .menu, .context-menu, popover, popover.background {
-  border: 1px solid @wren_border2;
+button, entry {
+  border-radius: 10px;
+}
+
+menu, .menu, .context-menu {
+  border: 1px solid @wren_border;
+  border-radius: 12px;
+}
+popover, popover.background {
+  border: 1px solid @wren_border;
+  border-radius: 14px;
 }

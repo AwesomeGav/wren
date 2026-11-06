@@ -1,6 +1,6 @@
 # Wren start-up screen: logo, name and a spinning ring on the Wren background.
-Window.SetBackgroundTopColor(0.078, 0.071, 0.063);
-Window.SetBackgroundBottomColor(0.078, 0.071, 0.063);
+Window.SetBackgroundTopColor(0.086, 0.098, 0.13);
+Window.SetBackgroundBottomColor(0.05, 0.058, 0.078);
 
 logo.image = Image("logo.png");
 word.image = Image("wordmark.png");

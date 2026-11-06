@@ -1,40 +1,43 @@
-# Wren window style: warm graphite title bars, centered titles, soft shadows
-border.width: 1
-padding.height: 7
-window.titlebar.padding.width: 8
+# Wren window style: rounded frosted title bars, centered titles, soft shadows
+border.width: 0
+padding.height: 8
+window.titlebar.padding.width: 10
 window.titlebar.padding.height: 2
 window.button.width: 30
-window.button.spacing: 2
+window.button.spacing: 4
 window.label.text.justify: center
 
-window.active.title.bg.color: ${surface2}
+window.active.title.bg.color: ${window}
 window.inactive.title.bg.color: ${window}
 window.active.label.text.color: ${text}
 window.inactive.label.text.color: ${muted}
-window.active.border.color: ${accent}
+window.active.border.color: ${border2}
 window.inactive.border.color: ${border}
 window.active.button.unpressed.image.color: ${text2}
 window.inactive.button.unpressed.image.color: ${muted}
-window.active.button.close.unpressed.image.color: ${accent_text}
+window.active.button.hover.bg.color: ${surface2}
+window.active.button.close.hover.bg.color: #E5484D
+window.active.button.close.hover.image.color: #FFFFFF
+window.button.hover.bg.corner-radius: 10
 
-window.active.shadow.size: 28
-window.inactive.shadow.size: 14
-window.active.shadow.color: #00000077
-window.inactive.shadow.color: #00000044
+window.active.shadow.size: 40
+window.inactive.shadow.size: 22
+window.active.shadow.color: #1E2A4045
+window.inactive.shadow.color: #1E2A4025
 
 menu.border.width: 1
-menu.border.color: ${border2}
+menu.border.color: ${border}
 menu.items.padding.x: 12
-menu.items.padding.y: 6
-menu.items.bg.color: ${surface2}
+menu.items.padding.y: 7
+menu.items.bg.color: ${surface}
 menu.items.text.color: ${text}
 menu.items.active.bg.color: ${accent}
 menu.items.active.text.color: ${on_accent}
-menu.separator.color: ${border2}
-menu.title.bg.color: ${surface2}
+menu.separator.color: ${border}
+menu.title.bg.color: ${surface}
 
-osd.bg.color: ${surface2}
-osd.border.color: ${border2}
+osd.bg.color: ${surface}
+osd.border.color: ${border}
 osd.border.width: 1
 osd.label.text.color: ${text}
 osd.window-switcher.item.active.border.color: ${accent}

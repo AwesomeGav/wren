@@ -5,6 +5,7 @@ so signing in is just typing the password.
 Talks to greetd over its IPC socket ($GREETD_SOCK). Set WREN_GREETER_DEMO=1 to run
 without greetd (password "wren" works), for screenshots and testing.
 """
+import glob
 import json
 import os
 import pwd
@@ -17,6 +18,7 @@ import threading
 LAST_USER = "/var/cache/wren-greeter/last-user"
 SESSION = ["wren-session"]
 DEMO = bool(os.environ.get("WREN_GREETER_DEMO"))
+BACKGROUND = "/usr/share/wren/wallpapers/silk.jpg"
 NOLOGIN = ("nologin", "false", "sync", "halt", "shutdown")
 
 
@@ -120,32 +122,35 @@ def main():
     from gi.repository import Gdk, GLib, Gtk
 
     css = """
-    window { background-color: #141210; }
-    .shade { background-color: rgba(12, 10, 9, 0.45); }
-    .clock { font-family: Inter; font-size: 96px; font-weight: 300; color: #F1EBE3; }
-    .date { font-family: Inter; font-size: 18px; color: #C8BEB2; }
-    .card { background-color: rgba(28, 25, 22, 0.94); border: 1px solid #3A342E;
-            padding: 28px 30px; box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55); }
-    .avatar { background: #E0894A; color: #1A120B; font-family: Inter; font-size: 30px;
-              font-weight: 800; min-width: 72px; min-height: 72px; }
-    .who { font-family: Inter; font-size: 20px; font-weight: 700; color: #F1EBE3; }
-    .hint { font-family: Inter; font-size: 12px; color: #8A8178; }
-    .error { font-family: Inter; font-size: 13px; color: #F08A78; }
-    entry.pw { background: #141210; color: #F1EBE3; border: 1px solid #3A342E; min-height: 44px;
-               padding: 0 12px; font-size: 15px; border-radius: 0; box-shadow: none; outline: none; }
-    entry.pw:focus-within { border-color: #E0894A; }
-    button { border-radius: 0; box-shadow: none; border: none; font-family: Inter; }
-    button.go { background: #E0894A; color: #1A120B; min-width: 44px; min-height: 44px; }
-    button.go:hover { background: #EC9A5E; }
-    button.go:disabled { background: #5A3D27; color: #1A120B; }
-    button.flatlink { background: transparent; color: #A89F94; padding: 4px 8px; font-size: 12px; }
-    button.flatlink:hover { color: #F1EBE3; background: rgba(255, 240, 225, 0.06); }
-    button.power { background: rgba(28, 25, 22, 0.85); color: #F1EBE3; padding: 10px 16px;
-                   border: 1px solid #3A342E; font-size: 13px; }
-    button.power:hover { background: #C4513F; color: #FFFFFF; border-color: #C4513F; }
-    button.userrow { background: transparent; color: #F1EBE3; padding: 8px 10px; }
-    button.userrow:hover { background: rgba(224, 137, 74, 0.15); }
-    popover > contents { background: #26221E; border: 1px solid #3A342E; border-radius: 0; padding: 4px; }
+    window { background-color: #E6EAF1; }
+    .shade { background-color: rgba(236, 241, 248, 0.10); }
+    .date { font-family: Inter; font-size: 22px; font-weight: 600; color: #3A4354; }
+    .clock { font-family: Inter; font-size: 112px; font-weight: 600; color: #2A3242; letter-spacing: -3px; }
+    .status { font-family: Inter, "Symbols Nerd Font"; font-size: 15px; font-weight: 600; color: #2A3242; }
+    .avatar { background-image: linear-gradient(135deg, #60A5FA, #3B82F6); color: #FFFFFF; font-family: Inter;
+              font-size: 15px; font-weight: 800; min-width: 34px; min-height: 34px; border-radius: 999px;
+              box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85); }
+    .who { font-family: Inter; font-size: 17px; font-weight: 700; color: #F7F9FC;
+           text-shadow: 0 1px 6px rgba(20, 30, 50, 0.45); }
+    button.whobtn { background: transparent; box-shadow: none; border: none; padding: 4px 10px; border-radius: 999px; }
+    button.whobtn:hover { background: rgba(255, 255, 255, 0.25); }
+    .error { font-family: Inter; font-size: 13px; font-weight: 600; color: #FFFFFF; background: rgba(229, 72, 77, 0.85);
+             border-radius: 999px; padding: 6px 14px; }
+    entry.pw { background: rgba(40, 52, 76, 0.55); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.45);
+               min-height: 50px; padding: 0 20px; font-size: 15px; border-radius: 999px; outline: none;
+               box-shadow: 0 8px 24px rgba(30, 45, 70, 0.25); caret-color: #FFFFFF; }
+    entry.pw:focus-within { border-color: rgba(255, 255, 255, 0.85); background: rgba(40, 52, 76, 0.65); }
+    entry.pw text placeholder { color: rgba(255, 255, 255, 0.7); }
+    entry.pw image { color: rgba(255, 255, 255, 0.85); }
+    button { box-shadow: none; border: none; font-family: Inter; }
+    button.roundbtn { background: rgba(255, 255, 255, 0.55); color: #2A3242; min-width: 48px; min-height: 48px;
+                      border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.8);
+                      box-shadow: 0 6px 18px rgba(30, 45, 70, 0.18); }
+    button.roundbtn:hover { background: rgba(255, 255, 255, 0.8); }
+    button.menurow { background: transparent; color: #1C2230; padding: 9px 14px; border-radius: 10px; font-size: 14px; }
+    button.menurow:hover { background: rgba(59, 130, 246, 0.14); }
+    popover > contents { background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(255, 255, 255, 0.9);
+                         border-radius: 16px; padding: 6px; box-shadow: 0 12px 32px rgba(30, 45, 70, 0.25); }
     """
 
     users = list_users() or [{"user": "wren", "name": "Wren"}]
@@ -160,11 +165,11 @@ def main():
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
                                                   Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         settings = Gtk.Settings.get_default()
-        settings.set_property("gtk-application-prefer-dark-theme", True)
+        settings.set_property("gtk-application-prefer-dark-theme", False)
 
         win = Gtk.ApplicationWindow(application=app, title="Wren Login")
         overlay = Gtk.Overlay()
-        bg = Gtk.Picture.new_for_filename("/usr/share/wren/wallpaper.jpg")
+        bg = Gtk.Picture.new_for_filename(BACKGROUND)
         bg.set_content_fit(Gtk.ContentFit.COVER)
         bg.set_can_shrink(True)
         overlay.set_child(bg)
@@ -172,54 +177,66 @@ def main():
         shade.add_css_class("shade")
         overlay.add_overlay(shade)
 
-        column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0,
-                         halign=Gtk.Align.CENTER, valign=Gtk.Align.CENTER)
-        clock = Gtk.Label()
-        clock.add_css_class("clock")
-        date = Gtk.Label(margin_bottom=40)
+        # Date and big time, top left
+        corner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, halign=Gtk.Align.START, valign=Gtk.Align.START,
+                         margin_start=56, margin_top=44)
+        date = Gtk.Label(xalign=0)
         date.add_css_class("date")
-        column.append(clock)
-        column.append(date)
+        clock = Gtk.Label(xalign=0, margin_top=-6)
+        clock.add_css_class("clock")
+        corner.append(date)
+        corner.append(clock)
+        overlay.add_overlay(corner)
 
-        card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
-        card.add_css_class("card")
-        card.set_size_request(380, -1)
-        head = Gtk.Box(spacing=16)
+        # Wi-Fi and battery, top right
+        status = Gtk.Label(halign=Gtk.Align.END, valign=Gtk.Align.START, margin_end=44, margin_top=40)
+        status.add_css_class("status")
+        overlay.add_overlay(status)
+
+        # Name and password, bottom middle
+        column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14,
+                         halign=Gtk.Align.CENTER, valign=Gtk.Align.END, margin_bottom=64)
+        head = Gtk.Box(spacing=10)
         avatar = Gtk.Label()
         avatar.add_css_class("avatar")
-        head.append(avatar)
-        names = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER, hexpand=True)
-        who = Gtk.Label(xalign=0)
+        who = Gtk.Label()
         who.add_css_class("who")
-        names.append(who)
-        switch = Gtk.MenuButton(label="Not you?", halign=Gtk.Align.START, visible=len(users) > 1)
-        switch.add_css_class("flatlink")
-        names.append(switch)
-        head.append(names)
-        card.append(head)
-
-        row = Gtk.Box(spacing=0)
-        entry = Gtk.PasswordEntry(show_peek_icon=True, hexpand=True, placeholder_text="Password")
+        head.append(avatar)
+        head.append(who)
+        if len(users) > 1:
+            switch = Gtk.MenuButton(child=head, halign=Gtk.Align.CENTER, tooltip_text="Switch user")
+            switch.add_css_class("whobtn")
+            column.append(switch)
+        else:
+            switch = None
+            head.set_halign(Gtk.Align.CENTER)
+            column.append(head)
+        entry = Gtk.PasswordEntry(show_peek_icon=True, placeholder_text="Enter password")
         entry.add_css_class("pw")
-        go = Gtk.Button(icon_name="go-next-symbolic", tooltip_text="Sign in")
-        go.add_css_class("go")
-        row.append(entry)
-        row.append(go)
-        card.append(row)
-        message = Gtk.Label(xalign=0, wrap=True, visible=False)
+        entry.set_size_request(400, -1)
+        column.append(entry)
+        message = Gtk.Label(halign=Gtk.Align.CENTER, wrap=True, visible=False)
         message.add_css_class("error")
-        card.append(message)
-        column.append(card)
+        column.append(message)
         overlay.add_overlay(column)
 
-        power = Gtk.Box(spacing=8, halign=Gtk.Align.END, valign=Gtk.Align.END, margin_end=24, margin_bottom=24)
+        # Power, bottom right
+        power = Gtk.MenuButton(icon_name="system-shutdown-symbolic", tooltip_text="Power",
+                               halign=Gtk.Align.END, valign=Gtk.Align.END, margin_end=32, margin_bottom=32)
+        power.add_css_class("roundbtn")
+        pmenu = Gtk.Popover()
+        pbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         for label, action in (("Restart", "reboot"), ("Shut Down", "poweroff")):
             b = Gtk.Button(label=label)
-            b.add_css_class("power")
+            b.add_css_class("menurow")
+            b.get_child().set_xalign(0)
             b.connect("clicked", lambda _b, a=action: None if DEMO else subprocess.Popen(["systemctl", a]))
-            power.append(b)
+            pbox.append(b)
+        pmenu.set_child(pbox)
+        power.set_popover(pmenu)
         overlay.add_overlay(power)
         win.set_child(overlay)
+        go = entry  # sensitivity is toggled together while signing in
 
         def show_user(u):
             nonlocal chosen
@@ -230,21 +247,43 @@ def main():
             entry.set_text("")
             entry.grab_focus()
 
-        popover = Gtk.Popover()
-        plist = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        for u in users:
-            b = Gtk.Button(label=u["name"])
-            b.add_css_class("userrow")
-            b.get_child().set_xalign(0)
-            b.connect("clicked", lambda _b, u=u: (popover.popdown(), show_user(u)))
-            plist.append(b)
-        popover.set_child(plist)
-        switch.set_popover(popover)
+        if switch is not None:
+            popover = Gtk.Popover()
+            plist = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            for u in users:
+                b = Gtk.Button(label=u["name"])
+                b.add_css_class("menurow")
+                b.get_child().set_xalign(0)
+                b.connect("clicked", lambda _b, u=u: (popover.popdown(), show_user(u)))
+                plist.append(b)
+            popover.set_child(plist)
+            switch.set_popover(popover)
+
+        def status_text():
+            parts = []
+            try:
+                for dev in os.listdir("/sys/class/net"):
+                    if os.path.isdir(f"/sys/class/net/{dev}/wireless") and \
+                            open(f"/sys/class/net/{dev}/operstate").read().strip() == "up":
+                        parts.append("\U000f05a9")
+                        break
+            except OSError:
+                pass
+            for bat in sorted(glob.glob("/sys/class/power_supply/BAT*")):
+                try:
+                    cap = open(f"{bat}/capacity").read().strip()
+                    charging = open(f"{bat}/status").read().strip() == "Charging"
+                    parts.append(("\U000f0084 " if charging else "\U000f0079 ") + cap + "%")
+                    break
+                except OSError:
+                    pass
+            return "    ".join(parts)
 
         def tick():
             now = GLib.DateTime.new_now_local()
             clock.set_text(now.format("%-I:%M"))
             date.set_text(now.format("%A, %B %-d"))
+            status.set_text(status_text())
             return True
         tick()
         GLib.timeout_add_seconds(5, tick)
@@ -284,7 +323,6 @@ def main():
             threading.Thread(target=work, daemon=True).start()
 
         entry.connect("activate", submit)
-        go.connect("clicked", submit)
         show_user(chosen)
         win.fullscreen()
         win.present()

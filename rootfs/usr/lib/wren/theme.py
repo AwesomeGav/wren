@@ -15,7 +15,7 @@ import sys
 from string import Template
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from wrenlib import ACCENTS, THEME_FILE, load_theme, palette  # noqa: E402
+from wrenlib import ACCENTS, ICON_ACCENT, THEME_FILE, load_theme, palette, wallpaper, wallpaper_blur  # noqa: E402
 
 HOME = os.path.expanduser("~")
 CFG = os.path.join(HOME, ".config")
@@ -24,6 +24,7 @@ SHARE = "/usr/share/wren"
 PREFS = os.path.join(CFG, "wren", "settings.json")
 ICON_SRC = "/usr/share/icons/Wren"
 WAYBAR_BASE = "/etc/xdg/wren/waybar/config.jsonc"
+THEME_VERSION = 2  # bump when the generated files change, so every account picks them up
 
 
 def rgb(hexstr):
@@ -49,18 +50,21 @@ def palette_css(pal):
         "wren_border": pal["border"], "wren_border2": pal["border2"], "wren_line": pal["line"],
         "wren_text": pal["text"], "wren_text2": pal["text2"], "wren_dim": pal["dim"], "wren_muted": pal["muted"],
         "wren_danger": pal["danger"],
+        "wren_glass": pal["glass"], "wren_glass_strong": pal["glass_strong"], "wren_glass_hover": pal["glass_hover"],
+        "wren_glass_border": pal["glass_border"], "wren_glass_edge": pal["glass_edge"],
+        "wren_glass_tint": pal["glass_tint"], "wren_shadow": pal["shadow"], "wren_accent_glass": pal["accent_glass"],
         "accent_color": pal["accent_text"], "accent_bg_color": pal["accent"], "accent_fg_color": pal["on_accent"],
         "destructive_bg_color": pal["danger"], "destructive_fg_color": "#FFFFFF",
         "window_bg_color": pal["window"], "window_fg_color": pal["text"],
         "view_bg_color": pal["bg"], "view_fg_color": pal["text"],
-        "headerbar_bg_color": pal["surface2"] if pal["text"] == "#F1EBE3" else pal["window"],
+        "headerbar_bg_color": pal["surface2"] if pal["scheme"] == "dark" else pal["window"],
         "headerbar_fg_color": pal["text"], "headerbar_backdrop_color": pal["window"],
         "sidebar_bg_color": pal["deep"], "sidebar_fg_color": pal["text"], "sidebar_backdrop_color": pal["deep"],
         "secondary_sidebar_bg_color": pal["deep"], "secondary_sidebar_fg_color": pal["text"],
         "card_bg_color": pal["surface"], "card_fg_color": pal["text"],
-        "dialog_bg_color": pal["surface2"] if pal["text"] == "#F1EBE3" else pal["surface"],
+        "dialog_bg_color": pal["surface2"] if pal["scheme"] == "dark" else pal["surface"],
         "dialog_fg_color": pal["text"],
-        "popover_bg_color": pal["surface2"] if pal["text"] == "#F1EBE3" else pal["surface"],
+        "popover_bg_color": pal["surface2"] if pal["scheme"] == "dark" else pal["surface"],
         "popover_fg_color": pal["text"],
         "thumbnail_bg_color": pal["surface2"], "thumbnail_fg_color": pal["text"],
     }
@@ -70,7 +74,7 @@ def palette_css(pal):
 
 
 def root_vars(pal):
-    dark = pal["text"] == "#F1EBE3"
+    dark = pal["scheme"] == "dark"
     pairs = {
         "--accent-color": pal["accent_text"], "--accent-bg-color": pal["accent"], "--accent-fg-color": pal["on_accent"],
         "--destructive-bg-color": pal["danger"], "--window-bg-color": pal["window"], "--window-fg-color": pal["text"],
@@ -110,15 +114,15 @@ def panel_config(pal):
     if p.get("panel_position") == "top":
         cfg["position"] = "top"
         cfg.pop("margin-bottom", None)
-        cfg["margin-top"] = 8
+        cfg["margin-top"] = 10
     if p.get("clock_24h"):
-        cfg.setdefault("clock", {})["format"] = "{:%H:%M}"
+        cfg.setdefault("clock", {})["format"] = "{:%a %-d   %H:%M}"
     return json.dumps(cfg, indent=2, ensure_ascii=False) + "\n"
 
 
 def accent_icons(theme):
     """Copy of the Wren icon theme with the accent color swapped in."""
-    if theme["accent"] == "ember":
+    if theme["accent"] == "sky":
         return "Wren"
     # A differently named theme per accent, so apps notice the change and reload icons
     name = "Wren-" + theme["accent"].title()
@@ -130,7 +134,7 @@ def accent_icons(theme):
         if os.path.isdir(src):
             os.makedirs(out, exist_ok=True)
         elif src.endswith(".svg"):
-            write(out, open(src).read().replace("#E0894A", acc).replace("#e0894a", acc))
+            write(out, open(src).read().replace(ICON_ACCENT, acc).replace(ICON_ACCENT.lower(), acc))
         elif rel == "index.theme":
             write(out, open(src).read().replace("Name=Wren", "Name=" + name))
         else:
@@ -153,11 +157,35 @@ def gset(key, value, schema="org.gnome.desktop.interface"):
     quiet(["gsettings", "set", schema, key, value])
 
 
+def apply_settings(theme, pal, icons):
+    """Light/dark, accent, icons and animations for GNOME and GTK 3 apps."""
+    light = theme["mode"] == "light"
+    gset("color-scheme", "prefer-light" if light else "prefer-dark")
+    gset("gtk-theme", "adw-gtk3" if light else "adw-gtk3-dark")
+    gset("icon-theme", icons)
+    gset("accent-color", pal["adw_accent"])
+    gset("enable-animations", "true" if theme["animations"] else "false")
+    gset("style-variant", "light" if light else "dark", "org.gnome.TextEditor")
+    gset("style-scheme", "Adwaita" if light else "wren-dark", "org.gnome.TextEditor")
+
+
 def generate(reload=False):
     theme = load_theme()
     pal = palette(theme)
     vals = template_vars(pal)
-    vals["wallpaper"] = prefs().get("wallpaper", f"{SHARE}/wallpapers/topographic.jpg")
+    vals["wallpaper"] = wallpaper()
+    vals["wallpaper_blur"] = wallpaper_blur()
+    face = os.path.join(HOME, ".face")
+    vals["avatar"] = face if os.path.exists(face) else f"{SHARE}/avatar.png"
+    vals["clock_fmt"] = "%H:%M" if prefs().get("clock_24h") else "%-I:%M"
+    try:
+        import pwd
+        name = (pwd.getpwuid(os.getuid()).pw_gecos.split(",")[0] or pwd.getpwuid(os.getuid()).pw_name)
+    except Exception:
+        name = os.environ.get("USER", "")
+    vals["USER_NAME"] = name.replace("<", "").replace(">", "")
+    vals["name_shift"] = str(min(200, len(name) * 5 + 22))
+    vals["glass_rgb"] = "255, 255, 255" if pal["scheme"] == "light" else "30, 34, 42"
     write(os.path.join(OUT, "palette.css"), palette_css(pal))
     write(os.path.join(CFG, "gtk-4.0", "gtk.css"),
           f'/* Generated by wren-theme. */\n@import url("file://{OUT}/palette.css");\n'
@@ -172,21 +200,32 @@ def generate(reload=False):
     write(os.path.join(CFG, "labwc", "themerc-override"), fill(f"{SHARE}/templates/themerc-override", vals))
     icons = accent_icons(theme)
     with open(os.path.join(OUT, "stamp"), "w") as f:
-        f.write(json.dumps(theme))
+        f.write(json.dumps(dict(theme, v=THEME_VERSION)))
 
     if reload:
-        light = theme["mode"] == "light"
-        gset("color-scheme", "prefer-light" if light else "prefer-dark")
-        gset("gtk-theme", "adw-gtk3" if light else "adw-gtk3-dark")
-        gset("icon-theme", icons)
-        gset("accent-color", pal["adw_accent"])
-        gset("enable-animations", "true" if theme["animations"] else "false")
-        gset("style-variant", "light" if light else "dark", "org.gnome.TextEditor")
-        gset("style-scheme", "Adwaita" if light else "wren-dark", "org.gnome.TextEditor")
+        apply_settings(theme, pal, icons)
         quiet(["labwc", "--reconfigure"])
         quiet(["makoctl", "reload"])
         quiet(["wren-panel"], background=True)
     return theme
+
+
+def make_blur():
+    """Blurred copy of a custom wallpaper photo (Wren's own wallpapers ship one)."""
+    w = wallpaper()
+    if w.endswith(".jpg") and os.path.exists(w[:-4] + "-blur.jpg"):
+        return
+    out = os.path.join(HOME, ".cache", "wren", "wallpaper-blur.jpg")
+    try:
+        from PIL import Image, ImageFilter
+        im = Image.open(w).convert("RGB")
+        im.thumbnail((960, 960))
+        im = im.filter(ImageFilter.GaussianBlur(28))
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        im.resize((im.width * 2, im.height * 2), Image.BICUBIC).save(out + ".tmp.jpg", quality=82)
+        os.replace(out + ".tmp.jpg", out)
+    except Exception:
+        pass
 
 
 def set_theme(mode=None, accent=None, animations=None):
@@ -209,8 +248,18 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "apply"
     if cmd == "ensure":
         stamp = os.path.join(OUT, "stamp")
-        if not os.path.exists(stamp) or not os.path.exists(os.path.join(CFG, "labwc", "themerc-override")):
-            generate(reload=False)
+        try:
+            current = json.load(open(stamp)).get("v") == THEME_VERSION
+        except (OSError, ValueError, AttributeError):
+            current = False
+        if not current or not os.path.exists(os.path.join(CFG, "labwc", "themerc-override")):
+            t = generate(reload=False)
+            p = palette(t)
+            apply_settings(t, p, "Wren" if t["accent"] == "sky" else "Wren-" + t["accent"].title())
+            if os.environ.get("LABWC_PID"):
+                quiet(["labwc", "--reconfigure"])
+    elif cmd == "blur":
+        make_blur()
     elif cmd == "panel":
         write(os.path.join(OUT, "waybar.jsonc"), panel_config(palette(load_theme())))
         quiet(["wren-panel"], background=True)

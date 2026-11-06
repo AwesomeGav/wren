@@ -44,17 +44,20 @@ for page in about devices personalization apps time power display; do
 done
 # The window list reader used to stop background apps
 PYTHONPATH=/usr/lib/wren python3 -m winlist >/var/tmp/shots/winlist.log 2>&1
-# Light mode with the Sky accent, switched live while Settings stays open
-wren-theme set light sky >/var/tmp/shots/theme.log 2>&1; shot 12-light-settings 5
+# Dark mode, switched live while Settings stays open
+wren-theme set dark sky >/var/tmp/shots/theme.log 2>&1; shot 12-dark-settings 5
 kill $pid; sleep 1
-shot 12-light-desktop 2
-wren-shell launcher; shot 12-light-launcher 3; wren-shell launcher
-wren-shell control;  shot 12-light-quick-settings 3; wren-shell control
-nautilus --new-window "$HOME" >/dev/null 2>&1 & shot 12-light-files 8
+shot 12-dark-desktop 2
+wren-shell launcher; shot 12-dark-launcher 3; wren-shell launcher
+wren-shell control;  shot 12-dark-quick-settings 3; wren-shell control
+nautilus --new-window "$HOME" >/dev/null 2>&1 & shot 12-dark-files 8
 nautilus -q; sleep 1
-wren-terminal >/dev/null 2>&1 & pid=$!; shot 12-light-terminal 5; kill $pid; sleep 1
-wren-theme set dark violet >>/var/tmp/shots/theme.log 2>&1
-wren-shell launcher; shot 13-dark-violet-launcher 4; wren-shell launcher
+wren-terminal >/dev/null 2>&1 & pid=$!; shot 12-dark-terminal 5; kill $pid; sleep 1
+wren-theme set light violet >>/var/tmp/shots/theme.log 2>&1
+wren-shell launcher; shot 13-light-violet-launcher 4; wren-shell launcher
+wren-theme set light sky >>/var/tmp/shots/theme.log 2>&1; sleep 2
+# Lock screen last: a killed locker leaves the session locked
+wren-lock >/var/tmp/shots/lock.log 2>&1 & shot 14-lock-screen 5
 labwc --exit
 EOF
 

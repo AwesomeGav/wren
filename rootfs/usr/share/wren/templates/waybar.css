@@ -1,49 +1,56 @@
-/* Wren panel */
+/* Wren dock: a floating sheet of frosted glass */
 * {
   font-family: "Inter", "Symbols Nerd Font", sans-serif;
   font-size: 13px;
   min-height: 0;
   border: none;
-  border-radius: 0;
   box-shadow: none;
   text-shadow: none;
 }
 
 window#waybar {
-  background: rgba(${window_rgb}, 0.96);
-  border: 1px solid rgba(${text_rgb}, 0.07);
-  border-radius: 0;
+  background: ${glass};
+  border: 1px solid ${glass_border};
+  border-radius: 20px;
   color: ${text};
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 #custom-apps {
   background: ${accent};
   color: ${on_accent};
-  font-size: 18px;
-  padding: 0 13px;
-  margin: 6px 6px 6px 8px;
-  border-radius: 0;
+  font-size: 19px;
+  padding: 0 12px;
+  margin: 7px 4px 7px 8px;
+  border-radius: 14px;
+  transition: background 150ms ease;
 }
 #custom-apps:hover {
   background: ${accent_hover};
 }
 
+#taskbar {
+  margin-left: 6px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(${text_rgb}, 0.12);
+}
 #taskbar button {
-  padding: 2px 9px 0 9px;
-  margin: 5px 2px;
-  border-radius: 0;
-  border-bottom: 2px solid transparent;
+  padding: 3px 9px 1px 9px;
+  margin: 6px 2px;
+  border-radius: 13px;
   background: transparent;
+  transition: background 150ms ease;
+  box-shadow: inset 0 -2px transparent;
 }
 #taskbar button:hover {
-  background: rgba(${text_rgb}, 0.06);
+  background: ${glass_hover};
 }
 #taskbar button.active {
-  background: rgba(${text_rgb}, 0.09);
-  border-bottom: 2px solid ${accent};
+  background: ${glass_hover};
+  box-shadow: inset 0 -3px 0 -1px ${accent};
 }
 #taskbar button.minimized {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
 #tray {
@@ -51,45 +58,47 @@ window#waybar {
 }
 
 #status {
-  background: rgba(${text_rgb}, 0.06);
-  border-radius: 0;
-  margin: 7px 4px;
-  padding: 0 4px;
+  background: ${glass_hover};
+  border: 1px solid rgba(${text_rgb}, 0.06);
+  border-radius: 14px;
+  margin: 8px 4px;
+  padding: 0 6px;
 }
 #network, #pulseaudio, #battery, #custom-power {
   font-size: 16px;
-  padding: 0 8px;
+  padding: 0 7px;
   margin: 0;
-  border-radius: 0;
-}
-#custom-power {
-  margin: 7px 8px 7px 2px;
+  border-radius: 12px;
 }
 #battery {
   font-size: 13px;
+  font-weight: 600;
 }
 #network:hover, #pulseaudio:hover, #battery:hover, #clock:hover, #custom-power:hover {
   background: rgba(${text_rgb}, 0.08);
 }
-#battery.warning:not(.charging) { color: #E9C46A; }
-#battery.critical:not(.charging) { color: #F08A78; }
+#battery.warning:not(.charging) { color: #D97706; }
+#battery.critical:not(.charging) { color: #DC2626; }
 
 #clock {
   font-weight: 600;
-  padding: 0 10px;
-  margin: 7px 1px;
-  border-radius: 0;
+  padding: 0 12px;
+  margin: 8px 1px;
+  border-radius: 14px;
 }
 #custom-power {
+  margin: 8px 10px 8px 2px;
+  padding: 0 10px;
   color: ${accent_text};
+  background: ${glass_hover};
 }
 
 tooltip {
-  background: ${surface2};
-  border: 1px solid ${border2};
-  border-radius: 0;
+  background: ${glass_strong};
+  border: 1px solid ${glass_border};
+  border-radius: 12px;
 }
 tooltip label {
   color: ${text};
-  padding: 2px 4px;
+  padding: 4px 6px;
 }

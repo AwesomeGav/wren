@@ -95,36 +95,41 @@ CATEGORIES = [
 
 CSS = """
 .store { background-color: @wren_bg; }
-.side { background-color: @wren_deep; border-right: 1px solid @wren_border; }
-.side row { padding: 9px 16px 9px 14px; border-left: 3px solid transparent; color: @wren_dim; }
+.side { background-color: @wren_deep; border-right: 1px solid @wren_line; padding: 0 10px; }
+.side row { padding: 9px 12px; margin: 1px 0; border-radius: 12px; color: @wren_dim; }
 .side row:hover { background-color: alpha(@wren_text, 0.05); color: @wren_text; }
-.side row:selected { background-color: alpha(@wren_accent, 0.13); border-left-color: @wren_accent; color: @wren_text; }
-.side row:selected image { color: @wren_accent_text; }
-.side-sep { margin: 8px 16px; background-color: @wren_border; min-height: 1px; }
-.side-title { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: @wren_muted; margin: 16px 18px 6px 18px; }
-.page-title { font-size: 26px; font-weight: 800; }
-.section { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: @wren_muted; margin-top: 18px; }
-.hero { background-image: linear-gradient(110deg, alpha(@wren_accent, 0.24) 0%, alpha(@wren_accent, 0.06) 55%, @wren_window 100%);
-        border: 1px solid alpha(@wren_accent, 0.25); padding: 28px; }
-.hero-tag { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; color: @wren_accent_text; }
-.hero-name { font-size: 30px; font-weight: 800; }
-.hero-sum { color: @wren_text2; font-size: 14px; }
-.card { background-color: @wren_surface; border: 1px solid @wren_line; padding: 14px; }
-.card:hover { background-color: @wren_surface2; border-color: @wren_border2; }
+.side row:selected { background-color: @wren_surface; color: @wren_text; box-shadow: 0 1px 6px alpha(@wren_shadow, 0.6); }
+.side row:selected image { color: @wren_accent; }
+.side list { background: transparent; }
+.side-sep { margin: 8px 12px; background-color: @wren_line; min-height: 1px; }
+.side-title { font-size: 12px; font-weight: 700; color: @wren_muted; margin: 16px 14px 6px 14px; }
+.page-title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+.section { font-size: 13px; font-weight: 700; color: @wren_dim; margin-top: 18px; }
+.hero { background-image: linear-gradient(120deg, alpha(@wren_accent, 0.85) 0%, alpha(@wren_accent, 0.45) 60%, alpha(@wren_accent, 0.15) 100%);
+        border: 1px solid @wren_glass_border; border-radius: 22px; padding: 30px;
+        box-shadow: 0 10px 30px alpha(@wren_accent, 0.25); }
+.hero label { color: #FFFFFF; }
+.hero-tag { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; opacity: 0.85; }
+.hero-name { font-size: 32px; font-weight: 800; }
+.hero-sum { font-size: 14px; opacity: 0.92; }
+.card { background-color: @wren_surface; border: 1px solid @wren_glass_edge; border-radius: 18px; padding: 14px;
+        box-shadow: 0 2px 10px alpha(@wren_shadow, 0.45); transition: box-shadow 150ms ease, background 150ms ease; }
+.card:hover { box-shadow: 0 8px 22px alpha(@wren_shadow, 0.8); }
 .card-name { font-weight: 700; }
 .card-sum { color: @wren_dim; font-size: 12px; }
-.chip { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: @wren_accent_text; }
+.chip { font-size: 11px; font-weight: 700; color: @wren_accent_text; background: @wren_accent_glass;
+        border-radius: 999px; padding: 2px 8px; }
 .dim { color: @wren_dim; }
-.detail-name { font-size: 28px; font-weight: 800; }
+.detail-name { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
 .detail-dev { color: @wren_dim; }
 .detail-desc { font-size: 14px; color: @wren_text2; }
-.shot { border: 1px solid @wren_border; }
-.btn { padding: 8px 18px; font-weight: 800; }
-.btn.primary { background-color: @wren_accent; color: @wren_on_accent; }
+.shot { border: 1px solid @wren_glass_edge; border-radius: 14px; }
+.btn { padding: 8px 20px; font-weight: 700; border-radius: 999px; }
+.btn.primary { background-color: @wren_accent; color: @wren_on_accent; box-shadow: 0 4px 12px alpha(@wren_accent, 0.3); }
 .btn.primary:hover { background-color: @wren_accent_hover; }
-.btn.danger:hover { background-color: @wren_danger; color: #FFFFFF; }
+.btn.danger:hover { background-color: #E5484D; color: #FFFFFF; }
 .row-item { padding: 12px 16px; border-bottom: 1px solid @wren_line; }
-progressbar trough, progressbar progress { min-height: 6px; }
+progressbar trough, progressbar progress { min-height: 6px; border-radius: 999px; }
 """
 
 

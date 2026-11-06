@@ -1,7 +1,7 @@
 {
   "layer": "top",
   "position": "bottom",
-  "height": 46,
+  "height": 52,
   "spacing": 0,
   "modules-left": [
     "custom/apps",
@@ -20,7 +20,7 @@
   },
   "wlr/taskbar": {
     "format": "{icon}",
-    "icon-size": 24,
+    "icon-size": 28,
     "tooltip-format": "{title}",
     "on-click": "activate",
     "on-click-middle": "close",
@@ -79,7 +79,7 @@
     "on-click": "wren-shell control"
   },
   "clock": {
-    "format": "{:%I:%M %p}",
+    "format": "{:%a %-d   %I:%M %p}",
     "tooltip-format": "{:%A, %B %d, %Y}",
     "on-click": "wren-shell control"
   },
@@ -88,9 +88,9 @@
     "tooltip": false,
     "on-click": "wren-shell control"
   },
-  "margin-left": 10,
-  "margin-right": 10,
-  "margin-bottom": 8,
+  "margin-left": 12,
+  "margin-right": 12,
+  "margin-bottom": 10,
   "group/status": {
     "orientation": "horizontal",
     "modules": [

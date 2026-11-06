@@ -39,26 +39,28 @@ AGENT_XML = """<node><interface name="org.bluez.Agent1">
 
 CSS = """
 .bt-window { background-color: @wren_bg; }
-.bt-hero { padding: 22px 24px 18px 24px; background-color: @wren_window; border-bottom: 1px solid @wren_border; }
-.bt-hero-title { font-size: 22px; font-weight: 800; }
+.bt-hero { padding: 22px 24px 18px 24px; background-color: transparent; }
+.bt-hero-title { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; }
 .bt-hero-sub { color: @wren_dim; }
-.bt-section { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: @wren_muted;
-              margin: 18px 24px 8px 24px; }
-.bt-list { background-color: transparent; }
-.bt-list > row { padding: 0; border-left: 3px solid transparent; border-bottom: 1px solid @wren_line; }
-.bt-list > row:hover { background-color: alpha(@wren_text, 0.04); }
-.bt-list > row.connected { border-left-color: @wren_accent; background-color: alpha(@wren_accent, 0.08); }
-.bt-row { padding: 12px 20px 12px 18px; }
-.bt-icon { min-width: 40px; min-height: 40px; background-color: @wren_surface2; color: @wren_text2; }
+.bt-section { font-size: 13px; font-weight: 700; color: @wren_dim; margin: 14px 24px 8px 28px; }
+.bt-list { background-color: @wren_surface; border-radius: 18px; margin: 0 20px;
+           border: 1px solid @wren_glass_edge; box-shadow: 0 2px 10px alpha(@wren_shadow, 0.45); }
+.bt-list > row { padding: 0; border-bottom: 1px solid @wren_line; }
+.bt-list > row:first-child { border-top-left-radius: 18px; border-top-right-radius: 18px; }
+.bt-list > row:last-child { border-bottom: none; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; }
+.bt-list > row:hover { background-color: alpha(@wren_text, 0.03); }
+.bt-list > row.connected { background-color: @wren_accent_glass; }
+.bt-row { padding: 12px 18px; }
+.bt-icon { min-width: 40px; min-height: 40px; border-radius: 999px; background-color: @wren_surface2; color: @wren_text2; }
 .connected .bt-icon { background-color: @wren_accent; color: @wren_on_accent; }
 .bt-name { font-weight: 700; }
 .bt-status { color: @wren_dim; font-size: 12px; }
 .connected .bt-status { color: @wren_accent_text; }
-.bt-btn { padding: 6px 14px; font-weight: 700; }
+.bt-btn { padding: 6px 16px; font-weight: 700; border-radius: 999px; }
 .bt-btn.primary { background-color: @wren_accent; color: @wren_on_accent; }
 .bt-btn.primary:hover { background-color: @wren_accent_hover; }
 .bt-empty { color: @wren_muted; padding: 18px 24px; }
-.bt-power { padding: 6px 16px; font-weight: 800; }
+.bt-power { padding: 6px 18px; font-weight: 700; border-radius: 999px; }
 .bt-power.on { background-color: @wren_accent; color: @wren_on_accent; }
 .bt-power.on:hover { background-color: @wren_accent_hover; }
 """

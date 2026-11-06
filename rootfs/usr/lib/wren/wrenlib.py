@@ -10,31 +10,47 @@ SAVER_FLAG = os.path.join(os.path.expanduser("~"), ".cache", "wren", "battery-sa
 PREFS_FILE = os.path.join(os.path.expanduser("~"), ".config", "wren", "settings.json")
 
 DARK = {
-    "bg": "#181512", "window": "#1C1916", "surface": "#1F1B18", "surface2": "#26221E", "deep": "#141210",
-    "border": "#2E2924", "border2": "#3A342E", "line": "#2A2520",
-    "text": "#F1EBE3", "text2": "#D9D1C7", "dim": "#A89F94", "muted": "#8A8178",
+    "scheme": "dark",
+    "bg": "#15181E", "window": "#1A1E25", "surface": "#222730", "surface2": "#2A303A", "deep": "#13161B",
+    "border": "#2E343E", "border2": "#3A414D", "line": "#272C35",
+    "text": "#EEF1F6", "text2": "#D3D8E1", "dim": "#9AA3B2", "muted": "#7C8594",
+    # frosted glass: panels over the (pre-blurred) wallpaper
+    "glass": "rgba(30, 34, 42, 0.62)", "glass_strong": "rgba(30, 34, 42, 0.82)",
+    "glass_hover": "rgba(255, 255, 255, 0.10)", "glass_border": "rgba(255, 255, 255, 0.14)",
+    "glass_edge": "rgba(0, 0, 0, 0.40)", "glass_tint": "rgba(10, 12, 16, 0.30)",
+    "shadow": "rgba(0, 0, 0, 0.45)",
 }
 LIGHT = {
-    "bg": "#FBF8F4", "window": "#F4EFE8", "surface": "#FFFFFF", "surface2": "#F1EBE3", "deep": "#ECE5DB",
-    "border": "#DDD3C6", "border2": "#CFC4B5", "line": "#E8E0D5",
-    "text": "#221C16", "text2": "#3A322A", "dim": "#6E6459", "muted": "#8C8277",
+    "scheme": "light",
+    "bg": "#F7F9FC", "window": "#EEF1F6", "surface": "#FFFFFF", "surface2": "#E8ECF2", "deep": "#E6EAF1",
+    "border": "#D8DEE7", "border2": "#C7CFDA", "line": "#E3E8EF",
+    "text": "#1C2230", "text2": "#333B4B", "dim": "#5F6879", "muted": "#8A92A1",
+    "glass": "rgba(255, 255, 255, 0.58)", "glass_strong": "rgba(255, 255, 255, 0.80)",
+    "glass_hover": "rgba(255, 255, 255, 0.55)", "glass_border": "rgba(255, 255, 255, 0.80)",
+    "glass_edge": "rgba(30, 45, 70, 0.12)", "glass_tint": "rgba(236, 241, 248, 0.30)",
+    "shadow": "rgba(40, 55, 80, 0.18)",
 }
 # name: (accent, hover, text-on-dark, text-on-light, on-accent, libadwaita accent name, label)
 ACCENTS = {
-    "ember":  ("#E0894A", "#EC9A5E", "#F0A06A", "#B4602A", "#1A120B", "orange", "Ember"),
-    "gold":   ("#D4A23A", "#E0B24E", "#E8C36E", "#93700F", "#1C1404", "yellow", "Gold"),
-    "moss":   ("#7FA65A", "#8DB566", "#A2C483", "#557A33", "#10170A", "green", "Moss"),
-    "sky":    ("#5B9BD5", "#6FAAE0", "#8DBDE8", "#2F6DAB", "#081421", "blue", "Sky"),
-    "violet": ("#9B7BD8", "#AA8DE0", "#BCA6E8", "#6D50AE", "#140D22", "purple", "Violet"),
-    "rose":   ("#D9607A", "#E37489", "#EB91A2", "#AE3B55", "#22080E", "pink", "Rose"),
-    "slate":  ("#8C9AAB", "#9CA9B8", "#B3BDC9", "#56657A", "#0F141A", "slate", "Slate"),
+    "sky":    ("#3B82F6", "#5594F7", "#86B4FA", "#1F63D6", "#FFFFFF", "blue", "Blue"),
+    "violet": ("#8B5CF6", "#9C73F7", "#B9A0FA", "#6A3BD9", "#FFFFFF", "purple", "Violet"),
+    "rose":   ("#EC4899", "#EF62A8", "#F49CC8", "#C02A74", "#FFFFFF", "pink", "Pink"),
+    "ember":  ("#F97316", "#FA8A3C", "#FBA66B", "#C2540A", "#FFFFFF", "orange", "Orange"),
+    "gold":   ("#EAB308", "#EFC33A", "#F3D266", "#946F00", "#1A1400", "yellow", "Yellow"),
+    "moss":   ("#22C55E", "#43CF75", "#7EDD9F", "#15803D", "#FFFFFF", "green", "Green"),
+    "teal":   ("#14B8A6", "#33C4B4", "#6FD8CB", "#0F766E", "#FFFFFF", "teal", "Teal"),
+    "slate":  ("#64748B", "#7A8AA0", "#A3B0C2", "#475569", "#FFFFFF", "slate", "Graphite"),
 }
-DEFAULT_ACCENT = "ember"
+DEFAULT_ACCENT = "sky"
+DEFAULT_MODE = "light"
+ICON_ACCENT = "#3B82F6"  # the accent color the Wren icon set is drawn with
+WALLPAPERS = "/usr/share/wren/wallpapers"
+DEFAULT_WALLPAPER = WALLPAPERS + "/silk.jpg"
 
-ANSI_DARK = ["#26221E", "#E26D5C", "#9CC98C", "#E9C46A", "#86A8C7", "#C79BC0", "#86C2B6", "#D9D1C7",
-             "#4A433C", "#F08A78", "#B2DBA3", "#F2D488", "#A3C1DC", "#DBB4D4", "#A3D8CD", "#F1EBE3"]
-ANSI_LIGHT = ["#3A322A", "#B83A2C", "#4E7F3A", "#946B0B", "#2F6098", "#8B4A86", "#2D7B70", "#D9D1C7",
-              "#6E6459", "#D04A3A", "#5E9447", "#B0830F", "#3B74B5", "#A65AA0", "#378F83", "#F4EFE8"]
+ANSI_DARK = ["#2A303A", "#F2777A", "#8BD49C", "#F4C46B", "#79AEF7", "#C49BF2", "#6FD3CC", "#D3D8E1",
+             "#566070", "#FF8F91", "#A6E3B5", "#F8D58C", "#9CC3FA", "#D5B5F6", "#93E2DC", "#F4F6FA"]
+ANSI_LIGHT = ["#333B4B", "#C9363A", "#2E8A4A", "#9A6A00", "#1F63D6", "#7D45C9", "#15837A", "#D8DEE7",
+              "#5F6879", "#DE4B4F", "#3AA35B", "#B88300", "#3B82F6", "#9161DB", "#1E9E93", "#F7F9FC"]
 
 
 def load_theme():
@@ -42,7 +58,7 @@ def load_theme():
         t = json.load(open(THEME_FILE))
     except (OSError, ValueError):
         t = {}
-    mode = t.get("mode") if t.get("mode") in ("dark", "light") else "dark"
+    mode = t.get("mode") if t.get("mode") in ("dark", "light") else DEFAULT_MODE
     accent = t.get("accent") if t.get("accent") in ACCENTS else DEFAULT_ACCENT
     return {"mode": mode, "accent": accent, "animations": t.get("animations", True) and not saver_on()}
 
@@ -88,12 +104,34 @@ def background_allowed():
     return bool(prefs().get("background_apps", False)) and not saver_on()
 
 
+def _rgb(h):
+    h = h.lstrip("#")
+    return f"{int(h[0:2], 16)}, {int(h[2:4], 16)}, {int(h[4:6], 16)}"
+
+
+def wallpaper():
+    """The picture on the desktop (from Settings), or Wren's default."""
+    w = prefs().get("wallpaper")
+    return w if w and os.path.exists(w) else DEFAULT_WALLPAPER
+
+
+def wallpaper_blur():
+    """A heavily blurred copy of the wallpaper: what frosted glass panels show through."""
+    w = wallpaper()
+    pre = w[:-4] + "-blur.jpg" if w.endswith(".jpg") else ""
+    if pre and os.path.exists(pre):
+        return pre
+    cache = os.path.join(os.path.expanduser("~"), ".cache", "wren", "wallpaper-blur.jpg")
+    return cache if os.path.exists(cache) else w
+
+
 def palette(theme=None):
     """Flat dict of every Wren color for the current theme."""
     theme = theme or load_theme()
     base = dict(LIGHT if theme["mode"] == "light" else DARK)
     a = ACCENTS[theme["accent"]]
-    base.update(accent=a[0], accent_hover=a[1], accent_text=a[3] if theme["mode"] == "light" else a[2],
+    base.update(radius="14px", radius_small="10px", radius_big="22px",
+                accent_glass=f"rgba({_rgb(a[0])}, 0.18)", accent=a[0], accent_hover=a[1], accent_text=a[3] if theme["mode"] == "light" else a[2],
                 on_accent=a[4], adw_accent=a[5], danger="#C4513F",
                 ansi=ANSI_LIGHT if theme["mode"] == "light" else ANSI_DARK)
     return base

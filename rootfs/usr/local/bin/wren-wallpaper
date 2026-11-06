@@ -1,7 +1,12 @@
 #!/bin/sh
 # Sets the desktop background from ~/.config/wren/settings.env (WREN_WALLPAPER).
-WREN_WALLPAPER=/usr/share/wren/wallpapers/topographic.jpg
+WREN_WALLPAPER=/usr/share/wren/wallpapers/silk.jpg
 [ -r "$HOME/.config/wren/settings.env" ] && . "$HOME/.config/wren/settings.env"
-[ -r "$WREN_WALLPAPER" ] || WREN_WALLPAPER=/usr/share/wren/wallpaper.jpg
+[ -r "$WREN_WALLPAPER" ] || WREN_WALLPAPER=/usr/share/wren/wallpapers/silk.jpg
 pkill -x swaybg 2>/dev/null
-exec swaybg -i "$WREN_WALLPAPER" -m fill
+setsid -f swaybg -i "$WREN_WALLPAPER" -m fill >/dev/null 2>&1
+# Frosted glass panels show a blurred copy of the wallpaper; make one for your own photos
+case "$WREN_WALLPAPER" in
+  /usr/share/wren/wallpapers/*) ;;
+  *) wren-theme blur >/dev/null 2>&1 & ;;
+esac

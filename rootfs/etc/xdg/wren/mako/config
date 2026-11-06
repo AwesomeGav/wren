@@ -1,12 +1,13 @@
 font=Inter 11
-background-color=#26221EF5
-text-color=#F1EBE3
-border-color=#3A342E
+background-color=#FFFFFFEE
+text-color=#1C2230
+border-color=#C7CFDA
 border-size=1
-border-radius=0
+border-radius=18
 padding=14,16
-margin=12
-width=360
+margin=14
+outer-margin=6
+width=370
 anchor=top-right
 default-timeout=5000
 max-visible=4
@@ -15,7 +16,8 @@ max-icon-size=40
 format=<b>%s</b>\n%b
 
 [urgency=high]
-border-color=#E0894A
+border-color=#3B82F6
+border-size=2
 default-timeout=0
 
 [mode=do-not-disturb]

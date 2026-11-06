@@ -1,24 +1,24 @@
-/* Wren default theme for GTK 4 / libadwaita apps (dark, ember). */
+/* Wren default theme for GTK 4 / libadwaita apps (light glass, blue). */
 @import url("file:///usr/share/wren/palette.css");
 @import url("file:///usr/share/wren/gtk4-rules.css");
 :root {
-  --accent-color: #F0A06A;
-  --accent-bg-color: #E0894A;
-  --accent-fg-color: #1A120B;
+  --accent-color: #1F63D6;
+  --accent-bg-color: #3B82F6;
+  --accent-fg-color: #FFFFFF;
   --destructive-bg-color: #C4513F;
-  --window-bg-color: #1C1916;
-  --window-fg-color: #F1EBE3;
-  --view-bg-color: #181512;
-  --view-fg-color: #F1EBE3;
-  --headerbar-bg-color: #26221E;
-  --headerbar-fg-color: #F1EBE3;
-  --headerbar-backdrop-color: #1C1916;
-  --sidebar-bg-color: #141210;
-  --sidebar-fg-color: #F1EBE3;
-  --sidebar-backdrop-color: #141210;
-  --secondary-sidebar-bg-color: #141210;
-  --card-bg-color: #1F1B18;
-  --dialog-bg-color: #26221E;
-  --popover-bg-color: #26221E;
-  --thumbnail-bg-color: #26221E;
+  --window-bg-color: #EEF1F6;
+  --window-fg-color: #1C2230;
+  --view-bg-color: #F7F9FC;
+  --view-fg-color: #1C2230;
+  --headerbar-bg-color: #EEF1F6;
+  --headerbar-fg-color: #1C2230;
+  --headerbar-backdrop-color: #EEF1F6;
+  --sidebar-bg-color: #E6EAF1;
+  --sidebar-fg-color: #1C2230;
+  --sidebar-backdrop-color: #E6EAF1;
+  --secondary-sidebar-bg-color: #E6EAF1;
+  --card-bg-color: #FFFFFF;
+  --dialog-bg-color: #FFFFFF;
+  --popover-bg-color: #FFFFFF;
+  --thumbnail-bg-color: #E8ECF2;
 }

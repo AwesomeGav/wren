@@ -1,40 +1,43 @@
-# Wren window style: warm graphite title bars, centered titles, soft shadows
-border.width: 1
-padding.height: 7
-window.titlebar.padding.width: 8
+# Wren window style: rounded frosted title bars, centered titles, soft shadows
+border.width: 0
+padding.height: 8
+window.titlebar.padding.width: 10
 window.titlebar.padding.height: 2
 window.button.width: 30
-window.button.spacing: 2
+window.button.spacing: 4
 window.label.text.justify: center
 
-window.active.title.bg.color: #221E1A
-window.inactive.title.bg.color: #1C1916
-window.active.label.text.color: #F1EBE3
-window.inactive.label.text.color: #8A8178
-window.active.border.color: #E0894A
-window.inactive.border.color: #2E2924
-window.active.button.unpressed.image.color: #D9D1C7
-window.inactive.button.unpressed.image.color: #6E665D
-window.active.button.close.unpressed.image.color: #F0A06A
+window.active.title.bg.color: #EEF1F6
+window.inactive.title.bg.color: #EEF1F6
+window.active.label.text.color: #1C2230
+window.inactive.label.text.color: #8A92A1
+window.active.border.color: #C7CFDA
+window.inactive.border.color: #D8DEE7
+window.active.button.unpressed.image.color: #333B4B
+window.inactive.button.unpressed.image.color: #8A92A1
+window.active.button.hover.bg.color: #E8ECF2
+window.active.button.close.hover.bg.color: #E5484D
+window.active.button.close.hover.image.color: #FFFFFF
+window.button.hover.bg.corner-radius: 10
 
-window.active.shadow.size: 28
-window.inactive.shadow.size: 14
-window.active.shadow.color: #00000077
-window.inactive.shadow.color: #00000044
+window.active.shadow.size: 40
+window.inactive.shadow.size: 22
+window.active.shadow.color: #1E2A4045
+window.inactive.shadow.color: #1E2A4025
 
 menu.border.width: 1
-menu.border.color: #3A342E
+menu.border.color: #D8DEE7
 menu.items.padding.x: 12
-menu.items.padding.y: 6
-menu.items.bg.color: #26221E
-menu.items.text.color: #F1EBE3
-menu.items.active.bg.color: #E0894A
-menu.items.active.text.color: #1A120B
-menu.separator.color: #3A342E
-menu.title.bg.color: #26221E
+menu.items.padding.y: 7
+menu.items.bg.color: #FFFFFF
+menu.items.text.color: #1C2230
+menu.items.active.bg.color: #3B82F6
+menu.items.active.text.color: #FFFFFF
+menu.separator.color: #D8DEE7
+menu.title.bg.color: #FFFFFF
 
-osd.bg.color: #26221E
-osd.border.color: #3A342E
+osd.bg.color: #FFFFFF
+osd.border.color: #D8DEE7
 osd.border.width: 1
-osd.label.text.color: #F1EBE3
-osd.window-switcher.item.active.border.color: #E0894A
+osd.label.text.color: #1C2230
+osd.window-switcher.item.active.border.color: #3B82F6
