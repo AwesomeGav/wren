@@ -82,7 +82,12 @@ install -d -m 700 -o wren -g wren /tmp/xdg-wren
 COMMON="WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
 WAYFIRE_ENV="WLR_RENDERER=gles2 WLR_RENDERER_ALLOW_SOFTWARE=1 XDG_CURRENT_DESKTOP=Wren:wlroots"
 # vgem gives a render node backed by software (Mesa llvmpipe) on machines without a GPU
-RN=$(ls /dev/dri/renderD* 2>/dev/null | head -1)
+RN=""
+for c in /sys/class/drm/card[0-9]*; do
+  # the vgem card node: buffers can be made there (render nodes refuse plain buffers)
+  [ "$(basename "$(readlink -f "$c/device/driver" 2>/dev/null)")" = vgem ] && RN=/dev/dri/$(basename "$c")
+done
+[ -n "$RN" ] || RN=$(ls /dev/dri/renderD* 2>/dev/null | head -1)
 [ -n "$RN" ] && { chmod 666 /dev/dri/*; WAYFIRE_ENV="$WAYFIRE_ENV WLR_RENDER_DRM_DEVICE=$RN"; }
 echo "render node: ${RN:-none}" >/var/tmp/shots/render-node.txt
 # The real Wren window manager (Wayfire), with the scenes added to its start-up list
