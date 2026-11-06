@@ -1,10 +1,13 @@
 """Shared helpers for Wren's apps: theme colors, light/dark mode, live theme
 reloading, and keeping apps warm after their window closes (instant reopen)."""
+import glob
 import json
 import os
 
 THEME_FILE = os.path.join(os.path.expanduser("~"), ".config", "wren", "theme.json")
 USER_GTK4 = os.path.join(os.path.expanduser("~"), ".config", "gtk-4.0", "gtk.css")
+SAVER_FLAG = os.path.join(os.path.expanduser("~"), ".cache", "wren", "battery-saver")
+PREFS_FILE = os.path.join(os.path.expanduser("~"), ".config", "wren", "settings.json")
 
 DARK = {
     "bg": "#181512", "window": "#1C1916", "surface": "#1F1B18", "surface2": "#26221E", "deep": "#141210",
@@ -41,7 +44,48 @@ def load_theme():
         t = {}
     mode = t.get("mode") if t.get("mode") in ("dark", "light") else "dark"
     accent = t.get("accent") if t.get("accent") in ACCENTS else DEFAULT_ACCENT
-    return {"mode": mode, "accent": accent, "animations": t.get("animations", True)}
+    return {"mode": mode, "accent": accent, "animations": t.get("animations", True) and not saver_on()}
+
+
+# ------------------------------------------------------------------ power
+def saver_on():
+    return os.path.exists(SAVER_FLAG)
+
+
+def prefs():
+    try:
+        return json.load(open(PREFS_FILE))
+    except (OSError, ValueError):
+        return {}
+
+
+def battery():
+    """(percent, status) of the first battery, or None on a desktop computer."""
+    for bat in sorted(glob.glob("/sys/class/power_supply/BAT*")):
+        try:
+            return int(open(f"{bat}/capacity").read()), open(f"{bat}/status").read().strip()
+        except (OSError, ValueError):
+            continue
+    return None
+
+
+def on_battery():
+    """True only when the computer is running from its battery (not plugged in)."""
+    if battery() is None:
+        return False
+    for ps in glob.glob("/sys/class/power_supply/*"):
+        try:
+            if open(f"{ps}/type").read().strip() == "Mains" and open(f"{ps}/online").read().strip() == "1":
+                return False
+        except OSError:
+            continue
+    b = battery()
+    return b is not None and b[1] == "Discharging"
+
+
+def background_allowed():
+    """Apps may keep running with no window open (off by default, to save battery)."""
+    return bool(prefs().get("background_apps", False)) and not saver_on()
 
 
 def palette(theme=None):
@@ -101,7 +145,7 @@ def keep_warm(app, seconds=300):
     """After the last window closes, keep the app running for a while so reopening it
     is instant (the window is rebuilt, but Python and GTK are already loaded)."""
     from gi.repository import GLib
-    state = {"src": None, "held": False}
+    state = {"src": None, "held": False, "left": 0}
 
     def release():
         state["src"] = None
@@ -110,14 +154,24 @@ def keep_warm(app, seconds=300):
             app.release()
         return False
 
+    def tick():
+        # On battery, or with Battery saver on, closed apps really quit.
+        state["left"] -= 15
+        if state["left"] <= 0 or on_battery() or saver_on():
+            return release()
+        return True
+
     def removed(_app, _win):
         if app.get_windows():
+            return
+        if on_battery() or saver_on():
             return
         if not state["held"]:
             app.hold()
             state["held"] = True
         if state["src"]:
             GLib.source_remove(state["src"])
-        state["src"] = GLib.timeout_add_seconds(seconds, release)
+        state["left"] = seconds
+        state["src"] = GLib.timeout_add_seconds(15, tick)
 
     app.connect("window-removed", removed)

@@ -480,6 +480,23 @@ class Pages:
             row.append(stat)
             row.append(lvl)
             card.append(row)
+
+            saver = self.group(box, "Battery saver")
+            saver_sw = switch(wrenlib.saver_on(), lambda v: background(
+                lambda: run(["wren-battery-saver", "on" if v else "off"], 20)))
+            saver.row("battery-caution-symbolic", "Battery saver",
+                      "Dims the screen, slows the processor a little, turns off animations and unused "
+                      "Bluetooth, and stops apps running in the background", saver_sw)
+            autos = [(10, "At 10%"), (20, "At 20%"), (30, "At 30%"), (50, "At 50%"), (0, "Never")]
+            cur_a = self.prefs.get("saver_auto_at", 20)
+
+            def set_auto(i):
+                self.prefs["saver_auto_at"] = autos[i][0]
+                self.save()
+            saver.row(None, "Turn on automatically", "It turns off again when you plug in",
+                      dropdown([t for _, t in autos], next((i for i, (v, _) in enumerate(autos) if v == cur_a), 1),
+                               set_auto))
+        self.background_row(self.group(box, "Background apps"))
         card = self.group(box, "Screen and sleep")
         lock_opts = [(60, "1 minute"), (300, "5 minutes"), (600, "10 minutes"), (900, "15 minutes"),
                      (1800, "30 minutes"), (0, "Never")]
@@ -885,6 +902,7 @@ class Pages:
                 self.win.toast(f"{apps[i].get_display_name()} is now the default for {title.lower()}")
             card.row(icon, title, "", dropdown([a.get_display_name() for a in apps], sel, set_default))
 
+        self.background_row(self.group(box, "Background apps"))
         store = self.group(box, "Get more apps")
         store.row("system-software-install-symbolic", "App Store", "Install, update and remove apps",
                   on_click=lambda: spawn(["wren-store"]))
@@ -901,6 +919,15 @@ class Pages:
             icon.set_pixel_size(28)
             row.prepend(icon)
         return box
+
+    def background_row(self, card):
+        def setb(v):
+            self.prefs["background_apps"] = v
+            self.save()
+        card.row("view-app-grid-symbolic", "Let apps run in the background",
+                 "When this is off, apps are stopped about two minutes after you close their last window, "
+                 "so they can't use battery, memory or data",
+                 switch(bool(self.prefs.get("background_apps", False)), setb))
 
     def uninstall(self, app_id, name):
         d = Adw.AlertDialog(heading=f"Uninstall {name}?", body="You can get it again from the App Store.")

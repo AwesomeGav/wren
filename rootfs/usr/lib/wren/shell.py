@@ -392,6 +392,7 @@ class Control(Sheet):
         self.upd = Tile("software-update-available-symbolic", "Updates", self.open_updates)
         self.files = Tile("emblem-system-symbolic", "Settings", lambda: self.open_app(["wren-settings"]))
         self.files.set_state(False, "All settings")
+        self.saver = Tile("battery-caution-symbolic", "Battery saver", self.toggle_saver)
         grid.attach(self.wifi, 0, 0, 1, 1)
         grid.attach(self.bt, 1, 0, 1, 1)
         grid.attach(self.dnd, 0, 1, 1, 1)
@@ -399,6 +400,8 @@ class Control(Sheet):
         if not LIVE:
             grid.attach(self.upd, 0, 2, 1, 1)
             grid.attach(self.files, 1, 2, 1, 1)
+        if wrenlib.battery() is not None:
+            grid.attach(self.saver, 0, 3, 2, 1)
         self.card.append(grid)
 
         # Wi-Fi network picker
@@ -479,6 +482,7 @@ class Control(Sheet):
         self.clock.set_text(now.format("%H:%M" if prefs.get("clock_24h") else "%-I:%M %p"))
         self.date.set_text(now.format("%A, %B %-d"))
         self.battery.set_text(self._battery_text())
+        self._show_saver()
         pending = os.path.exists(os.path.expanduser("~/.cache/wren/update-available"))
         self.upd.set_state(pending, "Update ready" if pending else "Up to date")
         self.net_reveal.set_reveal_child(False)
@@ -553,6 +557,14 @@ class Control(Sheet):
                 run(["rfkill", "unblock", "bluetooth"])
             run(["bluetoothctl", "power", "off" if on else "on"])
         in_thread(work, lambda _r: in_thread(self._read_state, self._apply_state))
+
+    def _show_saver(self):
+        on = wrenlib.saver_on()
+        self.saver.set_state(on, "On · longer battery life" if on else "Off")
+
+    def toggle_saver(self):
+        in_thread(lambda: run(["wren-battery-saver", "toggle"], timeout=20), lambda _r: self._show_saver())
+        GLib.timeout_add(150, lambda: self._show_saver() or False)
 
     def toggle_dnd(self):
         in_thread(lambda: run(["makoctl", "mode", "-t", "do-not-disturb"]),
@@ -711,6 +723,68 @@ class Shell(Adw.Application):
     def do_activate(self):
         pass
 
+    # -- power: Battery saver on low battery, and no apps left running without a window
+    def watch_power(self):
+        self._windowless = set()
+        self._was_on_battery = None
+        GLib.timeout_add_seconds(60, self._power_tick)
+
+    def _power_tick(self):
+        in_thread(self._power_work)
+        return True
+
+    def _power_work(self):
+        p = wrenlib.prefs()
+        bat = wrenlib.battery()
+        if bat is not None:
+            pct, _status = bat
+            on_bat = wrenlib.on_battery()
+            flag = wrenlib.SAVER_FLAG
+            auto_at = p.get("saver_auto_at", 20)
+            now_on = wrenlib.saver_on()
+            # Turned off by hand while the battery is low: don't switch it straight back on
+            if not on_bat:
+                self._declined = False
+            elif getattr(self, "_saver_was_on", False) and not now_on:
+                self._declined = True
+            self._saver_was_on = now_on
+            if on_bat and auto_at and pct <= auto_at and not now_on and not getattr(self, "_declined", False):
+                run(["wren-battery-saver", "on", "--auto"], timeout=20)
+                self._saver_was_on = True
+            elif not on_bat and wrenlib.saver_on():
+                try:
+                    auto = open(flag).read().strip() == "auto"
+                except OSError:
+                    auto = False
+                if auto:
+                    run(["wren-battery-saver", "off"], timeout=20)
+                    self._saver_was_on = False
+            self._was_on_battery = on_bat
+        if not wrenlib.background_allowed():
+            self._stop_background_apps()
+
+    def _stop_background_apps(self):
+        import winlist
+        running = [l.split("\t") for l in run(["flatpak", "ps", "--columns=application"]).splitlines()]
+        apps = {r[0].strip() for r in running if r and r[0].strip()}
+        if not apps:
+            self._windowless = set()
+            return
+        windows = winlist.app_ids()
+        if not windows:  # couldn't read the list (or nothing open at all): leave everything alone
+            return
+        open_ids = {w.lower() for w in windows if w}
+
+        def has_window(app):
+            a = app.lower()
+            last = a.rsplit(".", 1)[-1]
+            return any(w == a or w == last or w.startswith(a) or w.rsplit(".", 1)[-1] == last for w in open_ids)
+        idle = {a for a in apps if not has_window(a)}
+        # Only stop an app after it has had no window for two checks in a row
+        for app in idle & self._windowless:
+            run(["flatpak", "kill", app], timeout=10)
+        self._windowless = idle
+
     def toggle_sheet(self, what):
         for name, sheet in self.sheets.items():
             if name != what:
@@ -734,6 +808,9 @@ class Shell(Adw.Application):
             # build both ahead of time so the first open is instant
             self.sheet("launcher")
             self.sheet("control")
+            if not getattr(self, "_watching", False):
+                self._watching = True
+                self.watch_power()
         return 0
 
 

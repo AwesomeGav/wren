@@ -9,6 +9,7 @@ mako
 swaybg
 swayidle
 wlsunset
+iw
 hyprlock
 xdg-desktop-portal-wlr
 xdg-desktop-portal-gtk

@@ -1,0 +1,64 @@
+#!/bin/sh
+# Wren Battery saver.
+#   wren-battery-saver on [--auto] | off | toggle | status
+# On: dims the screen, turns off animations, turns Bluetooth off when nothing is
+# connected, puts the processor, Wi-Fi, disks and USB into their most frugal
+# modes, dims sooner when idle, and stops apps running with no window.
+C="$HOME/.cache/wren"
+FLAG="$C/battery-saver"
+mkdir -p "$C"
+
+notify() { notify-send -a "Battery saver" -i battery-caution-symbolic "$1" "$2" >/dev/null 2>&1 & }
+theme_ping() { [ -f "$HOME/.config/wren/theme.json" ] && touch "$HOME/.config/wren/theme.json"; }
+anims() {
+  python3 -c 'import sys; sys.path.insert(0, "/usr/lib/wren"); import wrenlib
+print("true" if wrenlib.load_theme()["animations"] else "false")' 2>/dev/null || echo true
+}
+
+on() {
+  [ -f "$FLAG" ] && exit 0
+  echo "${1:-manual}" > "$FLAG"
+  # Screen: no brighter than 40 %
+  cur=$(brightnessctl -m -c backlight 2>/dev/null | cut -d, -f4 | tr -d %)
+  if [ -n "$cur" ]; then
+    echo "$cur" > "$C/saver-brightness"
+    [ "$cur" -gt 40 ] && brightnessctl -q -c backlight set 40%
+  fi
+  gsettings set org.gnome.desktop.interface enable-animations false
+  # Bluetooth off unless headphones, a mouse or similar are connected
+  if bluetoothctl show 2>/dev/null | grep -q "Powered: yes" &&
+     ! bluetoothctl devices Connected 2>/dev/null | grep -q Device; then
+    bluetoothctl power off >/dev/null 2>&1 && touch "$C/saver-bt"
+  fi
+  pkexec /usr/lib/wren/power-helper.sh saver-on >/dev/null 2>&1
+  theme_ping
+  wren-idle >/dev/null 2>&1 &
+  if [ "$1" = auto ]; then
+    notify "Battery saver is on" "Your battery is low, so Wren turned on Battery saver. It turns off when you plug in."
+  fi
+}
+
+off() {
+  [ -f "$FLAG" ] || exit 0
+  rm -f "$FLAG"
+  if [ -f "$C/saver-brightness" ]; then
+    brightnessctl -q -c backlight set "$(cat "$C/saver-brightness")%" 2>/dev/null
+    rm -f "$C/saver-brightness"
+  fi
+  gsettings set org.gnome.desktop.interface enable-animations "$(anims)"
+  if [ -f "$C/saver-bt" ]; then
+    rm -f "$C/saver-bt"
+    bluetoothctl power on >/dev/null 2>&1
+  fi
+  pkexec /usr/lib/wren/power-helper.sh saver-off >/dev/null 2>&1
+  theme_ping
+  wren-idle >/dev/null 2>&1 &
+}
+
+case "$1" in
+  on) on "$( [ "$2" = --auto ] && echo auto || echo manual )" ;;
+  off) off ;;
+  toggle) if [ -f "$FLAG" ]; then off; else on manual; fi ;;
+  status) if [ -f "$FLAG" ]; then echo "on $(cat "$FLAG")"; else echo off; fi ;;
+  *) echo "usage: wren-battery-saver on [--auto] | off | toggle | status" >&2; exit 2 ;;
+esac

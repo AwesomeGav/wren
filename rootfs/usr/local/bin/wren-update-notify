@@ -2,6 +2,8 @@
 # Checks for a Wren update shortly after login and shows a notification if one is ready.
 [ -d /run/archiso ] && exit 0
 sleep 90
+# Battery saver: no background downloads
+[ -f "$HOME/.cache/wren/battery-saver" ] && exit 0
 cache="$HOME/.cache/wren"
 mkdir -p "$cache"
 result=$(wren-update --check 2>/dev/null)

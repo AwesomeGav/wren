@@ -42,6 +42,8 @@ wren-settings system >/var/tmp/shots/settings.log 2>&1 & pid=$!; shot 11-setting
 for page in about devices personalization apps time power display; do
   wren-settings $page >>/var/tmp/shots/settings.log 2>&1; shot "11-settings-$page" 4
 done
+# The window list reader used to stop background apps
+PYTHONPATH=/usr/lib/wren python3 -m winlist >/var/tmp/shots/winlist.log 2>&1
 # Light mode with the Sky accent, switched live while Settings stays open
 wren-theme set light sky >/var/tmp/shots/theme.log 2>&1; shot 12-light-settings 5
 kill $pid; sleep 1
