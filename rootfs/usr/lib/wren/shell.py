@@ -56,7 +56,7 @@ window.wren-layer { background: transparent; }
 .frost.shown { opacity: 1; }
 .backdrop { background-color: transparent; transition: background-color 120ms ease-out; }
 .backdrop.shown { background-color: @wren_glass_tint; }
-.sheet { opacity: 0; transform: translateY(14px) scale(0.97);
+.sheet { opacity: 0; transform: translateY(10px) scale(0.975);
          transition: opacity 90ms ease-out, transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1.06); }
 .sheet.shown { opacity: 1; transform: none; }
 flowboxchild, .tile, .pill-btn, .net-row { transition: background-color 120ms ease-out, box-shadow 120ms ease-out; }
@@ -204,7 +204,7 @@ class Sheet(Gtk.Window):
         return False
 
     def toggle(self):
-        if self.get_visible():
+        if self.get_visible() and self.card.has_css_class("shown"):
             self.hide_sheet()
         else:
             self.open_sheet()
@@ -220,6 +220,8 @@ class Sheet(Gtk.Window):
             self.frost.set_filename(src)
 
     def open_sheet(self):
+        self._hide_token = None
+        self.set_can_target(True)
         self.card.remove_css_class("shown")
         self.backdrop.remove_css_class("shown")
         self.frost.remove_css_class("shown")
@@ -235,10 +237,22 @@ class Sheet(Gtk.Window):
         self.card.add_tick_callback(lambda *_: show())
 
     def hide_sheet(self):
+        # Fade and sink back down, then unmap once the animation has played
+        if not self.get_visible():
+            return
         self.card.remove_css_class("shown")
         self.backdrop.remove_css_class("shown")
         self.frost.remove_css_class("shown")
-        self.set_visible(False)
+        self.set_can_target(False)
+        token = object()
+        self._hide_token = token
+
+        def done():
+            if getattr(self, "_hide_token", None) is token and not self.card.has_css_class("shown"):
+                self.set_visible(False)
+            self.set_can_target(True)
+            return False
+        GLib.timeout_add(170, done)
 
     def refresh(self):
         pass

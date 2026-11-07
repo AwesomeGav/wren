@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
 Name=Software Update
-Comment=Check for and install Wren updates
+Comment=Check for and install Floe updates
 Exec=wren-updater
-Icon=/usr/share/wren/logo-256.png
+Icon=floe-logo
 Terminal=false
 Categories=System;Settings;
 Keywords=update;upgrade;software;

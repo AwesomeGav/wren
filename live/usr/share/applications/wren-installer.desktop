@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Install Wren
-Comment=Install Wren Linux on this computer
+Name=Install Floe
+Comment=Install Floe on this computer
 Exec=wren-installer
-Icon=/usr/share/wren/logo-256.png
+Icon=floe-logo
 Terminal=false
 Categories=System;
 StartupWMClass=org.wrenlinux.Installer

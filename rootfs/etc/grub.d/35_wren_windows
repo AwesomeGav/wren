@@ -1,5 +1,5 @@
 #!/bin/sh
-# Wren: adds Windows to the boot menu when Wren is installed next to it.
+# Floe: adds Windows to the boot menu when Floe is installed next to it.
 # Looks for Windows' own boot files directly instead of relying on os-prober.
 set -e
 [ -f /etc/wren/dual-boot ] || exit 0
@@ -32,7 +32,7 @@ menuentry 'Windows' --class windows --class os {
 ENTRY
 }
 
-# The installer records which kind of computer Wren was installed for
+# The installer records which kind of computer Floe was installed for
 kind=$(cat /etc/wren/dual-boot 2>/dev/null || true)
 if [ -z "$kind" ]; then
   if [ -d /sys/firmware/efi ]; then kind=uefi; else kind=bios; fi

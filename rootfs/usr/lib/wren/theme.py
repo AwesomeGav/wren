@@ -25,7 +25,7 @@ SHARE = "/usr/share/wren"
 PREFS = os.path.join(CFG, "wren", "settings.json")
 ICON_SRC = "/usr/share/icons/Wren"
 WAYBAR_BASE = "/etc/xdg/wren/waybar/config.jsonc"
-THEME_VERSION = 8  # bump when the generated files change, so every account picks them up
+THEME_VERSION = 9  # bump when the generated files change, so every account picks them up
 
 
 def rgb(hexstr):
@@ -197,7 +197,7 @@ def wm_config(theme=None, pal=None):
         "left_handed": yn(p.get("left_handed", False)), "touchpad_natural": yn(p.get("touchpad_natural", True)),
         "tap_to_click": yn(p.get("tap_to_click", True)), "dwt": yn(p.get("dwt", True)),
         "touchpad_speed": f'{float(p.get("touchpad_speed", 0.0)):.2f}', "cursor_size": int(p.get("cursor_size", 24)),
-        "open_anim": "zoom" if anim else "none", "close_anim": "zoom" if anim else "none",
+        "open_anim": "zoom" if anim else "none", "close_anim": "fade" if anim else "none",
         "min_anim": "squeezimize" if anim else "none", "grid_anim": "crossfade" if anim else "none",
     }
     text = fill(f"{SHARE}/templates/wayfire.ini", vals)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wren Software Update: checks GitHub for a newer Wren release and installs it."""
+"""Floe Software Update: checks GitHub for a newer Floe release and installs it."""
 import os
 import re
 import subprocess
@@ -108,11 +108,11 @@ class Window(Adw.ApplicationWindow):
             if result.startswith("available"):
                 tag = result.split()[1]
                 self.title.set_text("An update is ready")
-                self.status.set_text(f"Wren {tag.replace('build-', 'build ')} is available. You have build {here}.\n"
+                self.status.set_text(f"Floe {tag.replace('build-', 'build ')} is available. You have build {here}.\n"
                                      "This also installs the latest system and app updates.")
                 self.set_button("Install Update", "install", suggested=True)
             elif result.startswith("current"):
-                self.title.set_text("Wren is up to date")
+                self.title.set_text("Floe is up to date")
                 self.status.set_text(f"You have the latest version (build {here}).")
                 self.set_button("Check Again", "check")
                 try:
@@ -132,7 +132,7 @@ class Window(Adw.ApplicationWindow):
         self.bar.set_visible(True)
         self.bar.set_fraction(0)
         self.details.set_visible(True)
-        self.title.set_text("Updating Wren")
+        self.title.set_text("Updating Floe")
         self.status.set_text("Waiting for your password…")
         try:
             proc = subprocess.Popen(["pkexec", UPDATE, "--apply"], stdout=subprocess.PIPE,

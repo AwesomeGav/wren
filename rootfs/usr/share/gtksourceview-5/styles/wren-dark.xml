@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<style-scheme id="wren-dark" name="Wren Dark" version="1.0" kind="dark">
-  <author>Wren Linux</author>
-  <description>Warm graphite and ember, matching the Wren desktop</description>
+<style-scheme id="wren-dark" name="Floe Dark" version="1.0" kind="dark">
+  <author>Floe</author>
+  <description>Warm graphite and ember, matching the Floe desktop</description>
   <color name="bg" value="#1C1916"/>
   <color name="bg2" value="#26221E"/>
   <color name="fg" value="#F1EBE3"/>

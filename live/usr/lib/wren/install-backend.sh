@@ -206,6 +206,7 @@ genfstab -U "$T" | awk '$3 != "swap"' > "$T/etc/fstab"
 
 # ---------------------------------------------------------------- settings
 echo "$HOST" > "$T/etc/hostname"
+cp -f "$T/usr/share/wren/os-release" "$T/usr/lib/os-release" 2>/dev/null || true
 cat > "$T/etc/hosts" <<EOF
 127.0.0.1 localhost
 ::1       localhost

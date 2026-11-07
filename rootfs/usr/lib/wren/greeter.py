@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wren Login: the sign-in screen. Picks the last (or only) user automatically,
+"""Floe Login: the sign-in screen. Picks the last (or only) user automatically,
 so signing in is just typing the password.
 
 Talks to greetd over its IPC socket ($GREETD_SOCK). Set WREN_GREETER_DEMO=1 to run
@@ -174,7 +174,7 @@ def main():
     def S(n):
         return round(n * factor)
 
-    users = list_users() or [{"user": "wren", "name": "Wren"}]
+    users = list_users() or [{"user": "wren", "name": "Floe"}]
     chosen = next((u for u in users if u["user"] == last_user()), users[0])
     greetd = None if DEMO else Greetd()
 
@@ -188,7 +188,7 @@ def main():
         settings = Gtk.Settings.get_default()
         settings.set_property("gtk-application-prefer-dark-theme", False)
 
-        win = Gtk.ApplicationWindow(application=app, title="Wren Login")
+        win = Gtk.ApplicationWindow(application=app, title="Floe Login")
         overlay = Gtk.Overlay()
         bg = Gtk.Picture.new_for_filename(BACKGROUND)
         bg.set_content_fit(Gtk.ContentFit.COVER)

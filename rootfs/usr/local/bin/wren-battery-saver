@@ -1,5 +1,5 @@
 #!/bin/sh
-# Wren Battery saver.
+# Floe Battery saver.
 #   wren-battery-saver on [--auto] | off | toggle | status
 # On: dims the screen, turns off animations, turns Bluetooth off when nothing is
 # connected, puts the processor, Wi-Fi, disks and USB into their most frugal
@@ -34,7 +34,7 @@ on() {
   theme_ping
   wren-idle >/dev/null 2>&1 &
   if [ "$1" = auto ]; then
-    notify "Battery saver is on" "Your battery is low, so Wren turned on Battery saver. It turns off when you plug in."
+    notify "Battery saver is on" "Your battery is low, so Floe turned on Battery saver. It turns off when you plug in."
   fi
 }
 

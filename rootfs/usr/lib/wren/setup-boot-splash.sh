@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sets up Wren's start-up screen (Plymouth) and a quiet boot.
+# Sets up Floe's start-up screen (Plymouth) and a quiet boot.
 #   setup-boot-splash.sh            configure only (the installer rebuilds afterwards)
 #   setup-boot-splash.sh --rebuild  configure, then rebuild the boot image and menu
 set -euo pipefail
@@ -36,7 +36,7 @@ done
 
 # Quiet boot with the splash, no visible boot menu (unless there's another system to choose)
 if [[ -f /etc/default/grub ]]; then
-  sed -i -e 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="Wren"/' \
+  sed -i -e 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="Floe"/' \
          -e 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' \
          -e 's/^GRUB_TIMEOUT_STYLE=.*/GRUB_TIMEOUT_STYLE=hidden/' \
          -e 's/^#\?GRUB_GFXPAYLOAD_LINUX=.*/GRUB_GFXPAYLOAD_LINUX=keep/' \
@@ -44,7 +44,7 @@ if [[ -f /etc/default/grub ]]; then
          /etc/default/grub
   grep -q '^GRUB_GFXPAYLOAD_LINUX=' /etc/default/grub || echo 'GRUB_GFXPAYLOAD_LINUX=keep' >> /etc/default/grub
 
-  # Installed next to another system (e.g. Windows): show a Wren-styled menu to pick one
+  # Installed next to another system (e.g. Windows): show a Floe-styled menu to pick one
   setkey() {
     if grep -qE "^#?$1=" /etc/default/grub; then
       sed -i -E "s|^#?$1=.*|$1=$2|" /etc/default/grub
@@ -59,10 +59,17 @@ if [[ -f /etc/default/grub ]]; then
     setkey GRUB_DISABLE_SUBMENU y
     setkey GRUB_GFXMODE auto
     setkey GRUB_COLOR_NORMAL '"light-gray/black"'
-    setkey GRUB_COLOR_HIGHLIGHT '"black/brown"'
+    setkey GRUB_COLOR_HIGHLIGHT '"white/cyan"'
     if [[ -f /usr/share/wren/grub-theme/theme.txt ]]; then
       mkdir -p /boot/grub/themes/wren
       cp -r /usr/share/wren/grub-theme/. /boot/grub/themes/wren/
+      # The menu's font, in the sizes the theme uses (GRUB can't read normal font files)
+      plex=/usr/share/fonts/TTF/IBMPlexSans-Regular.ttf
+      if [[ -f $plex ]] && command -v grub-mkfont >/dev/null; then
+        for size in 18 24; do
+          grub-mkfont -s "$size" -o "/boot/grub/themes/wren/plex-$size.pf2" "$plex" 2>/dev/null || true
+        done
+      fi
       setkey GRUB_THEME /boot/grub/themes/wren/theme.txt
     fi
   fi

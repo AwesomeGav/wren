@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wren Settings: one place for display, sound, network, Bluetooth, mouse and
+"""Floe Settings: one place for display, sound, network, Bluetooth, mouse and
 touchpad, background, default apps, time, accounts and updates.
 
   wren-settings [page]     page: system, display, sound, notifications, power, storage,
@@ -155,7 +155,7 @@ def write_labwc_user_config(prefs):
     os.makedirs(LABWC_DIR, exist_ok=True)
     yn = lambda b: "yes" if b else "no"  # noqa: E731
     rc = f"""<?xml version="1.0"?>
-<!-- Written by Wren Settings. Merged on top of /etc/xdg/labwc/rc.xml. -->
+<!-- Written by Floe Settings. Merged on top of /etc/xdg/labwc/rc.xml. -->
 <labwc_config>
   <libinput>
     <device category="non-touch">
@@ -276,7 +276,7 @@ class Pages:
         ("apps", "Apps", "view-app-grid-symbolic"),
         ("accounts", "Accounts", "avatar-default-symbolic"),
         ("time", "Time & language", "preferences-system-time-symbolic"),
-        ("update", "Wren Update", "software-update-available-symbolic"),
+        ("update", "Floe Update", "software-update-available-symbolic"),
     ]
 
     def __init__(self, win):
@@ -311,7 +311,7 @@ class Pages:
         box = self.page("System")
         host = socket.gethostname()
         head = Card()
-        r = head.row("computer-symbolic", host, f"Wren Linux · build {wren_build()}",
+        r = head.row("computer-symbolic", host, f"Floe, build {wren_build()}",
                      button("Rename", lambda: self.win.open("about")))
         r.get_first_child().set_pixel_size(32)
         box.append(head)
@@ -384,7 +384,7 @@ class Pages:
                         pass
                     lines.append(" ".join(GLib.shell_quote(c) for c in cmd))
                     with open(path, "w") as f:
-                        f.write("#!/bin/sh\n# Written by Wren Settings\n" + "\n".join(lines) + "\n")
+                        f.write("#!/bin/sh\n# Written by Floe Settings\n" + "\n".join(lines) + "\n")
                     os.chmod(path, 0o755)
                     self.win.toast("Display settings applied")
                 else:
@@ -551,6 +551,20 @@ class Pages:
 
     def about(self):
         box = self.page("About", ("System", "system"))
+        # The Floe mark and name, then the build
+        brand = Gtk.Box(spacing=16, margin_top=8, margin_bottom=4)
+        mark = Gtk.Image.new_from_file("/usr/share/wren/logo-128.png")
+        mark.set_pixel_size(72)
+        brand.append(mark)
+        dark = wrenlib.load_theme()["mode"] == "dark"
+        word = Gtk.Picture.new_for_filename(f"/usr/share/wren/wordmark-{'light' if dark else 'dark'}.png")
+        word.set_can_shrink(True)
+        word.set_size_request(118, 44)
+        word.set_valign(Gtk.Align.CENTER)
+        brand.append(word)
+        build = label(f"Build {wren_build()}", "row-sub", valign=Gtk.Align.END, margin_bottom=10, hexpand=True)
+        brand.append(build)
+        box.append(brand)
         card = self.group(box, "This computer")
         name_entry = Gtk.Entry(text=socket.gethostname(), valign=Gtk.Align.CENTER, width_chars=18)
 
@@ -567,7 +581,7 @@ class Pages:
         row.append(button("Rename", rename))
         card.row("computer-symbolic", "Device name", "", row)
         specs = self.group(box, "Specifications")
-        for title, value in (("Wren Linux", f"Build {wren_build()}"),
+        for title, value in (("Floe", f"Build {wren_build()}"),
                              ("Processor", cpu_name()),
                              ("Memory", mem_total()),
                              ("Graphics", gpu_name()),
@@ -925,7 +939,7 @@ class Pages:
             app_id = (a.get_id() or "").removesuffix(".desktop")
             is_flatpak = "flatpak" in (getattr(a, "get_filename", lambda: "")() or "")
             ctl = button("Uninstall", lambda app_id=app_id, a=a: self.uninstall(app_id, a.get_display_name())) \
-                if is_flatpak else label("Part of Wren", "row-sub")
+                if is_flatpak else label("Part of Floe", "row-sub")
             img = a.get_icon()
             row = installed.row(None, a.get_display_name(), (a.get_description() or "")[:80], ctl)
             icon = Gtk.Image.new_from_gicon(img) if img else Gtk.Image.new_from_icon_name("application-x-executable")
@@ -1040,7 +1054,7 @@ class Pages:
 
     # -------------------------------------------------------- Update
     def update(self):
-        box = self.page("Wren Update")
+        box = self.page("Floe Update")
         card = Card()
         status = card.row("software-update-available-symbolic", "Checking for updates…", f"You have build {wren_build()}",
                           button("Open Software Update", lambda: spawn(["wren-updater"]), primary=True))

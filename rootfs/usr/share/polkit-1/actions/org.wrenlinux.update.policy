@@ -2,9 +2,9 @@
 <!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 <policyconfig>
-  <vendor>Wren Linux</vendor>
+  <vendor>Floe</vendor>
   <action id="org.wrenlinux.update">
-    <description>Update Wren Linux</description>
+    <description>Update Floe</description>
     <message>Enter your password to install updates</message>
     <icon_name>software-update-available</icon_name>
     <defaults>

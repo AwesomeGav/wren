@@ -1,41 +1,42 @@
-# Wren boot menu (shown only when Wren is installed next to another system)
+# Floe boot menu (shown only when Floe is installed next to another system)
 title-text: ""
 desktop-image: "background.jpg"
-desktop-color: "#141210"
-terminal-font: "Unifont Regular 16"
+desktop-image-scale-method: "crop"
+desktop-color: "#EEF1F4"
+terminal-font: "IBM Plex Sans Regular 18"
 
 + image {
-    top = 14%
-    left = 50%-48
-    width = 96
-    height = 96
+    top = 50%-250
+    left = 50%-60
+    width = 120
+    height = 120
     file = "logo.png"
 }
 
 + label {
-    top = 14%+112
+    top = 50%-118
     left = 0
     width = 100%
     align = "center"
     text = "Choose what to start"
-    font = "Unifont Regular 16"
-    color = "#F1EBE3"
+    font = "IBM Plex Sans Regular 24"
+    color = "#1E2328"
 }
 
 + boot_menu {
-    left = 50%-280
-    top = 14%+150
-    width = 560
-    height = 260
+    left = 50%-260
+    top = 50%-64
+    width = 520
+    height = 220
     menu_pixmap_style = "menu_*.png"
-    item_font = "Unifont Regular 16"
-    item_color = "#D9D1C7"
-    selected_item_font = "Unifont Regular 16"
-    selected_item_color = "#1A120B"
+    item_font = "IBM Plex Sans Regular 24"
+    item_color = "#343B42"
+    selected_item_font = "IBM Plex Sans Regular 24"
+    selected_item_color = "#FFFFFF"
     selected_item_pixmap_style = "select_*.png"
-    item_height = 40
-    item_padding = 14
-    item_spacing = 4
+    item_height = 48
+    item_padding = 18
+    item_spacing = 6
     icon_width = 0
     icon_height = 0
     item_icon_space = 0
@@ -44,21 +45,21 @@ terminal-font: "Unifont Regular 16"
 
 + label {
     id = "__timeout__"
-    top = 14%+430
+    top = 50%+180
     left = 0
     width = 100%
     align = "center"
     text = "Starting the highlighted system in %d seconds"
-    font = "Unifont Regular 16"
-    color = "#A89F94"
+    font = "IBM Plex Sans Regular 18"
+    color = "#5D6670"
 }
 
 + label {
-    top = 14%+458
+    top = 50%+210
     left = 0
     width = 100%
     align = "center"
-    text = "Use the arrow keys to choose, then press Enter"
-    font = "Unifont Regular 16"
-    color = "#6E665D"
+    text = "Arrow keys to choose, Enter to start"
+    font = "IBM Plex Sans Regular 18"
+    color = "#88919A"
 }

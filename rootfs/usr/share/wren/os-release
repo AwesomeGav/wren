@@ -1,0 +1,10 @@
+NAME="Floe"
+PRETTY_NAME="Floe"
+ID=floe
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;15;123;131"
+HOME_URL="https://github.com/AwesomeGav/wren"
+SUPPORT_URL="https://github.com/AwesomeGav/wren/issues"
+BUG_REPORT_URL="https://github.com/AwesomeGav/wren/issues"
+LOGO=floe-logo

@@ -1,26 +1,38 @@
-# Wren start-up screen: logo, name and a spinning ring on the Wren background.
-Window.SetBackgroundTopColor(0.086, 0.098, 0.13);
-Window.SetBackgroundBottomColor(0.05, 0.058, 0.078);
+# Floe start-up screen: the Floe mark and name on soft silver, with a slim bar
+# gliding back and forth underneath while the computer starts.
+Window.SetBackgroundTopColor(0.953, 0.961, 0.969);
+Window.SetBackgroundBottomColor(0.871, 0.894, 0.914);
 
-logo.image = Image("logo.png");
-word.image = Image("wordmark.png");
-ring.image = Image("spinner.png");
+# Sharp screens (like a Surface) get the double-size artwork
+if (Window.GetWidth() > 2200) suffix = "@2x"; else suffix = "";
+
+logo.image = Image("logo" + suffix + ".png");
+word.image = Image("wordmark" + suffix + ".png");
+track.image = Image("track" + suffix + ".png");
+bar.image = Image("bar" + suffix + ".png");
 
 logo.sprite = Sprite(logo.image);
 word.sprite = Sprite(word.image);
-ring.sprite = Sprite();
-ring.angle = 0;
+track.sprite = Sprite(track.image);
+bar.sprite = Sprite(bar.image);
+t = 0;
 
 # Recentred every frame: the screen size can change while booting
 fun refresh_callback() {
   cx = Window.GetX() + Window.GetWidth() / 2;
   cy = Window.GetY() + Window.GetHeight() / 2;
-  logo.sprite.SetPosition(cx - logo.image.GetWidth() / 2, cy - logo.image.GetHeight() - 20, 1);
-  word.sprite.SetPosition(cx - word.image.GetWidth() / 2, cy + 6, 1);
-  ring.angle += 0.10;
-  rotated = ring.image.Rotate(ring.angle);
-  ring.sprite.SetImage(rotated);
-  ring.sprite.SetPosition(cx - rotated.GetWidth() / 2, cy + 110, 1);
+  lh = logo.image.GetHeight();
+  logo.sprite.SetPosition(cx - logo.image.GetWidth() / 2, cy - lh - lh / 18, 1);
+  word.sprite.SetPosition(cx - word.image.GetWidth() / 2, cy + lh / 9, 1);
+
+  tw = track.image.GetWidth();
+  bw = bar.image.GetWidth();
+  ty = cy + lh;
+  track.sprite.SetPosition(cx - tw / 2, ty, 1);
+  # Ease back and forth along the track (smooth at both ends)
+  t += 0.035;
+  p = (Math.Sin(t) + 1) / 2;
+  bar.sprite.SetPosition(cx - tw / 2 + (tw - bw) * p, ty, 2);
 }
 Plymouth.SetRefreshFunction(refresh_callback);
 

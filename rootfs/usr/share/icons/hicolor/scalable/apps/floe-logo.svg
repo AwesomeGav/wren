@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="sideL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3FA7AD"/><stop offset="1" stop-color="#0F7B83"/>
+    </linearGradient>
+    <linearGradient id="sideR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0F7B83"/><stop offset="1" stop-color="#0A5960"/>
+    </linearGradient>
+    <linearGradient id="under" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0F7B83" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#0F7B83" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g stroke-linejoin="round" stroke-width="6">
+    <!-- below the water -->
+    <path d="M46 176 L222 160 L196 226 L104 236 Z" fill="url(#under)" stroke="none"/>
+    <!-- sides -->
+    <path d="M34 150 L170 160 L172 186 L40 172 Z" fill="url(#sideL)" stroke="url(#sideL)"/>
+    <path d="M170 160 L226 132 L222 156 L172 186 Z" fill="url(#sideR)" stroke="url(#sideR)"/>
+    <!-- top: two planes catching the light -->
+    <path d="M34 150 L92 98 L170 160 Z" fill="#D6EEF0" stroke="#D6EEF0"/>
+    <path d="M92 98 L186 88 L226 132 L170 160 Z" fill="#FFFFFF" stroke="#FFFFFF"/>
+  </g>
+  <!-- waterline -->
+  <path d="M18 178 C 62 170, 104 186, 146 177 S 212 166, 238 173" fill="none" stroke="#0F7B83" stroke-width="7" stroke-linecap="round"/>
+</svg>

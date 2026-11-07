@@ -1,6 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <path fill="#E0894A" d="M22.5 35 L7.5 12.8 C6.4 11.2 7.9 9.4 9.6 10.3 L14.2 12.6 L28.8 29.4 Z"/>
-  <path fill="#E0894A" d="M18.5 36.8 C18.5 26.5 27.5 20.4 36 21.8 C38 17.5 42 15.6 45.6 15.8 C50.4 16.1 53.6 19.6 53.8 23.6 L59.6 25.6 L53.6 27.6 C53.2 33.4 52.4 40.6 46.2 46.4 C40.2 52 28.4 52.6 22.6 47 C19.9 44.4 18.5 40.8 18.5 36.8 Z"/>
-  <path fill="#B8622A" d="M22 37.5 C28.5 33 38 32.5 45 36 C39.5 42.5 29 44 22 37.5 Z"/>
-  <circle fill="#1A1410" cx="46.6" cy="24.8" r="1.9"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="sideL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3FA7AD"/><stop offset="1" stop-color="#0F7B83"/>
+    </linearGradient>
+    <linearGradient id="sideR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0F7B83"/><stop offset="1" stop-color="#0A5960"/>
+    </linearGradient>
+    <linearGradient id="under" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0F7B83" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#0F7B83" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g stroke-linejoin="round" stroke-width="6">
+    <!-- below the water -->
+    <path d="M46 176 L222 160 L196 226 L104 236 Z" fill="url(#under)" stroke="none"/>
+    <!-- sides -->
+    <path d="M34 150 L170 160 L172 186 L40 172 Z" fill="url(#sideL)" stroke="url(#sideL)"/>
+    <path d="M170 160 L226 132 L222 156 L172 186 Z" fill="url(#sideR)" stroke="url(#sideR)"/>
+    <!-- top: two planes catching the light -->
+    <path d="M34 150 L92 98 L170 160 Z" fill="#D6EEF0" stroke="#D6EEF0"/>
+    <path d="M92 98 L186 88 L226 132 L170 160 Z" fill="#FFFFFF" stroke="#FFFFFF"/>
+  </g>
+  <!-- waterline -->
+  <path d="M18 178 C 62 170, 104 186, 146 177 S 212 166, 238 173" fill="none" stroke="#0F7B83" stroke-width="7" stroke-linecap="round"/>
 </svg>

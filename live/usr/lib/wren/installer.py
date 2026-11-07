@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wren Installer: a guided, point-and-click installer for Wren Linux."""
+"""Floe Installer: a guided, point-and-click installer for Floe."""
 import json
 import os
 import re
@@ -173,9 +173,9 @@ def disk_layout(path, data=None):
     if not parts or pttype not in ("gpt", "dos"):
         blocker = "This disk is empty, so there's nothing to keep."
     elif uefi and not has_esp:
-        blocker = "This disk has no EFI boot partition, so Wren can't start alongside what's on it."
+        blocker = "This disk has no EFI boot partition, so Floe can't start alongside what's on it."
     elif not uefi and pttype == "gpt" and not has_biosboot:
-        blocker = "This older computer can't start Wren from this disk alongside another system."
+        blocker = "This older computer can't start Floe from this disk alongside another system."
 
     can_free = bool(free) and not blocker and not (pttype == "dos" and primaries >= 4)
     replaceable = [p for p in others if not p["mounted"] and p["size"] >= MIN_DISK] if not blocker else []
@@ -244,7 +244,7 @@ class WelcomePage(Page):
         logo = Gtk.Image.new_from_file(LOGO)
         logo.set_pixel_size(120)
         box.append(logo)
-        box.append(make_label("Welcome to Wren", "hero-title", justify=Gtk.Justification.CENTER))
+        box.append(make_label("Welcome to Floe", "hero-title", justify=Gtk.Justification.CENTER))
         box.append(make_label("A calm, fast desktop that runs well on any computer.\n"
                               "Take a look around first, or install it now. It only takes a few minutes.",
                               "hero-body", justify=Gtk.Justification.CENTER, max_width_chars=48))
@@ -252,7 +252,7 @@ class WelcomePage(Page):
         try_btn = Gtk.Button(label="Keep Exploring")
         try_btn.add_css_class("big-button")
         try_btn.connect("clicked", lambda *_: win.close())
-        install_btn = Gtk.Button(label="Install Wren")
+        install_btn = Gtk.Button(label="Install Floe")
         install_btn.add_css_class("big-button")
         install_btn.add_css_class("suggested-action")
         install_btn.connect("clicked", lambda *_: win.go(1))
@@ -325,7 +325,7 @@ class DiskPage(Page):
 
     def __init__(self, win):
         super().__init__(win)
-        self.widget, self.box = page_shell("Where should Wren go?",
+        self.widget, self.box = page_shell("Where should Floe go?",
                                            "Pick a disk, then choose how to install.")
         self.group = Adw.PreferencesGroup(title="Disk")
         self.box.append(self.group)
@@ -449,7 +449,7 @@ class DiskPage(Page):
             self.part_dd.set_valign(Gtk.Align.CENTER)
             self.part_dd.connect("notify::selected", lambda *_: self._set_mode(self.mode))
         add("partition", "Replace a partition",
-            "Erases one partition and installs Wren there." if repl else "No partition here is big enough (12 GB).",
+            "Erases one partition and installs Floe there." if repl else "No partition here is big enough (12 GB).",
             bool(repl), self.part_dd)
 
         # Erase
@@ -478,7 +478,7 @@ class DiskPage(Page):
             if p["fstype"] == "ntfs":
                 msg += " This looks like a Windows partition. Windows may stop working."
         elif mode == "free":
-            msg = ("Nothing on the disk will be erased. A menu will let you choose Wren or "
+            msg = ("Nothing on the disk will be erased. A menu will let you choose Floe or "
                    f"{'Windows' if L['windows'] else 'your other system'} each time you start. "
                    "If Windows uses BitLocker, have your recovery key handy.")
         self.warning.set_text(msg)
@@ -617,7 +617,7 @@ class ProgressPage(Page):
         logo = Gtk.Image.new_from_file(LOGO)
         logo.set_pixel_size(72)
         box.append(logo)
-        self.heading = make_label("Installing Wren", "page-title", justify=Gtk.Justification.CENTER)
+        self.heading = make_label("Installing Floe", "page-title", justify=Gtk.Justification.CENTER)
         box.append(self.heading)
         self.status = make_label("Getting ready…", "page-body", justify=Gtk.Justification.CENTER)
         box.append(self.status)
@@ -645,7 +645,7 @@ class ProgressPage(Page):
 
 class Window(Adw.ApplicationWindow):
     def __init__(self, app):
-        super().__init__(application=app, title="Install Wren", default_width=880, default_height=640)
+        super().__init__(application=app, title="Install Floe", default_width=880, default_height=640)
         self.pages = [WelcomePage(self), LanguagePage(self), TimezonePage(self), DiskPage(self),
                       AccountPage(self), ReviewPage(self), ProgressPage(self)]
         self.progress = self.pages[-1]
@@ -738,14 +738,14 @@ class Window(Adw.ApplicationWindow):
         if isinstance(self.pages[self.index], ReviewPage):
             v = self.values()
             if v["mode"] == "free":
-                heading, body, go = ("Install Wren alongside?",
-                                     f"Wren will use {v['where']}. Nothing else will be changed.", "Install")
+                heading, body, go = ("Install Floe alongside?",
+                                     f"Floe will use {v['where']}. Nothing else will be changed.", "Install")
             elif v["mode"] == "partition":
                 heading, body, go = ("Erase this partition?",
                                      f"Everything on {v['where']} will be permanently deleted.", "Erase & Install")
             else:
                 heading, body, go = ("Erase this disk?",
-                                     f"Everything on {v['disk_label']} will be permanently deleted and Wren "
+                                     f"Everything on {v['disk_label']} will be permanently deleted and Floe "
                                      "will be installed.", "Erase & Install")
             dialog = Adw.AlertDialog(heading=heading, body=body)
             dialog.add_response("cancel", "Cancel")
@@ -812,7 +812,7 @@ class Window(Adw.ApplicationWindow):
             p.actions.remove(child)
         p.actions.set_visible(True)
         if success:
-            p.heading.set_text("Wren is installed")
+            p.heading.set_text("Floe is installed")
             p.status.set_text("Click Restart Now. When the screen goes dark, remove the USB stick.")
             p.bar.set_fraction(1.0)
             btn = Gtk.Button(label="Restart Now")
@@ -833,7 +833,7 @@ class Window(Adw.ApplicationWindow):
             again.add_css_class("big-button")
             again.add_css_class("suggested-action")
             again.connect("clicked", lambda *_: (p.status.remove_css_class("error-text"),
-                                                 p.heading.set_text("Installing Wren"),
+                                                 p.heading.set_text("Installing Floe"),
                                                  p.actions.set_visible(False),
                                                  p.bar.set_fraction(0), self.go(5)))
             p.actions.append(again)

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Wren updater.
+# Floe updater.
 #   wren-update --check   prints "available <tag>" or "current <tag>" (no root needed)
-#   wren-update --apply   installs the latest Wren release + Arch system updates (root)
+#   wren-update --apply   installs the latest Floe release + Arch system updates (root)
 # Progress lines look like "@@ <percent> <message>" for the Software Update app.
 #
-# Older Wren installs without this tool can update with:
+# Older Floe installs without this tool can update with:
 #   curl -fsSL https://raw.githubusercontent.com/AwesomeGav/wren/main/rootfs/usr/local/bin/wren-update | sudo bash -s -- --apply
 set -Eeuo pipefail
 
@@ -45,12 +45,12 @@ fi
 [[ ! -d /run/archiso ]] || fail "Updates aren't available on the live USB."
 trap 'echo "@@ERROR Update stopped while running: ${BASH_COMMAND}"' ERR
 
-step 2 "Checking for the latest Wren release"
+step 2 "Checking for the latest Floe release"
 tag=$(latest_tag)
 [[ -n $tag ]] || fail "Couldn't reach GitHub. Check your internet connection."
 latest=${tag#build-}
 
-step 6 "Downloading Wren $tag"
+step 6 "Downloading Floe $tag"
 src=$(mktemp -d)
 trap 'rm -rf "$src"' EXIT
 curl -fsSL --max-time 300 "https://github.com/$REPO/archive/refs/tags/$tag.tar.gz" |
@@ -63,7 +63,7 @@ pacman -Sy --noconfirm --needed archlinux-keyring
 step 20 "Installing system updates (this can take a while)"
 pacman -Su --noconfirm
 
-step 70 "Adding new Wren apps"
+step 70 "Adding new Floe apps"
 pkgs=()
 while read -r p; do
   [[ -z $p ]] && continue
@@ -71,10 +71,11 @@ while read -r p; do
 done < <(sed 's/#.*//; s/[[:space:]]//g' "$src/packages.txt")
 pacman -S --noconfirm --needed "${pkgs[@]}"
 
-step 85 "Applying the new Wren desktop"
+step 85 "Applying the new Floe desktop"
 # Keep this computer's keyboard layout across updates
 keep=$(grep '^XKB_' /etc/xdg/labwc/environment 2>/dev/null || true)
 cp -r "$src/rootfs/." /
+cp -f /usr/share/wren/os-release /usr/lib/os-release 2>/dev/null || true
 if [[ -n $keep ]]; then echo "$keep" >> /etc/xdg/labwc/environment; fi
 chmod 755 /usr/local/bin/wren-* /usr/lib/wren/*.py /usr/lib/wren/*.sh 2>/dev/null || true
 python -m compileall -q -f -j0 --invalidation-mode unchecked-hash /usr/lib/wren >/dev/null 2>&1 || true
@@ -96,4 +97,4 @@ if [[ -d $src/migrations ]]; then
 fi
 
 printf 'WREN_BUILD=%s\nWREN_TAG=%s\n' "$latest" "$tag" > /etc/wren-release
-step 100 "Wren is up to date ($tag). Restart to finish."
+step 100 "Floe is up to date ($tag). Restart to finish."

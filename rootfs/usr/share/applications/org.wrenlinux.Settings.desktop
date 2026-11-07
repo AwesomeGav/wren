@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Settings
-Comment=Change how Wren looks and works
+Comment=Change how Floe looks and works
 Exec=wren-settings
 Icon=org.wrenlinux.Settings
 Terminal=false

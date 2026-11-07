@@ -82,9 +82,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: Wren Linux (build ${{ github.run_number }})
+          name: Floe (build ${{ github.run_number }})
           body: |
             Download the .iso below, flash it to a USB stick with balenaEtcher or Ventoy, and boot from it.
-            The Wren installer opens automatically. Pick **Install Wren** and follow the steps.
+            The installer opens automatically. Pick **Install Floe** and follow the steps.
           files: out/*.iso
           make_latest: true

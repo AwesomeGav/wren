@@ -1,0 +1,11 @@
+# Keep the system's name as Floe after Arch updates the "filesystem" package.
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = filesystem
+
+[Action]
+Description = Naming the system Floe...
+When = PostTransaction
+Exec = /usr/bin/cp -f /usr/share/wren/os-release /usr/lib/os-release

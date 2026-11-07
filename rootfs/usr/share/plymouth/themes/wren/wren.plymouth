@@ -1,6 +1,6 @@
 [Plymouth Theme]
-Name=Wren
-Description=Wren Linux start-up screen
+Name=Floe
+Description=Floe start-up screen
 ModuleName=script
 
 [script]

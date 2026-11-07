@@ -10,7 +10,7 @@ XCURSOR_SIZE=$(sed -n 's/.*"cursor_size": *\([0-9]*\).*/\1/p' "$HOME/.config/wre
 export XCURSOR_SIZE="${XCURSOR_SIZE:-24}"
 
 # Colors, panel and window manager settings for this account (rewritten after Wren updates)
-grep -qs '"v": 8' "$HOME/.config/wren/theme/stamp" || wren-theme ensure >/dev/null 2>&1  # keep in step with THEME_VERSION
+grep -qs '"v": 9' "$HOME/.config/wren/theme/stamp" || wren-theme ensure >/dev/null 2>&1  # keep in step with THEME_VERSION
 CONF="$HOME/.config/wren/wayfire.ini"
 [ -r "$CONF" ] || CONF=/etc/xdg/wren/wayfire.ini
 

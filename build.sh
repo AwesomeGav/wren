@@ -16,13 +16,15 @@ cp -r /usr/share/archiso/configs/releng "$PROFILE"
 
 echo ":: Branding"
 sed -i \
-  -e 's/^iso_name=.*/iso_name="wren"/' \
+  -e 's/^iso_name=.*/iso_name="floe"/' \
   -e 's/ARCH_/WREN_/' \
-  -e 's/^iso_publisher=.*/iso_publisher="Wren Linux <https:\/\/github.com\/AwesomeGav\/wren>"/' \
-  -e 's/^iso_application=.*/iso_application="Wren Linux Live\/Install"/' \
+  -e 's/^iso_publisher=.*/iso_publisher="Floe <https:\/\/github.com\/AwesomeGav\/wren>"/' \
+  -e 's/^iso_application=.*/iso_application="Floe Live\/Install"/' \
   "$PROFILE/profiledef.sh"
-grep -rlI "Arch Linux install medium" "$PROFILE" | xargs -r sed -i 's/Arch Linux install medium/Wren Linux/g'
-echo "wren" > "$ROOT/etc/hostname"
+grep -rlI "Arch Linux install medium" "$PROFILE" | xargs -r sed -i 's/Arch Linux install medium/Floe/g'
+# Live USB start menu artwork (older BIOS computers)
+[ -f "$PROFILE/syslinux/splash.png" ] && cp build-assets/syslinux-splash.png "$PROFILE/syslinux/splash.png"
+echo "floe" > "$ROOT/etc/hostname"
 
 echo ":: Faster compression (quicker builds, and quicker start-up on slow computers)"
 sed -i "s/^airootfs_image_tool_options=.*/airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '17' '-b' '1M')/" "$PROFILE/profiledef.sh"
