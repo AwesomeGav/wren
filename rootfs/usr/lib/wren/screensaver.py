@@ -18,15 +18,20 @@ import signal
 import sys
 import time
 
-import gi
+from ctypes import CDLL
+
+CDLL("libgtk4-layer-shell.so")  # must load before GTK, or windows can't float above the desktop
+
+import gi  # noqa: E402
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Gdk", "4.0")
 gi.require_version("Gsk", "4.0")
 gi.require_version("Graphene", "1.0")
+gi.require_version("GLibUnix", "2.0")
 gi.require_version("Pango", "1.0")
 gi.require_version("Gtk4LayerShell", "1.0")
-from gi.repository import Gdk, GLib, Graphene, Gsk, Gtk, Pango  # noqa: E402
+from gi.repository import Gdk, GLib, GLibUnix, Graphene, Gsk, Gtk, Pango  # noqa: E402
 from gi.repository import Gtk4LayerShell as Layer  # noqa: E402
 
 sys.path.insert(0, "/usr/lib/wren")
@@ -301,8 +306,8 @@ class Saver(Gtk.Application):
             self.add_screen(monitors.get_item(i) if monitors.get_n_items() else None, i)
         self.hold()
         log("showing on", len(self.windows), "screen(s)")
-        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, lambda: self.end() or True)
-        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, lambda: self.end() or True)
+        GLibUnix.signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, lambda: self.end() or True)
+        GLibUnix.signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, lambda: self.end() or True)
         self.tick()
 
     def add_screen(self, monitor, i):

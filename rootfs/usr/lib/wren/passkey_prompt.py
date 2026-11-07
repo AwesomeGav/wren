@@ -6,7 +6,11 @@ import os
 import sys
 import threading
 
-import gi
+from ctypes import CDLL
+
+CDLL("libgtk4-layer-shell.so")  # must load before GTK, or windows can't float above the desktop
+
+import gi  # noqa: E402
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")

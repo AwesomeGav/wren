@@ -64,6 +64,10 @@ gnome-calculator >/dev/null 2>&1 &
 for i in 1 2 3 4 5 6 7 8; do grim "/var/tmp/shots/15-open-anim-$i.png"; done
 sleep 2; pkill -x gnome-calculator; sleep 1
 cp "$HOME/.cache/wren/panel.log" /var/tmp/shots/panel.log 2>/dev/null
+# Floe Passkeys prompt, as a site asks to save a passkey
+echo '{"kind": "create", "rp": "google.com", "user": "gavin@gmail.com", "has_pin": false}' |
+  PYTHONPATH=/usr/lib/wren python3 -m passkey_prompt >/var/tmp/shots/passkey-prompt.log 2>&1 & pid=$!
+shot 19-passkey-prompt 6; kill $pid 2>/dev/null; sleep 1
 # Screen saver: fading in, then a few seconds later
 pkill -USR1 -f "m screensaver"; sleep 0.5   # one started by the idle timer: where is it?
 wren-screensaver --stop; sleep 1
