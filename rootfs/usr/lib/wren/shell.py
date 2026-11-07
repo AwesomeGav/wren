@@ -322,6 +322,7 @@ SETTINGS_INDEX = [
     ("Taskbar", "personalization", "dock panel clock 24-hour", "view-dual-symbolic"),
     ("Apps", "apps", "uninstall installed background", "view-app-grid-symbolic"),
     ("Account and password", "accounts", "user name password", "system-users-symbolic"),
+    ("Passwords and passkeys", "accounts", "passkey bitwarden google sign in login", "dialog-password-symbolic"),
     ("Date and time", "time", "clock timezone", "preferences-system-time-symbolic"),
     ("Keyboard and language", "time", "layout typing repeat", "input-keyboard-symbolic"),
     ("Software update", "update", "upgrade updates", "software-update-available-symbolic"),

@@ -980,7 +980,7 @@ class Pages:
         head.append(av)
         info = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER)
         info.append(label(full, "me-name"))
-        info.append(label(f"{me.pw_name} · Administrator", "me-sub"))
+        info.append(label(f"{me.pw_name}, administrator", "me-sub"))
         head.append(info)
         card.append(head)
         box.append(card)
@@ -988,7 +988,85 @@ class Pages:
         sign.row("dialog-password-symbolic", "Change password", "",
                  on_click=lambda: spawn(["wren-terminal", "-e", "sh", "-c",
                                          "passwd; echo; echo 'You can close this window.'; read _"]))
+        self.passkeys(box)
         return box
+
+    # Passwords and passkeys: Bitwarden in Firefox, plus the app
+    BW_GUID = "{446900e4-71c2-419f-a6a7-df9c091e268b}"
+    BW_APP = "com.bitwarden.desktop"
+
+    def _bw_in_firefox(self):
+        try:
+            data = json.load(open("/etc/firefox/policies/policies.json"))
+            return self.BW_GUID in data.get("policies", {}).get("ExtensionSettings", {})
+        except (OSError, ValueError):
+            return False
+
+    def _bw_app_installed(self):
+        return self.BW_APP in run(["flatpak", "list", "--app", "--columns=application"], 10).split()
+
+    def passkeys(self, box):
+        card = self.group(box, "Passwords and passkeys")
+        box.append(label("Floe uses Bitwarden, a free password manager, to keep your passwords and passkeys. "
+                         "When a site like Google asks you to sign in, Bitwarden offers the right one and signs "
+                         "you in. Your passkeys also work on your phone with the Bitwarden app.",
+                         "row-sub", wrap=True, margin_top=8, margin_start=2, max_width_chars=80))
+
+        quiet = {"on": False}
+
+        def set_firefox(on):
+            if quiet["on"]:
+                return
+
+            def work():
+                return ok(["pkexec", "/usr/lib/wren/passkeys-helper.sh", "enable" if on else "disable"], 120)
+
+            def done(result):
+                if result:
+                    self.win.toast("Restart Firefox, then click the Bitwarden icon to sign in" if on
+                                   else "Bitwarden will be removed from Firefox when it restarts")
+                else:
+                    self.win.toast("Bitwarden wasn't changed")
+                    quiet["on"] = True
+                    fx_switch.set_active(self._bw_in_firefox())
+                    quiet["on"] = False
+            background(work, done)
+        fx_switch = switch(self._bw_in_firefox(), set_firefox)
+        card.row("web-browser-symbolic", "Bitwarden in Firefox", "Fills in passwords and passkeys on websites",
+                 fx_switch)
+
+        app_slot = Gtk.Box(valign=Gtk.Align.CENTER)
+
+        def show_app_state(installed):
+            child = app_slot.get_first_child()
+            if child:
+                app_slot.remove(child)
+            if installed:
+                app_slot.append(button("Open", lambda: spawn(["flatpak", "run", self.BW_APP])))
+            else:
+                app_slot.append(button("Install", install_app, primary=True))
+
+        def install_app():
+            self.win.toast("Installing Bitwarden. This can take a few minutes.")
+            child = app_slot.get_first_child()
+            if child:
+                child.set_sensitive(False)
+
+            def work():
+                run(["flatpak", "remote-add", "--user", "--if-not-exists", "flathub",
+                     "https://dl.flathub.org/repo/flathub.flatpakrepo"], 60)
+                return ok(["flatpak", "install", "--user", "-y", "--noninteractive", "flathub", self.BW_APP], 1800)
+
+            def done(result):
+                self.win.toast("Bitwarden is installed" if result else "Bitwarden couldn't be installed. Check your internet connection.")
+                show_app_state(self._bw_app_installed())
+            background(work, done)
+
+        card.row("dialog-password-symbolic", "Bitwarden app", "See and edit everything you've saved", app_slot)
+        show_app_state(False)
+        background(self._bw_app_installed, show_app_state)
+        card.row("phone-symbolic", "On your phone", "Get Bitwarden from the App Store or Google Play",
+                 on_click=lambda: Gio.AppInfo.launch_default_for_uri("https://bitwarden.com/download/", None))
 
     # -------------------------------------------------------- Time & language
     def time(self):
@@ -1177,7 +1255,7 @@ class Window(Adw.ApplicationWindow):
         "storage": "disk space trash", "about": "device name hostname specs ram cpu",
         "devices": "bluetooth mouse touchpad trackpad scroll pointer", "network": "wifi wi-fi internet airplane ip",
         "personalization": "background wallpaper text size font", "apps": "default browser uninstall",
-        "accounts": "password user", "time": "date clock timezone keyboard layout language",
+        "accounts": "password user passkey passkeys bitwarden google sign in login", "time": "date clock timezone keyboard layout language",
         "update": "software upgrade",
     }
 

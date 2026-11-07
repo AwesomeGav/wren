@@ -41,7 +41,7 @@ WREN_STORE_PAGE=cat:Game wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; sh
 WREN_STORE_PAGE=app:org.gimp.GIMP wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-app 15; kill $pid; sleep 2
 WREN_STORE_PAGE=search:minecraft wren-store >>/var/tmp/shots/store.log 2>&1 & pid=$!; shot 10-store-search 15; kill $pid; sleep 2
 wren-settings system >/var/tmp/shots/settings.log 2>&1 & pid=$!; shot 11-settings-system 5
-for page in about devices personalization apps time power display; do
+for page in about devices personalization apps time power display accounts; do
   wren-settings $page >>/var/tmp/shots/settings.log 2>&1; shot "11-settings-$page" 4
 done
 # The window list reader used to stop background apps
