@@ -81,7 +81,7 @@ echo sample > "$H/notes.txt"
 chown -R wren:wren "$H"
 install -d -m 700 -o wren -g wren /tmp/xdg-wren
 
-COMMON="WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1"
+COMMON="WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 GSK_RENDERER=cairo LIBGL_ALWAYS_SOFTWARE=1 NO_AT_BRIDGE=1 XDG_CONFIG_DIRS=/etc/xdg/wren:/etc/xdg"
 WAYFIRE_ENV="WLR_RENDERER=gles2 WLR_RENDERER_ALLOW_SOFTWARE=1 XDG_CURRENT_DESKTOP=Wren:wlroots"
 # vgem gives a render node backed by software (Mesa llvmpipe) on machines without a GPU
 RN=""
@@ -104,7 +104,7 @@ if [ ! -f /var/tmp/shots/1-desktop.png ]; then
   # Wayfire couldn't start here: fall back like a real computer would
   echo "Wayfire failed; using labwc" >>/var/tmp/shots/desktop.log
   runuser -u wren -- env HOME=$H USER=wren XDG_RUNTIME_DIR=/tmp/xdg-wren $COMMON WLR_RENDERER=pixman \
-    timeout 540 dbus-run-session -- labwc -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop-labwc.log 2>&1
+    timeout 540 dbus-run-session -- labwc -m -s 'sh /var/tmp/scenes.sh' >/var/tmp/shots/desktop-labwc.log 2>&1
 fi
 
 # Wren Login, in demo mode, inside the same kiosk compositor greetd uses

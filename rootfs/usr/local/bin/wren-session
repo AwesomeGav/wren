@@ -4,6 +4,8 @@
 export WREN_SESSION=1
 [ -r /etc/profile ] && . /etc/profile
 export XDG_CURRENT_DESKTOP=Wren:wlroots XDG_SESSION_DESKTOP=wren XDG_SESSION_TYPE=wayland
+# Floe's GTK settings (icons, cursor, fonts) live in /etc/xdg/wren
+export XDG_CONFIG_DIRS=/etc/xdg/wren:/etc/xdg
 export MOZ_ENABLE_WAYLAND=1 QT_QPA_PLATFORM="wayland;xcb" _JAVA_AWT_WM_NONREPARENTING=1
 export XCURSOR_THEME=Wren-Cursor
 XCURSOR_SIZE=$(sed -n 's/.*"cursor_size": *\([0-9]*\).*/\1/p' "$HOME/.config/wren/settings.json" 2>/dev/null)
