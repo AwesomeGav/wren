@@ -83,7 +83,7 @@ if install_alongside "$loop" WREN_FORCE_UEFI=1 WREN_NO_NVRAM=1; then
   mount "${loop}p1" /mnt/esp
   [[ -f /mnt/esp/EFI/Microsoft/Boot/bootmgfw.efi ]] || fail "UEFI: Windows boot manager file is gone"
   grep -q "belongs to windows" /mnt/esp/EFI/Boot/bootx64.efi 2>/dev/null || fail "UEFI: Windows' fallback boot file was overwritten"
-  [[ -f /mnt/esp/EFI/Wren/grubx64.efi ]] || fail "UEFI: Wren's boot loader wasn't added to the EFI partition"
+  [[ -f /mnt/esp/EFI/Floe/grubx64.efi ]] || fail "UEFI: Floe's boot loader wasn't added to the EFI partition"
   umount /mnt/esp
   mkdir -p /mnt/wren && mount "${loop}p4" /mnt/wren
   grep -qE '\s/efi\s' /mnt/wren/etc/fstab || fail "UEFI: EFI partition not in fstab at /efi"
@@ -95,7 +95,7 @@ if install_alongside "$loop" WREN_FORCE_UEFI=1 WREN_NO_NVRAM=1; then
     fail "UEFI: Windows isn't in the boot menu"
     debug_windows UEFI "${loop}p1" WREN_FORCE_UEFI=1
   fi
-  grep -q "menuentry 'Wren Linux'" /mnt/wren/boot/grub/grub.cfg || fail "UEFI: Wren isn't in the boot menu"
+  grep -q "menuentry 'Floe'" /mnt/wren/boot/grub/grub.cfg || fail "UEFI: Floe isn't in the boot menu"
   umount /mnt/wren
 else
   fail "UEFI: install alongside Windows failed: $(grep '^@@ERROR' /tmp/dual.log | tail -n1)"
@@ -143,7 +143,7 @@ if install_alongside "$loop" WREN_FORCE_BIOS=1; then
     fail "BIOS: Windows isn't in the boot menu"
     debug_windows BIOS ""
   fi
-  grep -q "menuentry 'Wren Linux'" /mnt/wren/boot/grub/grub.cfg || fail "BIOS: Wren isn't in the boot menu"
+  grep -q "menuentry 'Floe'" /mnt/wren/boot/grub/grub.cfg || fail "BIOS: Floe isn't in the boot menu"
   cp /mnt/wren/boot/grub/grub.cfg "$SHOTS/dualboot-bios-grub.cfg.txt"
   # Test only: the boot image was tailored to the build server's hardware; make a
   # generic one so the virtual machine below can start it

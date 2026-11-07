@@ -268,12 +268,12 @@ arch-chroot "$T" mkinitcpio -P
 
 step 94 "Installing the boot loader"
 if ((UEFI)) && [[ $MODE == erase ]]; then
-  arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Wren --recheck "${NVRAM_OPT[@]}"
+  arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=Floe --recheck "${NVRAM_OPT[@]}"
   # Second copy at the fallback path, for computers that ignore boot entries
   arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/boot --removable --recheck
 elif ((UEFI)); then
   # Alongside another system: add Wren's own entry, leave the other system's files alone
-  arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=Wren --recheck "${NVRAM_OPT[@]}"
+  arch-chroot "$T" grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=Floe --recheck "${NVRAM_OPT[@]}"
 else
   arch-chroot "$T" grub-install --target=i386-pc --recheck "$DISK"
 fi

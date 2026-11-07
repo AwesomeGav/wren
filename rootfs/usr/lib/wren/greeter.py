@@ -131,18 +131,17 @@ def main():
     .avatar { background-color: #0F7B83; color: #FFFFFF; font-family: IBM Plex Sans;
               font-size: 15px; font-weight: 600; min-width: 34px; min-height: 34px; border-radius: 999px;
               box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85); }
-    .who { font-family: IBM Plex Sans; font-size: 17px; font-weight: 700; color: #F7F9FC;
-           text-shadow: 0 1px 6px rgba(20, 30, 50, 0.45); }
+    .who { font-family: IBM Plex Sans; font-size: 17px; font-weight: 500; color: #1E2328; }
     button.whobtn { background: transparent; box-shadow: none; border: none; padding: 4px 10px; border-radius: 999px; }
     button.whobtn:hover { background: rgba(255, 255, 255, 0.25); }
     .error { font-family: IBM Plex Sans; font-size: 13px; font-weight: 600; color: #FFFFFF; background: rgba(229, 72, 77, 0.85);
              border-radius: 999px; padding: 6px 14px; }
-    entry.pw { background: rgba(40, 52, 76, 0.55); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.45);
+    entry.pw { background: rgba(250, 251, 252, 0.72); color: #1E2328; border: 1px solid rgba(255, 255, 255, 0.95);
                min-height: 50px; padding: 0 20px; font-size: 15px; border-radius: 999px; outline: none;
-               box-shadow: 0 8px 24px rgba(30, 45, 70, 0.25); caret-color: #FFFFFF; }
-    entry.pw:focus-within { border-color: rgba(255, 255, 255, 0.85); background: rgba(40, 52, 76, 0.65); }
-    entry.pw text placeholder { color: rgba(255, 255, 255, 0.7); }
-    entry.pw image { color: rgba(255, 255, 255, 0.85); }
+               box-shadow: 0 8px 24px rgba(30, 40, 50, 0.16); caret-color: #0F7B83; }
+    entry.pw:focus-within { border-color: #0F7B83; background: rgba(255, 255, 255, 0.86); }
+    entry.pw text placeholder { color: #5D6670; }
+    entry.pw image { color: #5D6670; }
     button { box-shadow: none; border: none; font-family: IBM Plex Sans; }
     .roundbtn > button { background: rgba(255, 255, 255, 0.55); color: #2A3242; min-width: 48px; min-height: 48px;
                       border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.8);
