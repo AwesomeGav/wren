@@ -11,6 +11,8 @@ os.chmod(home, 0o755)
 subprocess.run(["modprobe", "uhid"], check=False)
 env = dict(os.environ, PYTHONPATH=LIB, PYTHONUNBUFFERED="1", HOME=home,
            FLOE_PASSKEY_DIRECT="1", FLOE_PASSKEY_TEST_PIN="2468")
+# the PIN is normally chosen in Floe's prompt the first time a passkey is saved
+subprocess.run([sys.executable, "-c", "import passkeys; assert passkeys.set_pin('2468')"], env=env, check=True)
 log = open(os.path.join(home, "service.log"), "w")
 svc = subprocess.Popen([sys.executable, "-m", "passkeys", "--system"], env=env, stdout=log, stderr=log)
 
