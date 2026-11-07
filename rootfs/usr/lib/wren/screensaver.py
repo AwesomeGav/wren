@@ -17,7 +17,6 @@ import signal
 import sys
 import time
 
-import cairo
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -54,26 +53,35 @@ def point(x, y):
     return Graphene.Point().init(x, y)
 
 
-def soft_texture(r, g, b, size=256, edge=False):
+def soft_texture(r, g, b, size=128, edge=False):
     """A soft round glow (or, with edge=True, a dark vignette) as a GPU texture."""
-    surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, size, size)
-    cr = cairo.Context(surf)
-    c = size / 2
-    grad = cairo.RadialGradient(c, c, 0, c, c, c * (1.45 if edge else 1.0))
-    if edge:
-        grad.add_color_stop_rgba(0.0, 0, 0, 0, 0.0)
-        grad.add_color_stop_rgba(0.55, 0, 0, 0, 0.0)
-        grad.add_color_stop_rgba(1.0, 0, 0, 0, 0.62)
-    else:
-        grad.add_color_stop_rgba(0.0, r, g, b, 1.0)
-        grad.add_color_stop_rgba(0.35, r, g, b, 0.55)
-        grad.add_color_stop_rgba(0.7, r, g, b, 0.14)
-        grad.add_color_stop_rgba(1.0, r, g, b, 0.0)
-    cr.set_source(grad)
-    cr.paint()
-    surf.flush()
-    return Gdk.MemoryTexture.new(size, size, Gdk.MemoryFormat.B8G8R8A8_PREMULTIPLIED,
-                                 GLib.Bytes.new(bytes(surf.get_data())), surf.get_stride())
+    c = (size - 1) / 2
+    stops = ((0.0, 0.0), (0.55, 0.0), (1.0, 0.62)) if edge else ((0.0, 1.0), (0.35, 0.55), (0.7, 0.14), (1.0, 0.0))
+    reach = c * (1.45 if edge else 1.0)
+
+    def alpha(d):
+        d = min(d / reach, 1.0)
+        for (d0, a0), (d1, a1) in zip(stops, stops[1:]):
+            if d <= d1:
+                k = (d - d0) / (d1 - d0)
+                k = k * k * (3 - 2 * k)
+                return a0 + (a1 - a0) * k
+        return stops[-1][1]
+    ramp = [alpha(i / 4) for i in range(int(reach * 4 * 1.5) + 8)]
+    rgb = (0, 0, 0) if edge else (r, g, b)
+    out = bytearray(size * size * 4)
+    i = 0
+    for y in range(size):
+        dy = (y - c) ** 2
+        for x in range(size):
+            a = ramp[min(int(math.sqrt((x - c) ** 2 + dy) * 4), len(ramp) - 1)]
+            out[i] = int(rgb[0] * a * 255)
+            out[i + 1] = int(rgb[1] * a * 255)
+            out[i + 2] = int(rgb[2] * a * 255)
+            out[i + 3] = int(a * 255)
+            i += 4
+    return Gdk.MemoryTexture.new(size, size, Gdk.MemoryFormat.R8G8B8A8_PREMULTIPLIED, GLib.Bytes.new(bytes(out)),
+                                 size * 4)
 
 
 class Floe:
