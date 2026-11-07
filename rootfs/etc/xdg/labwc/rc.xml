@@ -41,7 +41,7 @@
   <keyboard>
     <default />
     <keybind key="Super_L" onRelease="yes"><action name="Execute" command="wren-shell launcher" /></keybind>
-    <keybind key="W-space"><action name="Execute" command="wren-shell launcher" /></keybind>
+    <keybind key="W-space"><action name="Execute" command="wren-shell search" /></keybind>
     <keybind key="W-a"><action name="Execute" command="wren-shell control" /></keybind>
     <keybind key="W-Return"><action name="Execute" command="wren-terminal" /></keybind>
     <keybind key="W-e"><action name="Execute" command="nautilus --new-window" /></keybind>

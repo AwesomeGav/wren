@@ -18,6 +18,7 @@ wren-shell --service >/var/tmp/shots/shell.log 2>&1 &
 shot 1-desktop 8
 wren-shell launcher; shot 2-launcher 3; wren-shell launcher
 wren-shell control;  shot 3-quick-settings 3; wren-shell control
+wren-shell search;   shot 17-search 3; wren-shell search
 wren-osd volume up; sleep 0.4; grim /var/tmp/shots/16-volume-popup.png
 for page in 0 1 3 4; do
   WREN_INSTALLER_PAGE=$page wren-installer & pid=$!

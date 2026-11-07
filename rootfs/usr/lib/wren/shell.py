@@ -42,6 +42,28 @@ LOCK_CMD = ["wren-lock"]
 
 CSS = """
 window.wren-layer { background: transparent; }
+.search-sheet { padding: 6px; border-radius: 18px; }
+.search-row { padding: 10px 14px; }
+.search-icon { color: @wren_dim; }
+.search-text { font-size: 22px; font-weight: 300; min-height: 40px; }
+.search-results { background: transparent; border-top: 1px solid alpha(@wren_text, 0.10); padding: 6px 0 4px 0; }
+.search-results > row { border-radius: 10px; padding: 0; margin: 0 4px; }
+.search-results > row:selected { background-color: @wren_accent; color: @wren_on_accent; }
+.search-results > row:selected .search-sub { color: alpha(@wren_on_accent, 0.8); }
+.search-head { font-size: 12px; font-weight: 600; color: @wren_dim; margin: 10px 12px 4px 12px; }
+.search-item { padding: 7px 10px; }
+.search-title { font-size: 14px; }
+.search-sub { font-size: 12px; color: @wren_dim; }
+.menu-footer { border-top: 1px solid alpha(@wren_text, 0.10); padding-top: 12px; margin-top: 2px; }
+.me-btn { background: none; border: none; box-shadow: none; padding: 4px 10px 4px 4px; border-radius: 12px; }
+.me-btn:hover { background: @wren_glass_hover; }
+.me-dot { background-color: @wren_accent; color: @wren_on_accent; border-radius: 999px; min-width: 30px; min-height: 30px;
+          font-weight: 600; }
+.me-name { font-weight: 500; }
+.round-btn { min-width: 38px; min-height: 38px; padding: 0 8px; border-radius: 999px; background: @wren_glass_hover;
+             border: 1px solid @wren_glass_border; box-shadow: none; color: @wren_text; }
+.round-btn:hover { background: alpha(@wren_text, 0.10); }
+.round-btn.confirm { background: #E5484D; color: #FFFFFF; border-color: transparent; padding: 0 14px; font-weight: 600; }
 .osd { background-color: @wren_glass_strong; border: 1px solid @wren_glass_border; border-radius: 999px;
        padding: 12px 20px; margin: 40px; color: @wren_text;
        box-shadow: 0 12px 32px @wren_shadow, 0 0 0 1px @wren_glass_edge;
@@ -56,6 +78,7 @@ window.wren-layer { background: transparent; }
 .frost.shown { opacity: 1; }
 .backdrop { background-color: transparent; transition: background-color 120ms ease-out; }
 .backdrop.shown { background-color: @wren_glass_tint; }
+.backdrop.clear, .backdrop.clear.shown { background-color: transparent; }
 .sheet { opacity: 0; transform: translateY(10px) scale(0.975);
          transition: opacity 90ms ease-out, transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1.06); }
 .sheet.shown { opacity: 1; transform: none; }
@@ -152,11 +175,27 @@ def label(text="", css=None, xalign=0.0, **kw):
     return w
 
 
+def do_power(action):
+    if action == "lock":
+        spawn(LOCK_CMD)
+    elif action == "logout":
+        spawn(["wren-logout"])
+    elif action == "suspend":
+        spawn(["systemctl", "suspend"])
+    elif LIVE and os.path.exists("/usr/lib/wren/live-power"):
+        # The live USB runs from the stick; switch off/restart instantly so it can't hang
+        cmd = ["/usr/lib/wren/live-power", action]
+        spawn(cmd if os.geteuid() == 0 else ["sudo", "-n"] + cmd)
+    else:
+        spawn(["systemctl", action])
+
+
 class Sheet(Gtk.Window):
     """A full-screen transparent overlay with a floating card; click outside or Esc to close."""
 
-    def __init__(self, app, name):
+    def __init__(self, app, name, frosted=True, keep_taskbar=False):
         super().__init__(application=app)
+        self.frosted = frosted
         self.add_css_class("wren-layer")
         self.set_decorated(False)
         Layer.init_for_window(self)
@@ -164,7 +203,8 @@ class Sheet(Gtk.Window):
         Layer.set_layer(self, Layer.Layer.OVERLAY)
         for edge in (Layer.Edge.TOP, Layer.Edge.BOTTOM, Layer.Edge.LEFT, Layer.Edge.RIGHT):
             Layer.set_anchor(self, edge, True)
-        Layer.set_exclusive_zone(self, -1)
+        # keep_taskbar: stay out of the taskbar's space, so it stays visible and clickable
+        Layer.set_exclusive_zone(self, 0 if keep_taskbar else -1)
         Layer.set_keyboard_mode(self, Layer.KeyboardMode.EXCLUSIVE)
 
         # Frosted glass: a pre-blurred copy of the wallpaper fades in behind the card
@@ -175,6 +215,9 @@ class Sheet(Gtk.Window):
         overlay.set_child(self.frost)
         self.backdrop = Gtk.Box()
         self.backdrop.add_css_class("backdrop")
+        if not frosted:
+            self.backdrop.add_css_class("clear")
+            self.frost.set_visible(False)
         overlay.add_overlay(self.backdrop)
         self.set_child(overlay)
         self.card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
@@ -210,6 +253,8 @@ class Sheet(Gtk.Window):
             self.open_sheet()
 
     def _load_frost(self):
+        if not self.frosted:
+            return
         src = wrenlib.wallpaper_blur()
         try:
             key = (src, os.path.getmtime(src))
@@ -258,6 +303,283 @@ class Sheet(Gtk.Window):
         pass
 
 
+# ---------------------------------------------------------------- search (Super+Space)
+
+SETTINGS_INDEX = [
+    ("Wi-Fi", "network", "wifi internet wireless network", "network-wireless-symbolic"),
+    ("Airplane mode", "network", "flight offline", "airplane-mode-symbolic"),
+    ("Bluetooth", "devices", "headphones speaker pair", "bluetooth-active-symbolic"),
+    ("Mouse and touchpad", "devices", "pointer speed scroll tap trackpad", "input-mouse-symbolic"),
+    ("Display", "display", "screen resolution scale monitor brightness", "video-display-symbolic"),
+    ("Night light", "display", "warm blue light", "night-light-symbolic"),
+    ("Sound", "sound", "volume speakers microphone audio", "audio-volume-high-symbolic"),
+    ("Notifications", "notifications", "do not disturb alerts", "preferences-system-notifications-symbolic"),
+    ("Battery and power", "power", "battery saver sleep lock", "battery-good-symbolic"),
+    ("Storage", "storage", "disk space", "drive-harddisk-symbolic"),
+    ("Wallpaper", "personalization", "background picture", "preferences-desktop-wallpaper-symbolic"),
+    ("Dark mode", "personalization", "light theme colors appearance", "weather-clear-night-symbolic"),
+    ("Accent color", "personalization", "theme colour", "applications-graphics-symbolic"),
+    ("Taskbar", "personalization", "dock panel clock 24-hour", "view-dual-symbolic"),
+    ("Apps", "apps", "uninstall installed background", "view-app-grid-symbolic"),
+    ("Account and password", "accounts", "user name password", "system-users-symbolic"),
+    ("Date and time", "time", "clock timezone", "preferences-system-time-symbolic"),
+    ("Keyboard and language", "time", "layout typing repeat", "input-keyboard-symbolic"),
+    ("Software update", "update", "upgrade updates", "software-update-available-symbolic"),
+    ("About this computer", "about", "name version build system", "computer-symbolic"),
+]
+SKIP_DIRS = {"node_modules", "__pycache__", "venv", ".venv", "snap"}
+
+
+class FileIndex:
+    """Names of files in your home folder, gathered in the background."""
+
+    def __init__(self):
+        self.items = []
+        self.built = 0
+        self.busy = False
+
+    def refresh(self, done):
+        if self.busy or (self.items and GLib.get_monotonic_time() - self.built < 120_000_000):
+            return
+        self.busy = True
+
+        def walk():
+            home = os.path.expanduser("~")
+            found = []
+            for root, dirs, files in os.walk(home):
+                depth = root[len(home):].count(os.sep)
+                dirs[:] = [d for d in dirs if not d.startswith(".") and d not in SKIP_DIRS and depth < 6]
+                for d in dirs:
+                    found.append((d.lower(), os.path.join(root, d), True))
+                for f in files:
+                    if not f.startswith("."):
+                        found.append((f.lower(), os.path.join(root, f), False))
+                if len(found) > 40000:
+                    break
+            return found
+
+        def finish(found):
+            self.items, self.built, self.busy = found, GLib.get_monotonic_time(), False
+            done()
+        in_thread(walk, finish)
+
+    def find(self, q, limit=6):
+        starts, contains = [], []
+        for name, path, is_dir in self.items:
+            if name.startswith(q):
+                starts.append((path, is_dir))
+            elif q in name:
+                contains.append((path, is_dir))
+            if len(starts) >= limit:
+                break
+        return (starts + contains)[:limit]
+
+
+def calculate(q):
+    """Simple sums typed into search, like 12*4.5 or (300-20)/7."""
+    import ast
+    import operator
+    text = q.replace("x", "*").replace("×", "*").replace("÷", "/").replace("^", "**").replace(",", "")
+    if not re.fullmatch(r"[\d\s.+\-*/()%]+", text) or not re.search(r"\d\s*[-+*/%]", text):
+        return None
+    ops = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul, ast.Div: operator.truediv,
+           ast.Pow: operator.pow, ast.Mod: operator.mod, ast.USub: operator.neg, ast.UAdd: operator.pos}
+
+    def ev(n):
+        if isinstance(n, ast.Expression):
+            return ev(n.body)
+        if isinstance(n, ast.Constant) and isinstance(n.value, (int, float)):
+            return n.value
+        if isinstance(n, ast.BinOp) and type(n.op) in ops:
+            if isinstance(n.op, ast.Pow) and abs(ev(n.right)) > 100:
+                raise ValueError
+            return ops[type(n.op)](ev(n.left), ev(n.right))
+        if isinstance(n, ast.UnaryOp) and type(n.op) in ops:
+            return ops[type(n.op)](ev(n.operand))
+        raise ValueError
+    try:
+        v = ev(ast.parse(text, mode="eval"))
+    except (ValueError, SyntaxError, ZeroDivisionError, OverflowError):
+        return None
+    if isinstance(v, float):
+        v = round(v, 10)
+        if v.is_integer():
+            v = int(v)
+    return f"{v:,}" if isinstance(v, int) else f"{v:,.10g}"
+
+
+class Search(Sheet):
+    """Spotlight-style search: apps, settings, files, quick sums and the web."""
+
+    def __init__(self, app):
+        super().__init__(app, "search", frosted=False)
+        self.card.add_css_class("search-sheet")
+        self.card.set_halign(Gtk.Align.CENTER)
+        self.card.set_valign(Gtk.Align.START)
+        self.card.set_margin_top(150)
+        self.card.set_size_request(640, -1)
+        self.card.set_vexpand(False)
+        self.card.set_spacing(0)
+
+        row = Gtk.Box(spacing=12)
+        row.add_css_class("search-row")
+        icon = Gtk.Image.new_from_icon_name("system-search-symbolic")
+        icon.set_pixel_size(22)
+        icon.add_css_class("search-icon")
+        row.append(icon)
+        self.entry = Gtk.Text(hexpand=True, placeholder_text="Search apps, files and settings")
+        self.entry.add_css_class("search-text")
+        self.entry.connect("changed", lambda *_: self.update())
+        self.entry.connect("activate", lambda *_: self.open_selected())
+        row.append(self.entry)
+        self.card.append(row)
+
+        self.list = Gtk.ListBox(selection_mode=Gtk.SelectionMode.SINGLE, activate_on_single_click=True)
+        self.list.add_css_class("search-results")
+        self.list.connect("row-activated", lambda _l, r: self.open_row(r))
+        self.scroll = Gtk.ScrolledWindow(hscrollbar_policy=Gtk.PolicyType.NEVER, propagate_natural_height=True,
+                                         max_content_height=440, visible=False)
+        self.scroll.set_child(self.list)
+        self.card.append(self.scroll)
+        self.files = FileIndex()
+
+    def refresh(self):
+        self.entry.set_text("")
+        self.scroll.set_visible(False)
+        self.files.refresh(lambda: self.update() if self.get_visible() else None)
+        GLib.idle_add(lambda: self.entry.grab_focus() and False)
+
+    def on_key(self, keyval):
+        if keyval in (Gdk.KEY_Down, Gdk.KEY_Up):
+            rows = list(wrenlib.children(self.list))
+            rows = [r for r in rows if r.get_selectable()]
+            if not rows:
+                return True
+            cur = self.list.get_selected_row()
+            i = rows.index(cur) if cur in rows else -1
+            i = min(len(rows) - 1, i + 1) if keyval == Gdk.KEY_Down else max(0, i - 1)
+            self.list.select_row(rows[i])
+            rows[i].grab_focus()
+            self.entry.grab_focus_without_selecting()
+            return True
+        return False
+
+    def _clear(self):
+        child = self.list.get_first_child()
+        while child:
+            nxt = child.get_next_sibling()
+            self.list.remove(child)
+            child = nxt
+
+    def _heading(self, text):
+        r = Gtk.ListBoxRow(selectable=False, activatable=False)
+        r.set_child(label(text, "search-head"))
+        self.list.append(r)
+
+    def _result(self, title, sub, icon, run_it, gicon=None):
+        r = Gtk.ListBoxRow()
+        box = Gtk.Box(spacing=12)
+        box.add_css_class("search-item")
+        img = Gtk.Image.new_from_gicon(gicon) if gicon else Gtk.Image.new_from_icon_name(icon)
+        img.set_pixel_size(28)
+        box.append(img)
+        text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER)
+        t = label(title, "search-title", ellipsize=3)
+        text.append(t)
+        if sub:
+            text.append(label(sub, "search-sub", ellipsize=1))
+        box.append(text)
+        r.set_child(box)
+        r.run_it = run_it
+        self.list.append(r)
+        return r
+
+    def update(self):
+        q = self.entry.get_text().strip()
+        self._clear()
+        if not q:
+            self.scroll.set_visible(False)
+            return
+        ql = q.lower()
+        first = None
+
+        sum_ = calculate(q)
+        if sum_ is not None:
+            self._heading("Calculator")
+            first = self._result(f"= {sum_}", "Press Enter to copy", "accessories-calculator-symbolic",
+                                 lambda v=sum_: Gdk.Display.get_default().get_clipboard().set(v.replace(",", "")))
+
+        apps = []
+        for a in Gio.AppInfo.get_all():
+            if not a.should_show():
+                continue
+            name = a.get_display_name() or ""
+            hay = " ".join(filter(None, [name, a.get_description() or "",
+                                         getattr(a, "get_generic_name", lambda: "")() or "",
+                                         " ".join(a.get_keywords() or []) if hasattr(a, "get_keywords") else ""])).lower()
+            nl = name.lower()
+            if nl.startswith(ql) or any(w.startswith(ql) for w in nl.split()):
+                apps.append((0, name, a))
+            elif ql in hay:
+                apps.append((1, name, a))
+        apps.sort(key=lambda t: (t[0], t[1].lower()))
+        if apps:
+            self._heading("Apps")
+            for _r, name, a in apps[:6]:
+                r = self._result(name, a.get_description() or "", "application-x-executable",
+                                 lambda a=a: a.launch([], Gdk.Display.get_default().get_app_launch_context()),
+                                 gicon=a.get_icon())
+                first = first or r
+
+        sets = [x for x in SETTINGS_INDEX if ql in x[0].lower() or any(w.startswith(ql) for w in x[2].split())]
+        if sets:
+            self._heading("Settings")
+            for title, page, _kw, icon in sets[:4]:
+                r = self._result(title, "Settings", icon, lambda p=page: spawn(["wren-settings", p]))
+                first = first or r
+
+        if len(ql) >= 2:
+            found = self.files.find(ql)
+            if found:
+                self._heading("Files")
+                home = os.path.expanduser("~")
+                for path, is_dir in found:
+                    where = os.path.dirname(path).replace(home, "Home", 1)
+                    gfile = Gio.File.new_for_path(path)
+                    icon = "folder" if is_dir else "text-x-generic"
+                    try:
+                        ctype = Gio.content_type_guess(path, None)[0]
+                        gicon = None if is_dir else Gio.content_type_get_icon(ctype)
+                    except Exception:
+                        gicon = None
+                    r = self._result(os.path.basename(path), where, icon,
+                                     lambda f=gfile: Gio.AppInfo.launch_default_for_uri(f.get_uri(), None), gicon=gicon)
+                    first = first or r
+
+        self._heading("Web")
+        r = self._result(f"Search the web for “{q}”", "Opens your browser", "web-browser-symbolic",
+                         lambda: Gio.AppInfo.launch_default_for_uri(
+                             "https://duckduckgo.com/?q=" + GLib.Uri.escape_string(q, None, False), None))
+        first = first or r
+        self.list.select_row(first)
+        self.scroll.set_visible(True)
+
+    def open_selected(self):
+        r = self.list.get_selected_row()
+        if r is not None:
+            self.open_row(r)
+
+    def open_row(self, r):
+        fn = getattr(r, "run_it", None)
+        if fn is None:
+            return
+        self.hide_sheet()
+        try:
+            fn()
+        except GLib.Error:
+            pass
+
+
 # ---------------------------------------------------------------- launcher
 
 class Launcher(Sheet):
@@ -265,7 +587,7 @@ class Launcher(Sheet):
         super().__init__(app, "launcher")
         self.card.set_halign(Gtk.Align.CENTER)
         self.card.set_valign(Gtk.Align.CENTER)
-        self.card.set_size_request(680, 540)
+        self.card.set_size_request(680, 590)
 
         self.entry = Gtk.SearchEntry(placeholder_text="Search apps")
         self.entry.add_css_class("search")
@@ -288,12 +610,68 @@ class Launcher(Sheet):
         self.empty = label("No apps match your search", "empty", xalign=0.5, visible=False)
         self.card.append(self.empty)
         self.apps = {}
+        self.card.append(self._footer())
 
         self.dirty = True
         self.monitor = Gio.AppInfoMonitor.get()
         self.monitor.connect("changed", lambda *_: self._mark_dirty())
         Gtk.Settings.get_default().connect("notify::gtk-icon-theme-name", lambda *_: self._mark_dirty())
         GLib.idle_add(lambda: self.rebuild() or False)  # build ahead of time, while idle
+
+    def _footer(self):
+        bar = Gtk.Box(spacing=6)
+        bar.add_css_class("menu-footer")
+        try:
+            import pwd
+            pw = pwd.getpwuid(os.getuid())
+            full = pw.pw_gecos.split(",")[0] or pw.pw_name
+        except (KeyError, ImportError):
+            full = os.environ.get("USER", "")
+        me = Gtk.Button(tooltip_text="Account settings")
+        me.add_css_class("me-btn")
+        mebox = Gtk.Box(spacing=10)
+        av = label((full[:1] or "?").upper(), "me-dot", xalign=0.5)
+        mebox.append(av)
+        mebox.append(label(full, "me-name"))
+        me.set_child(mebox)
+        me.connect("clicked", lambda *_: (self.hide_sheet(), spawn(["wren-settings", "accounts"])))
+        bar.append(me)
+        bar.append(Gtk.Box(hexpand=True))
+        self._confirm = None
+        actions = [("system-lock-screen-symbolic", "Lock", "lock"),
+                   ("weather-clear-night-symbolic", "Sleep", "suspend"),
+                   ("system-log-out-symbolic", "Log out", "logout"),
+                   ("system-reboot-symbolic", "Restart", "reboot"),
+                   ("system-shutdown-symbolic", "Shut down", "poweroff")]
+        for icon, text, action in actions:
+            if LIVE and action in ("lock", "logout", "suspend"):
+                continue
+            b = Gtk.Button(icon_name=icon, tooltip_text=text)
+            b.add_css_class("round-btn")
+            b.action, b.text = action, text
+            b.connect("clicked", self._power_clicked)
+            bar.append(b)
+        return bar
+
+    def _power_clicked(self, b):
+        # Restart and Shut down ask once: the button turns red with its name, click again to go
+        if b.action in ("reboot", "poweroff") and self._confirm is not b:
+            self._clear_confirm()
+            self._confirm = b
+            b.add_css_class("confirm")
+            b.set_icon_name("")
+            b.set_label(b.text + "?")
+            return
+        self.hide_sheet()
+        do_power(b.action)
+
+    def _clear_confirm(self):
+        b = self._confirm
+        if b:
+            b.remove_css_class("confirm")
+            b.set_label("")
+            b.set_icon_name({"reboot": "system-reboot-symbolic", "poweroff": "system-shutdown-symbolic"}[b.action])
+        self._confirm = None
 
     def _mark_dirty(self):
         self.dirty = True
@@ -303,6 +681,7 @@ class Launcher(Sheet):
     def refresh(self):
         if self.dirty:
             self.rebuild()
+        self._clear_confirm()
         self.entry.set_text("")
         self.flow.invalidate_filter()
         self.empty.set_visible(False)
@@ -408,12 +787,12 @@ class Tile(Gtk.Button):
 
 class Control(Sheet):
     def __init__(self, app):
-        super().__init__(app, "control")
+        super().__init__(app, "control", frosted=False, keep_taskbar=True)
         self.card.set_halign(Gtk.Align.END)
         self.card.set_valign(Gtk.Align.END)
         self.card.set_margin_end(12)
         self.card.set_margin_top(10)
-        self.card.set_margin_bottom(74)
+        self.card.set_margin_bottom(10)
         self.card.set_size_request(380, -1)
         self.state = {}
         self._quiet = False
@@ -524,8 +903,8 @@ class Control(Sheet):
         prefs = load_prefs()
         top = prefs.get("panel_position") == "top"
         self.card.set_valign(Gtk.Align.START if top else Gtk.Align.END)
-        self.card.set_margin_top(74 if top else 12)
-        self.card.set_margin_bottom(12 if top else 74)
+        self.card.set_margin_top(10)
+        self.card.set_margin_bottom(10)
         now = GLib.DateTime.new_now_local()
         self.clock.set_text(now.format("%H:%M" if prefs.get("clock_24h") else "%-I:%M %p"))
         self.date.set_text(now.format("%A, %B %-d"))
@@ -651,16 +1030,7 @@ class Control(Sheet):
             btn.text_label.set_text("Confirm")
             return
         self.hide_sheet()
-        if action == "lock":
-            spawn(LOCK_CMD)
-        elif action == "logout":
-            spawn(["wren-logout"])
-        elif LIVE and os.path.exists("/usr/lib/wren/live-power"):
-            # The live USB runs from the stick; switch off/restart instantly so it can't hang
-            cmd = ["/usr/lib/wren/live-power", action]
-            spawn(cmd if os.geteuid() == 0 else ["sudo", "-n"] + cmd)
-        else:
-            spawn(["systemctl", action])
+        do_power(action)
 
     # -- wifi networks
     def toggle_networks(self):
@@ -824,7 +1194,7 @@ class Shell(Adw.Application):
     def do_startup(self):
         Adw.Application.do_startup(self)
         self.restyle = wrenlib.setup_app_style(CSS)
-        for name in ("launcher", "control"):
+        for name in ("launcher", "control", "search"):
             action = Gio.SimpleAction.new(name, None)
             action.connect("activate", lambda _a, _p, n=name: self.toggle_sheet(n))
             self.add_action(action)
@@ -917,7 +1287,7 @@ class Shell(Adw.Application):
 
     def sheet(self, name):
         if name not in self.sheets:
-            self.sheets[name] = (Launcher if name == "launcher" else Control)(self)
+            self.sheets[name] = {"launcher": Launcher, "control": Control, "search": Search}[name](self)
         return self.sheets[name]
 
     def do_command_line(self, cmdline):
@@ -926,12 +1296,13 @@ class Shell(Adw.Application):
             self.held = True
         args = cmdline.get_arguments()[1:]
         what = args[0] if args else "--service"
-        if what in ("launcher", "control"):
+        if what in ("launcher", "control", "search"):
             self.toggle_sheet(what)
         elif what == "--service":
             # build both ahead of time so the first open is instant
             self.sheet("launcher")
             self.sheet("control")
+            self.sheet("search")
             if not getattr(self, "_watching", False):
                 self._watching = True
                 self.watch_power()
