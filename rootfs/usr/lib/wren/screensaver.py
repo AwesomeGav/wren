@@ -199,7 +199,7 @@ class Scene(Gtk.Widget):
             dx = (w - tw * s) / 2 + math.sin(t / 61) * w * 0.02
             dy = (h - th * s) / 2 + math.cos(t / 53) * h * 0.02
             snap.append_texture(self.wall, rect(dx, dy, tw * s, th * s))
-        snap.append_color(rgba(0.02, 0.05, 0.10, 0.50), rect(0, 0, w, h))
+        snap.append_color(rgba(0.02, 0.04, 0.09, 0.68), rect(0, 0, w, h))
 
         # aurora
         m = max(w, h)
@@ -208,7 +208,7 @@ class Scene(Gtk.Widget):
             cx = w * (0.5 + 0.38 * math.sin(t / p + i * 2.1))
             cy = h * (0.35 + 0.28 * math.cos(t / (p * 1.3) + i))
             size = m * (0.75 + 0.15 * math.sin(t / 23 + i))
-            snap.push_opacity(0.30 + 0.12 * math.sin(t / 17 + i * 1.7))
+            snap.push_opacity(0.40 + 0.14 * math.sin(t / 17 + i * 1.7))
             snap.append_texture(glow, rect(cx - size / 2, cy - size / 2, size, size))
             snap.pop()
 
@@ -293,6 +293,7 @@ class Saver(Gtk.Application):
         for i in range(max(1, monitors.get_n_items())):
             self.add_screen(monitors.get_item(i) if monitors.get_n_items() else None, i)
         self.hold()
+        print("screen saver showing on", len(self.windows), "screen(s)", file=sys.stderr, flush=True)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, lambda: self.end() or True)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, lambda: self.end() or True)
         self.tick()
