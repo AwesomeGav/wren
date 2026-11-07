@@ -42,6 +42,7 @@ adw-gtk-theme
 adwaita-icon-theme
 adwaita-cursors
 inter-font
+ttf-ibm-plex
 noto-fonts
 noto-fonts-emoji
 ttf-nerd-fonts-symbols

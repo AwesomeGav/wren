@@ -1,4 +1,4 @@
-font=Inter 11
+font=IBM Plex Sans 11
 background-color=${surface}EE
 text-color=${text}
 border-color=${border2}

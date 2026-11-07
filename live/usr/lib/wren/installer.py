@@ -41,12 +41,12 @@ RESERVED_USERS = {"root", "bin", "daemon", "mail", "ftp", "http", "nobody", "dbu
                   "systemd-network", "systemd-resolve", "polkitd", "rtkit", "git", "admin"}
 
 CSS = """
-.hero-title { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; }
+.hero-title { font-size: 32px; font-weight: 600; letter-spacing: -0.01em; }
 .hero-body { font-size: 15px; color: alpha(currentColor, 0.72); }
-.page-title { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
+.page-title { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
 .page-body { color: alpha(currentColor, 0.7); }
 .footer { padding: 14px 18px; border-top: 1px solid alpha(currentColor, 0.07); }
-.big-button { padding: 10px 26px; border-radius: 999px; font-weight: 600; }
+.big-button { padding: 10px 26px; border-radius: 10px; font-weight: 600; }
 .warn { color: #B45309; }
 .error-text { color: #DC2626; }
 .steps label { font-size: 12px; color: alpha(currentColor, 0.45); }

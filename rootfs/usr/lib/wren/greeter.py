@@ -125,17 +125,17 @@ def main():
     css = """
     window { background-color: #E6EAF1; }
     .shade { background-color: rgba(236, 241, 248, 0.10); }
-    .date { font-family: Inter; font-size: 22px; font-weight: 600; color: #3A4354; }
-    .clock { font-family: Inter; font-size: 112px; font-weight: 600; color: #2A3242; letter-spacing: -3px; }
-    .status { font-family: Inter, "Symbols Nerd Font"; font-size: 15px; font-weight: 600; color: #2A3242; }
-    .avatar { background-image: linear-gradient(135deg, #60A5FA, #3B82F6); color: #FFFFFF; font-family: Inter;
-              font-size: 15px; font-weight: 800; min-width: 34px; min-height: 34px; border-radius: 999px;
+    .date { font-family: IBM Plex Sans; font-size: 22px; font-weight: 500; color: #343B42; }
+    .clock { font-family: IBM Plex Sans; font-size: 120px; font-weight: 300; color: #1E2328; letter-spacing: -2px; }
+    .status { font-family: IBM Plex Sans, "Symbols Nerd Font"; font-size: 15px; font-weight: 600; color: #2A3242; }
+    .avatar { background-color: #0F7B83; color: #FFFFFF; font-family: IBM Plex Sans;
+              font-size: 15px; font-weight: 600; min-width: 34px; min-height: 34px; border-radius: 999px;
               box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85); }
-    .who { font-family: Inter; font-size: 17px; font-weight: 700; color: #F7F9FC;
+    .who { font-family: IBM Plex Sans; font-size: 17px; font-weight: 700; color: #F7F9FC;
            text-shadow: 0 1px 6px rgba(20, 30, 50, 0.45); }
     button.whobtn { background: transparent; box-shadow: none; border: none; padding: 4px 10px; border-radius: 999px; }
     button.whobtn:hover { background: rgba(255, 255, 255, 0.25); }
-    .error { font-family: Inter; font-size: 13px; font-weight: 600; color: #FFFFFF; background: rgba(229, 72, 77, 0.85);
+    .error { font-family: IBM Plex Sans; font-size: 13px; font-weight: 600; color: #FFFFFF; background: rgba(229, 72, 77, 0.85);
              border-radius: 999px; padding: 6px 14px; }
     entry.pw { background: rgba(40, 52, 76, 0.55); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.45);
                min-height: 50px; padding: 0 20px; font-size: 15px; border-radius: 999px; outline: none;
@@ -143,14 +143,14 @@ def main():
     entry.pw:focus-within { border-color: rgba(255, 255, 255, 0.85); background: rgba(40, 52, 76, 0.65); }
     entry.pw text placeholder { color: rgba(255, 255, 255, 0.7); }
     entry.pw image { color: rgba(255, 255, 255, 0.85); }
-    button { box-shadow: none; border: none; font-family: Inter; }
+    button { box-shadow: none; border: none; font-family: IBM Plex Sans; }
     .roundbtn > button { background: rgba(255, 255, 255, 0.55); color: #2A3242; min-width: 48px; min-height: 48px;
                       border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.8);
                       box-shadow: 0 6px 18px rgba(30, 45, 70, 0.18); }
     .roundbtn image, entry.pw image { -gtk-icon-size: 18px; }
     .roundbtn > button:hover { background: rgba(255, 255, 255, 0.8); }
     button.menurow { background: transparent; color: #1C2230; padding: 9px 14px; border-radius: 10px; font-size: 14px; }
-    button.menurow:hover { background: rgba(59, 130, 246, 0.14); }
+    button.menurow:hover { background: rgba(15, 123, 131, 0.14); }
     .intro { opacity: 0; transform: translateY(24px);
              transition: opacity 500ms ease-out, transform 700ms cubic-bezier(0.18, 0.9, 0.28, 1.05); }
     .intro.in { opacity: 1; transform: none; }

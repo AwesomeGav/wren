@@ -43,39 +43,38 @@ LIVE = os.path.isdir("/run/archiso")
 CSS = """
 .settings { background-color: @wren_bg; }
 .nav { background-color: @wren_deep; border-right: 1px solid @wren_line; padding: 0 10px; }
-.nav row { padding: 9px 12px; margin: 1px 0; border-radius: 12px; color: @wren_dim; }
+.nav row { padding: 8px 12px; margin: 1px 0; border-radius: 8px; color: @wren_text2; }
 .nav row:hover { background-color: alpha(@wren_text, 0.05); color: @wren_text; }
-.nav row:selected { background-color: @wren_surface; color: @wren_text; box-shadow: 0 1px 6px alpha(@wren_shadow, 0.6); }
+.nav row:selected { background-color: alpha(@wren_accent, 0.10); color: @wren_accent_text; font-weight: 600; }
 .nav row:selected image { color: @wren_accent; }
 .nav > row, .nav list { background: transparent; }
 .me { padding: 18px 8px 14px 8px; }
-.me-avatar { background-image: linear-gradient(135deg, @wren_accent_hover, @wren_accent); color: @wren_on_accent;
-             font-weight: 800; font-size: 20px; min-width: 48px; min-height: 48px; border-radius: 999px; }
-.me-name { font-weight: 800; font-size: 15px; }
+.me-avatar { background-color: @wren_accent; color: @wren_on_accent;
+             font-weight: 500; font-size: 20px; min-width: 48px; min-height: 48px; border-radius: 999px; }
+.me-name { font-weight: 600; font-size: 15px; }
 .me-sub { color: @wren_muted; font-size: 12px; }
-.page-title { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
+.page-title { font-size: 26px; font-weight: 600; letter-spacing: -0.3px; }
 .crumb { color: @wren_muted; font-size: 13px; }
-.group-title { font-size: 12px; font-weight: 700; color: @wren_dim; margin: 16px 0 6px 6px; }
-.card { background-color: @wren_surface; border: 1px solid @wren_glass_edge; border-radius: 16px;
-        box-shadow: 0 2px 10px alpha(@wren_shadow, 0.45); }
+.group-title { font-size: 15px; font-weight: 600; color: @wren_text; margin: 28px 0 10px 2px; }
+.card { background-color: @wren_surface; border: 1px solid @wren_border; border-radius: 12px; box-shadow: none; }
 .card + .card { margin-top: 6px; }
-.row { padding: 13px 18px; min-height: 36px; }
+.row { padding: 12px 16px; min-height: 34px; }
 .row + .row { border-top: 1px solid @wren_line; }
 .row.link:hover { background-color: alpha(@wren_text, 0.03); }
-.row-icon { color: @wren_accent; min-width: 36px; }
-.row-title { font-weight: 600; }
+.row-icon { color: @wren_dim; min-width: 34px; }
+.row-title { font-weight: 500; }
 .row-sub { color: @wren_dim; font-size: 12px; }
-.big-stat { font-size: 30px; font-weight: 800; }
-.btn { padding: 6px 16px; font-weight: 700; border-radius: 999px; }
-.btn.primary { background-color: @wren_accent; color: @wren_on_accent; box-shadow: 0 4px 12px alpha(@wren_accent, 0.3); }
+.big-stat { font-size: 28px; font-weight: 300; }
+.btn { padding: 6px 16px; font-weight: 600; border-radius: 8px; }
+.btn.primary { background-color: @wren_accent; color: @wren_on_accent; box-shadow: none; }
 .btn.primary:hover { background-color: @wren_accent_hover; }
-.wall { border: 3px solid transparent; padding: 0; border-radius: 16px; }
-.wall picture { border-radius: 12px; }
+.wall { border: 2px solid transparent; padding: 2px; border-radius: 12px; }
+.wall picture { border-radius: 8px; }
 .wall.chosen { border-color: @wren_accent; }
 .tile-grid > flowboxchild { padding: 0; }
-.mode-tile { padding: 0; border: 2px solid @wren_line; background: @wren_surface; border-radius: 16px; }
-.mode-tile.chosen { border-color: @wren_accent; box-shadow: 0 0 0 3px @wren_accent_glass; }
-.mode-tile .preview { min-width: 150px; min-height: 84px; border-radius: 13px 13px 0 0; }
+.mode-tile { padding: 0; border: 1px solid @wren_border; background: @wren_surface; border-radius: 12px; }
+.mode-tile.chosen { border-color: @wren_accent; box-shadow: inset 0 0 0 1px @wren_accent; }
+.mode-tile .preview { min-width: 150px; min-height: 84px; border-radius: 11px 11px 0 0; }
 .mode-tile .preview.dark { background-image: linear-gradient(160deg, #2A3140, #12151B); }
 .mode-tile .preview.light { background-image: linear-gradient(160deg, #FFFFFF, #DCE3EE); }
 .mode-tile .bar { min-height: 10px; margin: 10px 12px 0 12px; border-radius: 999px; }
@@ -84,7 +83,7 @@ CSS = """
 .mode-tile .blob { min-width: 46px; min-height: 8px; margin: 8px 12px 0 12px; background-color: @wren_accent; border-radius: 999px; }
 .mode-tile .dark .line2 { background-color: rgba(255, 255, 255, 0.22); min-width: 80px; min-height: 6px; margin: 6px 12px 0 12px; border-radius: 999px; }
 .mode-tile .light .line2 { background-color: rgba(30, 45, 70, 0.18); min-width: 80px; min-height: 6px; margin: 6px 12px 0 12px; border-radius: 999px; }
-.mode-name { padding: 8px 12px; font-weight: 700; }
+.mode-name { padding: 8px 12px; font-weight: 500; }
 .swatch { min-width: 28px; min-height: 28px; padding: 3px; border: 2px solid transparent; border-radius: 999px; background: none; }
 .swatch.chosen { border-color: @wren_text; }
 .swatch > box { margin: 0; border-radius: 999px; }
@@ -302,7 +301,7 @@ class Pages:
         return box
 
     def group(self, box, title):
-        box.append(label(title.upper(), "group-title"))
+        box.append(label(title, "group-title"))
         card = Card()
         box.append(card)
         return card
@@ -366,7 +365,7 @@ class Pages:
             res_dd = dropdown(labels, sel)
             scale_dd = dropdown([f"{int(s * 100)}%" for s in scales], ssel)
             card.row("video-display-symbolic", "Display resolution", "", res_dd)
-            card.row("zoom-in-symbolic", "Scale", "Makes text and apps bigger", scale_dd)
+            card.row("zoom-in-symbolic", "Scale", "", scale_dd)
 
             def apply(name=name, uniq=uniq, res_dd=res_dd, scale_dd=scale_dd):
                 if not uniq:
@@ -404,7 +403,7 @@ class Pages:
             spawn(["wren-nightlight"])
         cur_t = self.prefs.get("night_temp", 3800)
         cur_s = self.prefs.get("night_schedule", "evening")
-        night.row("night-light-symbolic", "Night light", "Warmer colors that are easier on your eyes at night",
+        night.row("night-light-symbolic", "Night light", "",
                   switch(self.prefs.get("night_light", False), lambda v: setn("night_light", v)))
         night.row(None, "Strength", "", dropdown([t for _, t in temps],
                   next((i for i, (v, _) in enumerate(temps) if v == cur_t), 1),
@@ -498,8 +497,7 @@ class Pages:
             saver_sw = switch(wrenlib.saver_on(), lambda v: background(
                 lambda: run(["wren-battery-saver", "on" if v else "off"], 20)))
             saver.row("battery-caution-symbolic", "Battery saver",
-                      "Dims the screen, slows the processor a little, turns off animations and unused "
-                      "Bluetooth, and stops apps running in the background", saver_sw)
+                      "Dims the screen and cuts background activity", saver_sw)
             autos = [(10, "At 10%"), (20, "At 20%"), (30, "At 30%"), (50, "At 50%"), (0, "Never")]
             cur_a = self.prefs.get("saver_auto_at", 20)
 
@@ -523,10 +521,10 @@ class Pages:
             self.prefs[key] = opts[i][0]
             self.save()
             spawn(["wren-idle"])
-        card.row("system-lock-screen-symbolic", "Lock the screen after", "When you're not using the computer",
+        card.row("system-lock-screen-symbolic", "Lock the screen after", "",
                  dropdown([t for _, t in lock_opts], pick(lock_opts, "lock_after", 600),
                           lambda i: set_opt("lock_after", lock_opts, i)))
-        card.row("weather-clear-night-symbolic", "Put the computer to sleep after", "Saves battery and power",
+        card.row("weather-clear-night-symbolic", "Sleep after", "",
                  dropdown([t for _, t in sleep_opts], pick(sleep_opts, "sleep_after", 0),
                           lambda i: set_opt("sleep_after", sleep_opts, i)))
         return box
@@ -584,7 +582,7 @@ class Pages:
         card = self.group(box, "Bluetooth")
         bt = run(["bluetoothctl", "show"], 3)
         if "Controller" in bt:
-            card.row("bluetooth-active-symbolic", "Bluetooth", "Turn on to connect wireless devices",
+            card.row("bluetooth-active-symbolic", "Bluetooth", "",
                      switch("Powered: yes" in bt, lambda on: background(
                          lambda: (subprocess.run(["rfkill", "unblock", "bluetooth"], capture_output=True) if on else None,
                                   run(["bluetoothctl", "power", "on" if on else "off"])))))
@@ -608,9 +606,9 @@ class Pages:
 
         mouse = self.group(box, "Mouse")
         mouse.row("input-mouse-symbolic", "Pointer speed", "", speed("mouse_speed"))
-        mouse.row(None, "Natural scrolling", "Content moves the same way as your fingers",
+        mouse.row(None, "Natural scrolling", "",
                   switch(self.prefs.get("mouse_natural", False), lambda v: setp("mouse_natural", v)))
-        mouse.row(None, "Swap left and right buttons", "For left-handed use",
+        mouse.row(None, "Left-handed buttons", "",
                   switch(self.prefs.get("left_handed", False), lambda v: setp("left_handed", v)))
         pad = self.group(box, "Touchpad")
         pad.row("input-touchpad-symbolic", "Tap to click", "",
@@ -720,7 +718,7 @@ class Pages:
     def personalization(self):
         box = self.page("Personalization")
         self.colors(box)
-        box.append(label("BACKGROUND", "group-title"))
+        box.append(label("Background", "group-title"))
         current = self.prefs.get("wallpaper", wrenlib.DEFAULT_WALLPAPER)
         flow = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, max_children_per_line=4, min_children_per_line=2,
                            row_spacing=8, column_spacing=8, homogeneous=True)
@@ -789,7 +787,7 @@ class Pages:
         sizes = [(1.0, "Default"), (1.1, "Larger"), (1.25, "Large"), (1.5, "Extra large")]
         cur = iface.get_double("text-scaling-factor")
         sel = min(range(len(sizes)), key=lambda i: abs(sizes[i][0] - cur))
-        text.row("format-text-larger-symbolic", "Text size", "Applies to apps",
+        text.row("format-text-larger-symbolic", "Text size", "",
                  dropdown([t for _, t in sizes], sel, lambda i: iface.set_double("text-scaling-factor", sizes[i][0])))
         cursors = [(24, "Default"), (32, "Large"), (48, "Extra large")]
         cur_c = self.prefs.get("cursor_size", 24)
@@ -813,13 +811,13 @@ class Pages:
         bar.row("view-dual-symbolic", "Taskbar position", "",
                 dropdown(["Bottom", "Top"], 1 if self.prefs.get("panel_position") == "top" else 0,
                          lambda i: setp("panel_position", "top" if i else "bottom")))
-        bar.row("preferences-system-time-symbolic", "24-hour clock", "Show 18:30 instead of 6:30 PM",
+        bar.row("preferences-system-time-symbolic", "24-hour clock", "",
                 switch(bool(self.prefs.get("clock_24h")), lambda v: setp("clock_24h", v)))
         return box
 
     def colors(self, box):
         t = wrenlib.load_theme()
-        box.append(label("COLORS", "group-title"))
+        box.append(label("Colors", "group-title"))
         modes = Gtk.Box(spacing=10)
         mode_buttons = []
 
@@ -884,7 +882,7 @@ class Pages:
             sw_buttons.append(b)
             swatches.append(b)
         acc_row = card.row("applications-graphics-symbolic", "Accent color", wrenlib.ACCENTS[t["accent"]][6], swatches)
-        card.row("view-reveal-symbolic", "Animations", "Smooth fades and slides when things open",
+        card.row("view-reveal-symbolic", "Animations", "",
                  switch(bool(t["animations"]), lambda v: set_theme(animations=v)))
         box.append(card)
 
@@ -919,7 +917,7 @@ class Pages:
 
         self.background_row(self.group(box, "Background apps"))
         store = self.group(box, "Get more apps")
-        store.row("system-software-install-symbolic", "App Store", "Install, update and remove apps",
+        store.row("system-software-install-symbolic", "App Store", "",
                   on_click=lambda: spawn(["wren-store"]))
         installed = self.group(box, "Installed apps")
         apps = sorted([a for a in Gio.AppInfo.get_all() if a.should_show()], key=lambda a: a.get_display_name().lower())
@@ -940,8 +938,7 @@ class Pages:
             self.prefs["background_apps"] = v
             self.save()
         card.row("view-app-grid-symbolic", "Let apps run in the background",
-                 "When this is off, apps are stopped about two minutes after you close their last window, "
-                 "so they can't use battery, memory or data",
+                 "When off, closed apps stop after about two minutes",
                  switch(bool(self.prefs.get("background_apps", False)), setb))
 
     def uninstall(self, app_id, name):
@@ -974,7 +971,7 @@ class Pages:
         card.append(head)
         box.append(card)
         sign = self.group(box, "Sign-in options")
-        sign.row("dialog-password-symbolic", "Change your password", "You'll type your current password, then the new one",
+        sign.row("dialog-password-symbolic", "Change password", "",
                  on_click=lambda: spawn(["wren-terminal", "-e", "sh", "-c",
                                          "passwd; echo; echo 'You can close this window.'; read _"]))
         return box
@@ -986,7 +983,7 @@ class Pages:
         now = GLib.DateTime.new_now_local()
         card.row("preferences-system-time-symbolic", now.format("%-I:%M %p"), now.format("%A, %B %-d, %Y"))
         ntp = "NTP=yes" in run(["timedatectl", "show", "-p", "NTP"])
-        card.row(None, "Set time automatically", "Uses the internet to keep the clock right",
+        card.row(None, "Set time automatically", "",
                  switch(ntp, lambda on: background(lambda: ok(["timedatectl", "set-ntp", "true" if on else "false"]))))
         zones = run(["timedatectl", "list-timezones"]).splitlines() or ["UTC"]
         cur = run(["timedatectl", "show", "-p", "Timezone", "--value"]) or "UTC"
@@ -1037,8 +1034,8 @@ class Pages:
                 pending["src"] = GLib.timeout_add(400, commit)
             s.connect("value-changed", changed)
             return s
-        kb.row(None, "Repeat delay", "How long to hold a key before it repeats", key_scale("repeat_delay", 200, 1000, 600, 50))
-        kb.row(None, "Repeat speed", "How fast a held key repeats", key_scale("repeat_rate", 10, 60, 25, 1))
+        kb.row(None, "Repeat delay", "", key_scale("repeat_delay", 200, 1000, 600, 50))
+        kb.row(None, "Repeat speed", "", key_scale("repeat_rate", 10, 60, 25, 1))
         return box
 
     # -------------------------------------------------------- Update

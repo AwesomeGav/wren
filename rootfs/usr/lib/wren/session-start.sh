@@ -8,8 +8,8 @@ xdg-user-dirs-update >/dev/null 2>&1
 
 # First login: fonts and window buttons for GNOME/libadwaita apps (colors come from wren-theme)
 if [ ! -f "$HOME/.config/wren/defaults-v5" ]; then
-  gsettings set org.gnome.desktop.interface font-name 'Inter 10'
-  gsettings set org.gnome.desktop.interface document-font-name 'Inter 10'
+  gsettings set org.gnome.desktop.interface font-name 'IBM Plex Sans 10'
+  gsettings set org.gnome.desktop.interface document-font-name 'IBM Plex Sans 10'
   gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
   mkdir -p "$HOME/.config/wren" && touch "$HOME/.config/wren/defaults-v5"
 fi

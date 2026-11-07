@@ -15,10 +15,10 @@
       <layout>icon:iconify,max,close</layout>
       <showTitle>yes</showTitle>
     </titlebar>
-    <font place="ActiveWindow"><name>Inter</name><size>10</size><weight>bold</weight></font>
-    <font place="InactiveWindow"><name>Inter</name><size>10</size><weight>bold</weight></font>
-    <font place="MenuItem"><name>Inter</name><size>10</size></font>
-    <font place="OnScreenDisplay"><name>Inter</name><size>11</size></font>
+    <font place="ActiveWindow"><name>IBM Plex Sans</name><size>10</size><weight>bold</weight></font>
+    <font place="InactiveWindow"><name>IBM Plex Sans</name><size>10</size><weight>bold</weight></font>
+    <font place="MenuItem"><name>IBM Plex Sans</name><size>10</size></font>
+    <font place="OnScreenDisplay"><name>IBM Plex Sans</name><size>11</size></font>
   </theme>
 
   <!-- Drag a window to the top edge to maximize, to a side to fill half the screen -->

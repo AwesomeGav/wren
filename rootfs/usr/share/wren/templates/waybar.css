@@ -1,6 +1,6 @@
 /* Wren dock: a floating sheet of frosted glass */
 * {
-  font-family: "Inter", "Symbols Nerd Font", sans-serif;
+  font-family: "IBM Plex Sans", "Symbols Nerd Font", sans-serif;
   font-size: 13px;
   min-height: 0;
   border: none;
@@ -11,7 +11,7 @@
 window#waybar {
   background: ${glass};
   border: 1px solid ${glass_border};
-  border-radius: 20px;
+  border-radius: 16px;
   color: ${text};
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
@@ -22,7 +22,7 @@ window#waybar {
   font-size: 19px;
   padding: 0 12px;
   margin: 7px 4px 7px 8px;
-  border-radius: 14px;
+  border-radius: 10px;
   transition: background 180ms ease, margin 220ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
 }
 #custom-apps:hover {
@@ -39,7 +39,7 @@ window#waybar {
 #taskbar button {
   padding: 3px 9px 1px 9px;
   margin: 6px 2px;
-  border-radius: 13px;
+  border-radius: 10px;
   background: transparent;
   transition: background 180ms ease, margin 220ms cubic-bezier(0.2, 0.9, 0.3, 1.2), box-shadow 220ms ease;
   box-shadow: inset 0 -2px transparent;
@@ -65,7 +65,7 @@ window#waybar {
 #status {
   background: ${glass_hover};
   border: 1px solid rgba(${text_rgb}, 0.06);
-  border-radius: 14px;
+  border-radius: 10px;
   margin: 8px 4px;
   padding: 0 6px;
 }
@@ -92,7 +92,7 @@ window#waybar {
   font-weight: 600;
   padding: 0 12px;
   margin: 8px 1px;
-  border-radius: 14px;
+  border-radius: 10px;
 }
 #custom-power {
   margin: 8px 10px 8px 2px;

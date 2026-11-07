@@ -5,7 +5,7 @@ fit = "Cover"
 [GTK]
 application_prefer_dark_theme = true
 cursor_theme_name = "Wren-Cursor"
-font_name = "Inter 12"
+font_name = "IBM Plex Sans 12"
 icon_theme_name = "Adwaita"
 theme_name = "Adwaita"
 

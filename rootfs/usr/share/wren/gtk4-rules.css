@@ -2,7 +2,7 @@
 
 /* ------------------------------------------------------- window frames */
 window.csd:not(.wren-layer) {
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow: 0 10px 34px @wren_shadow, 0 0 0 1px @wren_glass_edge;
 }
 window.csd:not(.wren-layer):backdrop {
@@ -26,7 +26,7 @@ popover > contents {
 
 /* Entries: soft accent ring when focused */
 entry, .entry, spinbutton, searchbar > revealer > box > entry {
-  border-radius: 12px;
+  border-radius: 8px;
 }
 entry:focus-within, .entry:focus-within {
   outline: 2px solid alpha(@wren_accent, 0.55);
@@ -34,14 +34,14 @@ entry:focus-within, .entry:focus-within {
 }
 
 button {
-  border-radius: 12px;
+  border-radius: 8px;
   transition: background 150ms ease, box-shadow 150ms ease;
 }
 button.pill, button.suggested-action.pill {
   border-radius: 999px;
 }
 button.suggested-action {
-  box-shadow: 0 4px 12px alpha(@wren_accent, 0.30);
+  box-shadow: none;
 }
 
 /* Window control buttons: round */
@@ -58,10 +58,11 @@ windowcontrols > button.close:hover > image {
 }
 
 /* Cards and lists: white glass with a soft drop shadow */
+/* Content groups: hairlines, not shadows (only floating things cast shadows) */
 .boxed-list, .card, list.boxed-list, .boxed-list-separate > row {
-  border-radius: 16px;
-  border: 1px solid @wren_glass_edge;
-  box-shadow: 0 2px 10px alpha(@wren_shadow, 0.5);
+  border-radius: 12px;
+  border: 1px solid @wren_border;
+  box-shadow: none;
 }
 switch {
   border-radius: 999px;
@@ -87,17 +88,17 @@ scale trough, progressbar trough, progressbar progress, scale highlight {
   margin: 1px 0;
   padding: 8px 12px;
   min-height: 22px;
-  border-radius: 12px;
-  color: @wren_dim;
+  border-radius: 8px;
+  color: @wren_text2;
 }
 .nautilus-window .navigation-sidebar > row:hover {
   background-color: alpha(@wren_text, 0.05);
   color: @wren_text;
 }
 .nautilus-window .navigation-sidebar > row:selected {
-  background-color: @wren_surface;
-  color: @wren_text;
-  box-shadow: 0 1px 6px alpha(@wren_shadow, 0.6);
+  background-color: alpha(@wren_accent, 0.10);
+  color: @wren_accent_text;
+  font-weight: 600;
 }
 .nautilus-window .navigation-sidebar > row:selected image {
   color: @wren_accent;
@@ -131,9 +132,9 @@ scale trough, progressbar trough, progressbar progress, scale highlight {
 }
 .nautilus-path-button.current-dir {
   color: @wren_text;
-  font-weight: 700;
-  background-color: @wren_surface;
-  box-shadow: 0 1px 4px alpha(@wren_shadow, 0.6);
+  font-weight: 600;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .nautilus-window .view,
@@ -148,7 +149,7 @@ scale trough, progressbar trough, progressbar progress, scale highlight {
 }
 .nautilus-grid-view gridview > child {
   padding: 0;
-  border-radius: 16px;
+  border-radius: 10px;
   transition: background 120ms ease;
 }
 .nautilus-grid-view gridview > child:hover {
@@ -230,10 +231,10 @@ popover.menu separator { margin: 5px 8px; background-color: @wren_line; }
 popover > arrow { background: none; border: none; }
 
 /* Check boxes and radio buttons */
-checkbutton check { border-radius: 7px; min-width: 18px; min-height: 18px; }
+checkbutton check { border-radius: 5px; min-width: 18px; min-height: 18px; }
 checkbutton radio { min-width: 18px; min-height: 18px; }
 checkbutton check:checked, checkbutton radio:checked {
-  background-color: @wren_accent; color: @wren_on_accent; box-shadow: 0 2px 6px alpha(@wren_accent, 0.35);
+  background-color: @wren_accent; color: @wren_on_accent; box-shadow: none;
 }
 
 /* Switches: white knob with a soft shadow */
@@ -258,18 +259,18 @@ progressbar progress { background-image: linear-gradient(90deg, @wren_accent, @w
 spinner { color: @wren_accent; }
 
 /* Title bars: lighter titles, soft separators */
-headerbar .title, windowtitle .title { font-weight: 700; }
+headerbar .title, windowtitle .title { font-weight: 600; }
 headerbar .subtitle, windowtitle .subtitle { color: @wren_dim; }
 separator { background-color: @wren_line; }
 
 /* Dropdowns and combo boxes */
-dropdown > button, combobox > box > button { border-radius: 12px; }
+dropdown > button, combobox > box > button { border-radius: 8px; }
 dropdown popover listview > row, dropdown popover list > row { border-radius: 9px; padding: 6px 10px; }
 dropdown popover listview > row:selected { background-color: @wren_accent_glass; color: @wren_text; }
 
 /* Toasts and banners */
-toast { background-color: @wren_glass_strong; color: @wren_text; border: 1px solid @wren_glass_border;
-        border-radius: 999px; box-shadow: 0 10px 28px @wren_shadow; }
+toast { background-color: @wren_text; color: @wren_bg; border: none;
+        border-radius: 10px; box-shadow: 0 10px 28px @wren_shadow; }
 banner > revealer > widget { background-color: @wren_accent_glass; }
 
 /* Tabs */

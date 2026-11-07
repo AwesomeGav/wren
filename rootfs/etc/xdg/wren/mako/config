@@ -1,10 +1,10 @@
-font=Inter 11
+font=IBM Plex Sans 11
 background-color=#FFFFFFEE
-text-color=#1C2230
-border-color=#C7CFDA
+text-color=#1E2328
+border-color=#C9D0D6
 border-size=1
 border-radius=18
-progress-color=over #3B82F640
+progress-color=over #0F7B8340
 padding=14,16
 margin=14
 outer-margin=6
@@ -19,7 +19,7 @@ max-icon-size=40
 format=<b>%s</b>\n%b
 
 [urgency=high]
-border-color=#3B82F6
+border-color=#0F7B83
 border-size=2
 default-timeout=0
 

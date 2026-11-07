@@ -11,39 +11,39 @@ PREFS_FILE = os.path.join(os.path.expanduser("~"), ".config", "wren", "settings.
 
 DARK = {
     "scheme": "dark",
-    "bg": "#15181E", "window": "#1A1E25", "surface": "#222730", "surface2": "#2A303A", "deep": "#13161B",
-    "border": "#2E343E", "border2": "#3A414D", "line": "#272C35",
-    "text": "#EEF1F6", "text2": "#D3D8E1", "dim": "#9AA3B2", "muted": "#7C8594",
+    "bg": "#171B1E", "window": "#1C2124", "surface": "#22282C", "surface2": "#2A3135", "deep": "#14181A",
+    "border": "#2E363B", "border2": "#3A4348", "line": "#283034",
+    "text": "#E9EDEF", "text2": "#CDD4D8", "dim": "#97A2A9", "muted": "#76828A",
     # frosted glass: panels over the (pre-blurred) wallpaper
-    "glass": "rgba(30, 34, 42, 0.62)", "glass_strong": "rgba(30, 34, 42, 0.82)",
-    "glass_hover": "rgba(255, 255, 255, 0.10)", "glass_border": "rgba(255, 255, 255, 0.14)",
-    "glass_edge": "rgba(0, 0, 0, 0.40)", "glass_tint": "rgba(10, 12, 16, 0.30)",
-    "shadow": "rgba(0, 0, 0, 0.45)",
+    "glass": "rgba(28, 33, 36, 0.66)", "glass_strong": "rgba(28, 33, 36, 0.86)",
+    "glass_hover": "rgba(255, 255, 255, 0.08)", "glass_border": "rgba(255, 255, 255, 0.12)",
+    "glass_edge": "rgba(0, 0, 0, 0.40)", "glass_tint": "rgba(8, 10, 12, 0.32)",
+    "shadow": "rgba(0, 0, 0, 0.42)",
 }
 LIGHT = {
     "scheme": "light",
-    "bg": "#F7F9FC", "window": "#EEF1F6", "surface": "#FFFFFF", "surface2": "#E8ECF2", "deep": "#E6EAF1",
-    "border": "#D8DEE7", "border2": "#C7CFDA", "line": "#E3E8EF",
-    "text": "#1C2230", "text2": "#333B4B", "dim": "#5F6879", "muted": "#8A92A1",
-    "glass": "rgba(255, 255, 255, 0.58)", "glass_strong": "rgba(255, 255, 255, 0.80)",
-    "glass_hover": "rgba(255, 255, 255, 0.55)", "glass_border": "rgba(255, 255, 255, 0.80)",
-    "glass_edge": "rgba(30, 45, 70, 0.12)", "glass_tint": "rgba(236, 241, 248, 0.30)",
-    "shadow": "rgba(40, 55, 80, 0.18)",
+    "bg": "#FAFBFC", "window": "#EEF1F4", "surface": "#FFFFFF", "surface2": "#E6EAEE", "deep": "#E9EDF1",
+    "border": "#D9DEE3", "border2": "#C9D0D6", "line": "#E2E6EA",
+    "text": "#1E2328", "text2": "#343B42", "dim": "#5D6670", "muted": "#88919A",
+    "glass": "rgba(250, 251, 252, 0.62)", "glass_strong": "rgba(250, 251, 252, 0.84)",
+    "glass_hover": "rgba(255, 255, 255, 0.55)", "glass_border": "rgba(255, 255, 255, 0.85)",
+    "glass_edge": "rgba(30, 35, 40, 0.10)", "glass_tint": "rgba(238, 241, 244, 0.30)",
+    "shadow": "rgba(30, 40, 50, 0.16)",
 }
 # name: (accent, hover, text-on-dark, text-on-light, on-accent, libadwaita accent name, label)
 ACCENTS = {
-    "sky":    ("#3B82F6", "#5594F7", "#86B4FA", "#1F63D6", "#FFFFFF", "blue", "Blue"),
-    "violet": ("#8B5CF6", "#9C73F7", "#B9A0FA", "#6A3BD9", "#FFFFFF", "purple", "Violet"),
-    "rose":   ("#EC4899", "#EF62A8", "#F49CC8", "#C02A74", "#FFFFFF", "pink", "Pink"),
-    "ember":  ("#F97316", "#FA8A3C", "#FBA66B", "#C2540A", "#FFFFFF", "orange", "Orange"),
-    "gold":   ("#EAB308", "#EFC33A", "#F3D266", "#946F00", "#1A1400", "yellow", "Yellow"),
-    "moss":   ("#22C55E", "#43CF75", "#7EDD9F", "#15803D", "#FFFFFF", "green", "Green"),
-    "teal":   ("#14B8A6", "#33C4B4", "#6FD8CB", "#0F766E", "#FFFFFF", "teal", "Teal"),
-    "slate":  ("#64748B", "#7A8AA0", "#A3B0C2", "#475569", "#FFFFFF", "slate", "Graphite"),
+    "teal":   ("#0F7B83", "#138C95", "#5FC6CC", "#0B6870", "#FFFFFF", "teal", "Teal"),
+    "sky":    ("#2F6FDE", "#4581E4", "#8DB1F2", "#2258BA", "#FFFFFF", "blue", "Blue"),
+    "violet": ("#6E4FD8", "#8065DE", "#B2A1EE", "#5638BD", "#FFFFFF", "purple", "Violet"),
+    "rose":   ("#C93C6E", "#D3537F", "#EC97B5", "#A72C58", "#FFFFFF", "pink", "Rose"),
+    "ember":  ("#D2591E", "#DC6C35", "#F2A27A", "#AE4614", "#FFFFFF", "orange", "Orange"),
+    "gold":   ("#C99A12", "#D4A92E", "#E9CB6C", "#856500", "#1A1400", "yellow", "Ochre"),
+    "moss":   ("#3E8E41", "#4E9E51", "#8FCB91", "#2D7330", "#FFFFFF", "green", "Green"),
+    "slate":  ("#56636E", "#677480", "#A4B0BA", "#46525C", "#FFFFFF", "slate", "Graphite"),
 }
-DEFAULT_ACCENT = "sky"
+DEFAULT_ACCENT = "teal"
 DEFAULT_MODE = "light"
-ICON_ACCENT = "#3B82F6"  # the accent color the Wren icon set is drawn with
+ICON_ACCENT = "#0F7B83"  # the accent color the Wren icon set is drawn with
 WALLPAPERS = "/usr/share/wren/wallpapers"
 DEFAULT_WALLPAPER = WALLPAPERS + "/silk.jpg"
 
@@ -172,8 +172,8 @@ def animate_in(widget, delay=0, kind="wren-enter"):
 
 
 def stagger(widgets, step=16, start=0, cap=12, kind="wren-enter"):
-    for i, w in enumerate(widgets):
-        animate_in(w, start + min(i, cap) * step, kind)
+    """Kept for compatibility; Wren no longer cascades content in (it only delays reading)."""
+    return
 
 
 def setup_app_style(css=None, on_change=None):

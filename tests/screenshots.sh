@@ -56,7 +56,7 @@ nautilus -q; sleep 1
 wren-terminal >/dev/null 2>&1 & pid=$!; shot 12-dark-terminal 5; kill $pid; sleep 1
 wren-theme set light violet >>/var/tmp/shots/theme.log 2>&1
 wren-shell launcher; shot 13-light-violet-launcher 4; wren-shell launcher
-wren-theme set light sky >>/var/tmp/shots/theme.log 2>&1; sleep 2
+wren-theme set light teal >>/var/tmp/shots/theme.log 2>&1; sleep 2
 # A window zooming open, caught part-way through
 echo "compositor: $(pgrep -x wayfire >/dev/null && echo wayfire || echo labwc)" >/var/tmp/shots/compositor.txt
 gnome-calculator >/dev/null 2>&1 &

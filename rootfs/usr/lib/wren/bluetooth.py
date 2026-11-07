@@ -40,27 +40,26 @@ AGENT_XML = """<node><interface name="org.bluez.Agent1">
 CSS = """
 .bt-window { background-color: @wren_bg; }
 .bt-hero { padding: 22px 24px 18px 24px; background-color: transparent; }
-.bt-hero-title { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; }
+.bt-hero-title { font-size: 24px; font-weight: 600; letter-spacing: -0.3px; }
 .bt-hero-sub { color: @wren_dim; }
-.bt-section { font-size: 13px; font-weight: 700; color: @wren_dim; margin: 14px 24px 8px 28px; }
-.bt-list { background-color: @wren_surface; border-radius: 18px; margin: 0 20px;
-           border: 1px solid @wren_glass_edge; box-shadow: 0 2px 10px alpha(@wren_shadow, 0.45); }
+.bt-section { font-size: 15px; font-weight: 600; color: @wren_text; margin: 20px 24px 10px 26px; }
+.bt-list { background-color: @wren_surface; border-radius: 12px; margin: 0 20px; border: 1px solid @wren_border; box-shadow: none; }
 .bt-list > row { padding: 0; border-bottom: 1px solid @wren_line; }
-.bt-list > row:first-child { border-top-left-radius: 18px; border-top-right-radius: 18px; }
-.bt-list > row:last-child { border-bottom: none; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; }
+.bt-list > row:first-child { border-top-left-radius: 12px; border-top-right-radius: 12px; }
+.bt-list > row:last-child { border-bottom: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
 .bt-list > row:hover { background-color: alpha(@wren_text, 0.03); }
-.bt-list > row.connected { background-color: @wren_accent_glass; }
+.bt-list > row.connected { background-color: transparent; }
 .bt-row { padding: 12px 18px; }
 .bt-icon { min-width: 40px; min-height: 40px; border-radius: 999px; background-color: @wren_surface2; color: @wren_text2; }
 .connected .bt-icon { background-color: @wren_accent; color: @wren_on_accent; }
-.bt-name { font-weight: 700; }
+.bt-name { font-weight: 500; }
 .bt-status { color: @wren_dim; font-size: 12px; }
 .connected .bt-status { color: @wren_accent_text; }
-.bt-btn { padding: 6px 16px; font-weight: 700; border-radius: 999px; }
+.bt-btn { padding: 6px 16px; font-weight: 600; border-radius: 8px; }
 .bt-btn.primary { background-color: @wren_accent; color: @wren_on_accent; }
 .bt-btn.primary:hover { background-color: @wren_accent_hover; }
 .bt-empty { color: @wren_muted; padding: 18px 24px; }
-.bt-power { padding: 6px 18px; font-weight: 700; border-radius: 999px; }
+.bt-power { padding: 6px 18px; font-weight: 600; border-radius: 8px; }
 .bt-power.on { background-color: @wren_accent; color: @wren_on_accent; }
 .bt-power.on:hover { background-color: @wren_accent_hover; }
 """
@@ -253,11 +252,11 @@ class Window(Adw.ApplicationWindow):
 
         scroll = Gtk.ScrolledWindow(hscrollbar_policy=Gtk.PolicyType.NEVER, vexpand=True)
         lists = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.mine_title = self._label("MY DEVICES", "bt-section")
+        self.mine_title = self._label("My devices", "bt-section")
         self.mine = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE)
         self.mine.add_css_class("bt-list")
         nearby_head = Gtk.Box(spacing=8)
-        nearby_head.append(self._label("NEARBY", "bt-section"))
+        nearby_head.append(self._label("Nearby", "bt-section"))
         self.spinner = Gtk.Spinner(valign=Gtk.Align.CENTER, margin_top=10)
         nearby_head.append(self.spinner)
         self.nearby = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE)

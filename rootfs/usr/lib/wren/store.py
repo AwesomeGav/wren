@@ -96,36 +96,31 @@ CATEGORIES = [
 CSS = """
 .store { background-color: @wren_bg; }
 .side { background-color: @wren_deep; border-right: 1px solid @wren_line; padding: 0 10px; }
-.side row { padding: 9px 12px; margin: 1px 0; border-radius: 12px; color: @wren_dim; }
+.side row { padding: 8px 12px; margin: 1px 0; border-radius: 8px; color: @wren_text2; }
 .side row:hover { background-color: alpha(@wren_text, 0.05); color: @wren_text; }
-.side row:selected { background-color: @wren_surface; color: @wren_text; box-shadow: 0 1px 6px alpha(@wren_shadow, 0.6); }
+.side row:selected { background-color: alpha(@wren_accent, 0.10); color: @wren_accent_text; font-weight: 600; }
 .side row:selected image { color: @wren_accent; }
 .side list { background: transparent; }
 .side-sep { margin: 8px 12px; background-color: @wren_line; min-height: 1px; }
-.side-title { font-size: 12px; font-weight: 700; color: @wren_muted; margin: 16px 14px 6px 14px; }
-.page-title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-.section { font-size: 13px; font-weight: 700; color: @wren_dim; margin-top: 18px; }
-.hero { background-image: linear-gradient(120deg, alpha(@wren_accent, 0.85) 0%, alpha(@wren_accent, 0.45) 60%, alpha(@wren_accent, 0.15) 100%);
-        border: 1px solid @wren_glass_border; border-radius: 22px; padding: 30px;
-        box-shadow: 0 10px 30px alpha(@wren_accent, 0.25); }
-.hero label { color: #FFFFFF; }
-.hero-tag { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; opacity: 0.85; }
-.hero-name { font-size: 32px; font-weight: 800; }
-.hero-sum { font-size: 14px; opacity: 0.92; }
-.card { background-color: @wren_surface; border: 1px solid @wren_glass_edge; border-radius: 18px; padding: 14px;
-        box-shadow: 0 2px 10px alpha(@wren_shadow, 0.45); transition: box-shadow 150ms ease, background 150ms ease; }
-.card:hover { box-shadow: 0 8px 22px alpha(@wren_shadow, 0.8); }
-.card-name { font-weight: 700; }
+.side-title { font-size: 15px; font-weight: 600; color: @wren_text; margin: 18px 14px 8px 14px; }
+.page-title { font-size: 26px; font-weight: 600; letter-spacing: -0.3px; }
+.section { font-size: 15px; font-weight: 600; color: @wren_text; margin-top: 26px; }
+.hero { background-color: @wren_surface; border: 1px solid @wren_border; border-radius: 14px; padding: 28px; }
+.hero-tag { font-size: 13px; font-weight: 500; color: @wren_accent_text; }
+.hero-name { font-size: 30px; font-weight: 600; letter-spacing: -0.3px; color: @wren_text; }
+.hero-sum { font-size: 14px; color: @wren_dim; }
+.card { background-color: @wren_surface; border: 1px solid @wren_border; border-radius: 12px; padding: 14px; box-shadow: none; }
+.card:hover { border-color: @wren_border2; background-color: alpha(@wren_text, 0.015); }
+.card-name { font-weight: 600; }
 .card-sum { color: @wren_dim; font-size: 12px; }
-.chip { font-size: 11px; font-weight: 700; color: @wren_accent_text; background: @wren_accent_glass;
-        border-radius: 999px; padding: 2px 8px; }
+.chip { font-size: 12px; font-weight: 500; color: @wren_dim; background: none; padding: 0; }
 .dim { color: @wren_dim; }
-.detail-name { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
+.detail-name { font-size: 28px; font-weight: 600; letter-spacing: -0.3px; }
 .detail-dev { color: @wren_dim; }
 .detail-desc { font-size: 14px; color: @wren_text2; }
-.shot { border: 1px solid @wren_glass_edge; border-radius: 14px; }
-.btn { padding: 8px 20px; font-weight: 700; border-radius: 999px; }
-.btn.primary { background-color: @wren_accent; color: @wren_on_accent; box-shadow: 0 4px 12px alpha(@wren_accent, 0.3); }
+.shot { border: 1px solid @wren_border; border-radius: 10px; }
+.btn { padding: 7px 18px; font-weight: 600; border-radius: 8px; }
+.btn.primary { background-color: @wren_accent; color: @wren_on_accent; box-shadow: none; }
 .btn.primary:hover { background-color: @wren_accent_hover; }
 .btn.danger:hover { background-color: #E5484D; color: #FFFFFF; }
 .row-item { padding: 12px 16px; border-bottom: 1px solid @wren_line; }
@@ -361,7 +356,7 @@ class Window(Adw.ApplicationWindow):
         body = Gtk.Box()
         side = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, width_request=230)
         side.add_css_class("side")
-        side.append(label("APP STORE", "side-title"))
+        side.append(label("App Store", "side-title"))
         self.nav = Gtk.ListBox(selection_mode=Gtk.SelectionMode.SINGLE)
         self.nav.add_css_class("side")
         self.nav_rows = []
@@ -464,7 +459,7 @@ class Window(Adw.ApplicationWindow):
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
         box.append(self.hero(*FEATURED))
         for title, apps in SECTIONS:
-            box.append(label(title.upper(), "section"))
+            box.append(label(title, "section"))
             box.append(self.grid([{"app_id": a, "name": n, "summary": s} for a, n, s in apps]))
         return self.scroller(box)
 
@@ -641,7 +636,6 @@ class Window(Adw.ApplicationWindow):
         load_icon(img, None, app_id)
         box.append(img)
         text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER, hexpand=True, spacing=4)
-        text.append(label("FEATURED", "hero-tag"))
         text.append(label(name, "hero-name"))
         text.append(label(summary, "hero-sum", wrap=True))
         box.append(text)
@@ -670,7 +664,7 @@ class Window(Adw.ApplicationWindow):
         text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER, hexpand=True, spacing=2)
         text.append(label(a.get("name") or app_id, "card-name", ellipsize=3))
         text.append(label(a.get("summary") or "", "card-sum", ellipsize=3, lines=2, wrap=True))
-        chip = label("INSTALLED", "chip", visible=app_id in self.installed)
+        chip = label("Installed", "chip", visible=app_id in self.installed)
         text.append(chip)
         self.watch(app_id, lambda: chip.set_visible(app_id in self.installed))
         box.append(text)

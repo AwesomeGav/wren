@@ -51,7 +51,7 @@ window.wren-layer { background: transparent; }
 .osd levelbar trough { min-height: 6px; border-radius: 999px; background-color: alpha(@wren_text, 0.14); border: none; }
 .osd levelbar block.filled { background-color: @wren_accent; border-radius: 999px; }
 .osd levelbar block.empty { background-color: transparent; }
-.osd-value { font-weight: 700; font-size: 13px; color: @wren_text2; }
+.osd-value { font-weight: 500; font-size: 13px; color: @wren_text2; font-feature-settings: "tnum"; }
 .frost { opacity: 0; transition: opacity 120ms ease-out; }
 .frost.shown { opacity: 1; }
 .backdrop { background-color: transparent; transition: background-color 120ms ease-out; }
@@ -63,44 +63,43 @@ flowboxchild, .tile, .pill-btn, .net-row { transition: background-color 120ms ea
 .sheet {
   background-color: @wren_glass;
   border: 1px solid @wren_glass_border;
-  border-radius: 26px;
+  border-radius: 20px;
   padding: 22px;
   box-shadow: 0 24px 60px @wren_shadow, 0 0 0 1px @wren_glass_edge, inset 0 1px 0 alpha(#FFFFFF, 0.35);
   color: @wren_text;
 }
 .search {
-  min-height: 46px; border-radius: 999px; font-size: 15px; padding: 0 8px;
+  min-height: 44px; border-radius: 12px; font-size: 15px; padding: 0 8px;
   background: @wren_glass_hover; border: 1px solid @wren_glass_border; box-shadow: none;
 }
-flowboxchild { border-radius: 18px; padding: 0; outline: none; }
+flowboxchild { border-radius: 14px; padding: 0; outline: none; }
 flowboxchild:hover { background: @wren_glass_hover; }
 flowboxchild:selected, flowboxchild:focus-visible { background: @wren_accent_glass; }
 .app-tile { padding: 14px 6px 12px 6px; }
-.app-name { font-size: 12px; font-weight: 500; color: @wren_text2; }
+.app-name { font-size: 12px; font-weight: 400; color: @wren_text2; }
 .muted { color: @wren_dim; }
 .empty { color: @wren_muted; font-size: 14px; }
-.big-clock { font-size: 40px; font-weight: 600; letter-spacing: -1px; }
+.big-clock { font-size: 44px; font-weight: 300; letter-spacing: -1px; }
 .tile {
-  border-radius: 18px; padding: 12px 14px; min-height: 40px;
+  border-radius: 14px; padding: 12px 14px; min-height: 40px;
   background: @wren_glass_hover; color: @wren_text;
   border: 1px solid @wren_glass_border; box-shadow: none;
 }
 .tile:hover { background: alpha(@wren_text, 0.10); }
-.tile.on { background: @wren_accent; color: @wren_on_accent; border-color: transparent;
-           box-shadow: 0 6px 16px alpha(@wren_accent, 0.35); }
+.tile.on { background: @wren_accent; color: @wren_on_accent; border-color: transparent; box-shadow: none; }
 .tile.on:hover { background: @wren_accent_hover; }
-.tile .title { font-weight: 600; }
+.tile .title { font-weight: 500; }
 .tile .sub { font-size: 11px; opacity: 0.75; }
 .row-icon { color: @wren_dim; }
 .pill-btn {
-  border-radius: 16px; padding: 9px 10px; background: @wren_glass_hover;
+  border-radius: 12px; padding: 9px 10px; background: @wren_glass_hover;
   border: 1px solid @wren_glass_border; box-shadow: none; color: @wren_text;
 }
 .pill-btn:hover { background: alpha(@wren_text, 0.10); }
 .pill-btn.danger:hover, .pill-btn.confirm { background: #E5484D; color: #FFFFFF; border-color: transparent; }
 .net-row { border-radius: 12px; padding: 8px 10px; background: transparent; box-shadow: none; border: none; color: @wren_text; }
 .net-row:hover { background: alpha(@wren_text, 0.07); }
-.net-list { background: alpha(@wren_text, 0.05); border-radius: 16px; padding: 6px; }
+.net-list { background: alpha(@wren_text, 0.05); border-radius: 12px; padding: 6px; }
 scale trough { min-height: 8px; border-radius: 999px; background: alpha(@wren_text, 0.12); }
 scale highlight { background: @wren_accent; border-radius: 999px; }
 scale slider { min-width: 22px; min-height: 22px; border-radius: 999px; background: #FFFFFF;

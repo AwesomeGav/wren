@@ -7,15 +7,15 @@ window.button.width: 30
 window.button.spacing: 4
 window.label.text.justify: center
 
-window.active.title.bg.color: #EEF1F6
-window.inactive.title.bg.color: #EEF1F6
-window.active.label.text.color: #1C2230
-window.inactive.label.text.color: #8A92A1
-window.active.border.color: #C7CFDA
-window.inactive.border.color: #D8DEE7
-window.active.button.unpressed.image.color: #333B4B
-window.inactive.button.unpressed.image.color: #8A92A1
-window.active.button.hover.bg.color: #E8ECF2
+window.active.title.bg.color: #EEF1F4
+window.inactive.title.bg.color: #EEF1F4
+window.active.label.text.color: #1E2328
+window.inactive.label.text.color: #88919A
+window.active.border.color: #C9D0D6
+window.inactive.border.color: #D9DEE3
+window.active.button.unpressed.image.color: #343B42
+window.inactive.button.unpressed.image.color: #88919A
+window.active.button.hover.bg.color: #E6EAEE
 window.active.button.close.hover.bg.color: #E5484D
 window.active.button.close.hover.image.color: #FFFFFF
 window.button.hover.bg.corner-radius: 10
@@ -26,18 +26,18 @@ window.active.shadow.color: #1E2A4045
 window.inactive.shadow.color: #1E2A4025
 
 menu.border.width: 1
-menu.border.color: #D8DEE7
+menu.border.color: #D9DEE3
 menu.items.padding.x: 12
 menu.items.padding.y: 7
 menu.items.bg.color: #FFFFFF
-menu.items.text.color: #1C2230
-menu.items.active.bg.color: #3B82F6
+menu.items.text.color: #1E2328
+menu.items.active.bg.color: #0F7B83
 menu.items.active.text.color: #FFFFFF
-menu.separator.color: #D8DEE7
+menu.separator.color: #D9DEE3
 menu.title.bg.color: #FFFFFF
 
 osd.bg.color: #FFFFFF
-osd.border.color: #D8DEE7
+osd.border.color: #D9DEE3
 osd.border.width: 1
-osd.label.text.color: #1C2230
-osd.window-switcher.item.active.border.color: #3B82F6
+osd.label.text.color: #1E2328
+osd.window-switcher.item.active.border.color: #0F7B83
