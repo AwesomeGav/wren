@@ -76,7 +76,12 @@ step 85 "Applying the new Floe desktop"
 keep=$(grep '^XKB_' /etc/xdg/labwc/environment 2>/dev/null || true)
 cp -r "$src/rootfs/." /
 cp -f /usr/share/wren/os-release /usr/lib/os-release 2>/dev/null || true
-if [[ -n $keep ]]; then echo "$keep" >> /etc/xdg/labwc/environment; fi
+if [[ -n $keep ]]; then
+  # one line per setting (the last one wins), so repeated updates don't pile up copies
+  sed -i '/^XKB_/d' /etc/xdg/labwc/environment
+  echo "$keep" | awk -F= '{v[$1]=$0; if (!($1 in o)) {o[$1]=++n; k[n]=$1}} END {for (i=1;i<=n;i++) print v[k[i]]}' \
+    >> /etc/xdg/labwc/environment
+fi
 chmod 755 /usr/local/bin/wren-* /usr/lib/wren/*.py /usr/lib/wren/*.sh 2>/dev/null || true
 python -m compileall -q -f -j0 --invalidation-mode unchecked-hash /usr/lib/wren >/dev/null 2>&1 || true
 mkdir -p /usr/share/xsessions

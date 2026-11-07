@@ -54,6 +54,7 @@ CSS = """
 .me-name { font-weight: 600; font-size: 15px; }
 .me-sub { color: @wren_muted; font-size: 12px; }
 .page-title { font-size: 26px; font-weight: 600; letter-spacing: -0.3px; }
+.wordmark { font-family: "IBM Plex Sans"; font-size: 44px; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 6px; }
 .crumb { color: @wren_muted; font-size: 13px; }
 .group-title { font-size: 15px; font-weight: 600; color: @wren_text; margin: 28px 0 10px 2px; }
 .card { background-color: @wren_surface; border: 1px solid @wren_border; border-radius: 12px; box-shadow: none; }
@@ -234,6 +235,14 @@ def button(text, cb, primary=False):
     return b
 
 
+def screen_title(out, name):
+    """A name people recognise: "Built-in screen", or the monitor's brand and model."""
+    if name.split("-")[0] in ("eDP", "LVDS", "DSI"):
+        return "Built-in screen"
+    brand = " ".join(x for x in (out.get("make"), out.get("model")) if x and x not in ("Unknown", "None"))
+    return brand or f"Screen ({name})"
+
+
 class Card(Gtk.Box):
     def __init__(self):
         super().__init__(orientation=Gtk.Orientation.VERTICAL)
@@ -348,7 +357,7 @@ class Pages:
             pass
         for out in [o for o in outputs if o.get("enabled", True)]:
             name = out.get("name", "")
-            card = self.group(box, f"{out.get('make', '')} {out.get('model', '') or name}".strip())
+            card = self.group(box, screen_title(out, name))
             modes = out.get("modes", [])
             uniq = []
             for m in modes:
@@ -551,19 +560,12 @@ class Pages:
 
     def about(self):
         box = self.page("About", ("System", "system"))
-        # The Floe mark and name, then the build
-        brand = Gtk.Box(spacing=16, margin_top=8, margin_bottom=4)
+        # The Floe mark and name (set as text, so it follows light and dark mode)
+        brand = Gtk.Box(spacing=14, margin_top=8, margin_bottom=4)
         mark = Gtk.Image.new_from_file("/usr/share/wren/logo-128.png")
-        mark.set_pixel_size(72)
+        mark.set_pixel_size(64)
         brand.append(mark)
-        dark = wrenlib.load_theme()["mode"] == "dark"
-        word = Gtk.Picture.new_for_filename(f"/usr/share/wren/wordmark-{'light' if dark else 'dark'}.png")
-        word.set_can_shrink(True)
-        word.set_size_request(118, 44)
-        word.set_valign(Gtk.Align.CENTER)
-        brand.append(word)
-        build = label(f"Build {wren_build()}", "row-sub", valign=Gtk.Align.END, margin_bottom=10, hexpand=True)
-        brand.append(build)
+        brand.append(label("floe", "wordmark", valign=Gtk.Align.CENTER))
         box.append(brand)
         card = self.group(box, "This computer")
         name_entry = Gtk.Entry(text=socket.gethostname(), valign=Gtk.Align.CENTER, width_chars=18)

@@ -392,7 +392,10 @@ class Window(Adw.ApplicationWindow):
         if start.startswith("app:"):
             self.show_page(self.details_page(start[4:]))
         elif start.startswith("cat:"):
-            self.show_page(self.category_page(start[4:], start[4:]), remember=False)
+            for i, (name, _icon, cat) in enumerate(CATEGORIES):
+                if cat == start[4:]:
+                    self.nav.select_row(self.nav.get_row_at_index(i))
+                    self.show_page(self.category_page(cat, name), remember=False)
         elif start.startswith("search:"):
             self.search.set_text(start[7:])
             self.do_search()

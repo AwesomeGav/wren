@@ -96,6 +96,7 @@ if install_alongside "$loop" WREN_FORCE_UEFI=1 WREN_NO_NVRAM=1; then
     debug_windows UEFI "${loop}p1" WREN_FORCE_UEFI=1
   fi
   grep -q "menuentry 'Floe'" /mnt/wren/boot/grub/grub.cfg || fail "UEFI: Floe isn't in the boot menu"
+  ! grep -q "EFI BootNext" /mnt/wren/boot/grub/grub.cfg || fail "UEFI: firmware boot options leaked into the boot menu"
   umount /mnt/wren
 else
   fail "UEFI: install alongside Windows failed: $(grep '^@@ERROR' /tmp/dual.log | tail -n1)"

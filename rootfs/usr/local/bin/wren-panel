@@ -1,18 +1,29 @@
 #!/bin/sh
-# (Re)starts the taskbar with the current theme and layout. Only one taskbar
-# ever runs: the old one is fully gone before the new one starts.
+# Starts the taskbar, or reloads it with the current theme and layout.
+# Only one taskbar ever runs.
 T="$HOME/.config/wren/theme"
 CFG=/etc/xdg/wren/waybar/config.jsonc
 CSS=/etc/xdg/wren/waybar/style.css
 [ -r "$T/waybar.jsonc" ] && CFG="$T/waybar.jsonc"
 [ -r "$T/waybar.css" ] && CSS="$T/waybar.css"
 LOCK="${XDG_RUNTIME_DIR:-/tmp}/wren-panel.lock"
+LOG="$HOME/.cache/wren/panel.log"
+[ "$(wc -c <"$LOG" 2>/dev/null || echo 0)" -gt 50000 ] && : >"$LOG"
+mkdir -p "$HOME/.cache/wren"
 {
   flock -w 10 9
-  pkill -x waybar 2>/dev/null
+  running=$(pgrep -u "$(id -u)" -x waybar | wc -l)
+  echo "$(date +%T) wren-panel: $running running ($*)" >>"$LOG"
+  if [ "$running" -eq 1 ] && [ "$1" != --restart ]; then
+    # Already running with these files: re-read config and style in place
+    pkill -USR2 -u "$(id -u)" -x waybar
+    exit 0
+  fi
+  pkill -u "$(id -u)" -x waybar 2>/dev/null
   i=0
-  while pgrep -x waybar >/dev/null && [ $i -lt 30 ]; do sleep 0.1; i=$((i + 1)); done
-  pkill -9 -x waybar 2>/dev/null
+  while pgrep -u "$(id -u)" -x waybar >/dev/null && [ $i -lt 30 ]; do sleep 0.1; i=$((i + 1)); done
+  pkill -9 -u "$(id -u)" -x waybar 2>/dev/null
   setsid -f waybar -c "$CFG" -s "$CSS" >/dev/null 2>&1 9>&-
   sleep 0.5
+  echo "$(date +%T) wren-panel: started, now $(pgrep -u "$(id -u)" -x waybar | wc -l)" >>"$LOG"
 } 9>"$LOCK"

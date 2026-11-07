@@ -1,3 +1,5 @@
 #!/bin/sh
-# Signs out of the Wren desktop.
+# Signs out of the Floe desktop. Leaves a note so the session doesn't mistake
+# a quick sign-out for Wayfire failing to start.
+touch "${XDG_RUNTIME_DIR:-/tmp}/floe-signing-out"
 pkill -TERM -x wayfire 2>/dev/null || pkill -TERM -x labwc 2>/dev/null || labwc --exit

@@ -234,6 +234,8 @@ class Sheet(Gtk.Window):
         click.connect("pressed", self._on_click)
         self.backdrop.add_controller(click)
         keys = Gtk.EventControllerKey()
+        # Capture: see arrow keys before the search box does
+        keys.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
         keys.connect("key-pressed", self._on_key)
         self.add_controller(keys)
 
@@ -449,6 +451,7 @@ class Search(Sheet):
         self.files = FileIndex()
 
     def refresh(self):
+        self.app_list = [a for a in Gio.AppInfo.get_all() if a.should_show()]
         self.entry.set_text("")
         self.scroll.set_visible(False)
         self.files.refresh(lambda: self.update() if self.get_visible() else None)
@@ -515,7 +518,7 @@ class Search(Sheet):
                                  lambda v=sum_: Gdk.Display.get_default().get_clipboard().set(v.replace(",", "")))
 
         apps = []
-        for a in Gio.AppInfo.get_all():
+        for a in getattr(self, "app_list", None) or Gio.AppInfo.get_all():
             if not a.should_show():
                 continue
             name = a.get_display_name() or ""
@@ -753,7 +756,9 @@ class Launcher(Sheet):
             pass
 
     def on_key(self, keyval):
-        if keyval in (Gdk.KEY_Down, Gdk.KEY_Tab) and self.entry.has_focus():
+        focus = self.get_focus()
+        in_search = focus is not None and (focus is self.entry or focus.is_ancestor(self.entry))
+        if keyval in (Gdk.KEY_Down, Gdk.KEY_Tab) and in_search:
             visible = sorted(self._visible_children(), key=lambda c: c.get_index())
             if visible:
                 self.flow.select_child(visible[0])

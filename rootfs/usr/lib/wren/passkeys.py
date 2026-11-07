@@ -408,6 +408,18 @@ def run_device():
     create += struct.pack("<HHIIII", len(REPORT), 0x03, 0x1209, 0xF10E, 1, 0) + REPORT.ljust(4096, b"\0")
     os.write(fd, create)
     hid = CtapHid(Authenticator(ask_person), send)
+
+    # Stop with the desktop session (the prompt needs it); the next login starts a fresh one
+    display = os.environ.get("WAYLAND_DISPLAY", "")
+    sock = display if display.startswith("/") else os.path.join(os.environ.get("XDG_RUNTIME_DIR", ""), display)
+
+    def watch():
+        while True:
+            time.sleep(5)
+            if display and not os.path.exists(sock):
+                os.write(fd, struct.pack("<I", UHID_DESTROY))
+                os._exit(0)
+    threading.Thread(target=watch, daemon=True).start()
     try:
         while True:
             ev = os.read(fd, EVENT_SIZE)

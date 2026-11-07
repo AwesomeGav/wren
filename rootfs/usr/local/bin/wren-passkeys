@@ -5,7 +5,13 @@
 LOCK="${XDG_RUNTIME_DIR:-/tmp}/floe-passkeys.lock"
 exec 9>"$LOCK"
 flock -n 9 || exit 0
-while [ ! -f "$HOME/.config/wren/passkeys-off" ]; do
+SOCK="${XDG_RUNTIME_DIR:-/tmp}/${WAYLAND_DISPLAY:-wayland-0}"
+mkdir -p "$HOME/.cache/wren"
+wait=3
+while [ ! -f "$HOME/.config/wren/passkeys-off" ] && [ -S "$SOCK" ]; do
+  started=$(date +%s)
   PYTHONPATH=/usr/lib/wren python3 -m passkeys --daemon 2>>"$HOME/.cache/wren/passkeys.log"
-  sleep 3
+  # Stopping straight away (e.g. no access to /dev/uhid yet): try again less often
+  if [ $(( $(date +%s) - started )) -lt 10 ]; then wait=$(( wait < 120 ? wait * 2 : 120 )); else wait=3; fi
+  sleep "$wait"
 done

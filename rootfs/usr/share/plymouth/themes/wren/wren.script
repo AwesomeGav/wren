@@ -15,7 +15,7 @@ logo.sprite = Sprite(logo.image);
 word.sprite = Sprite(word.image);
 track.sprite = Sprite(track.image);
 bar.sprite = Sprite(bar.image);
-t = 0;
+bar.t = 0;  # kept on an object: plain names inside functions are local
 
 # Recentred every frame: the screen size can change while booting
 fun refresh_callback() {
@@ -30,8 +30,8 @@ fun refresh_callback() {
   ty = cy + lh;
   track.sprite.SetPosition(cx - tw / 2, ty, 1);
   # Ease back and forth along the track (smooth at both ends)
-  t += 0.035;
-  p = (Math.Sin(t) + 1) / 2;
+  bar.t += 0.035;
+  p = (Math.Sin(bar.t) + 1) / 2;
   bar.sprite.SetPosition(cx - tw / 2 + (tw - bw) * p, ty, 2);
 }
 Plymouth.SetRefreshFunction(refresh_callback);

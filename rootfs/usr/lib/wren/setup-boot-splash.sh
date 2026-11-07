@@ -52,6 +52,9 @@ if [[ -f /etc/default/grub ]]; then
       echo "$1=$2" >> /etc/default/grub
     fi
   }
+  # GRUB 2.16 adds an entry for every firmware boot option (network boot, USB, other
+  # loaders...). Floe adds its own Windows entry instead, so keep the menu short.
+  setkey GRUB_DISABLE_BOOTNEXT true
   if [[ -f /etc/wren/dual-boot ]]; then
     setkey GRUB_TIMEOUT 5
     setkey GRUB_TIMEOUT_STYLE menu

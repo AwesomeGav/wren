@@ -1,5 +1,5 @@
 #!/bin/sh
-# Checks for a Wren update shortly after login and shows a notification if one is ready.
+# Checks for a Floe update shortly after login and shows a notification if one is ready.
 [ -d /run/archiso ] && exit 0
 sleep 90
 # Battery saver: no background downloads
@@ -10,8 +10,8 @@ result=$(wren-update --check 2>/dev/null)
 case "$result" in
   available*)
     echo "${result#available }" > "$cache/update-available"
-    notify-send -a Wren -i /usr/share/wren/logo-64.png "A Wren update is ready" \
-      "Open Quick Settings and click Updates to install it."
+    notify-send -a Floe -i floe-logo "A Floe update is ready" \
+      "Open quick settings and click Updates to install it."
     ;;
   current*) rm -f "$cache/update-available" ;;
 esac

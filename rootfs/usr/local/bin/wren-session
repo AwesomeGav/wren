@@ -1,5 +1,5 @@
 #!/bin/sh
-# Starts the Wren desktop with the full login environment (so apps installed
+# Starts the Floe desktop with the full login environment (so apps installed
 # from the App Store show up in the app grid).
 export WREN_SESSION=1
 [ -r /etc/profile ] && . /etc/profile
@@ -11,7 +11,7 @@ export XCURSOR_THEME=Wren-Cursor
 XCURSOR_SIZE=$(sed -n 's/.*"cursor_size": *\([0-9]*\).*/\1/p' "$HOME/.config/wren/settings.json" 2>/dev/null)
 export XCURSOR_SIZE="${XCURSOR_SIZE:-24}"
 
-# Colors, panel and window manager settings for this account (rewritten after Wren updates)
+# Colors, panel and window manager settings for this account (rewritten after Floe updates)
 grep -qs '"v": 10' "$HOME/.config/wren/theme/stamp" || wren-theme ensure >/dev/null 2>&1  # keep in step with THEME_VERSION
 CONF="$HOME/.config/wren/wayfire.ini"
 [ -r "$CONF" ] || CONF=/etc/xdg/wren/wayfire.ini
@@ -19,14 +19,17 @@ CONF="$HOME/.config/wren/wayfire.ini"
 mkdir -p "$HOME/.cache/wren"
 LOG="$HOME/.cache/wren/wayfire.log"
 [ -f "$LOG" ] && mv -f "$LOG" "$LOG.old"
+OUT="${XDG_RUNTIME_DIR:-/tmp}/floe-signing-out"
+rm -f "$OUT"
 if command -v wayfire >/dev/null && [ ! -f "$HOME/.config/wren/use-labwc" ]; then
   started=$(date +%s)
   wayfire -c "$CONF" >"$LOG" 2>&1
   code=$?
   # Wayfire needs working 3D graphics. If it couldn't start, use the simpler
   # window manager (no window animations) so the computer is still usable.
-  if [ "$code" -eq 0 ] || [ $(( $(date +%s) - started )) -ge 20 ]; then
-    exit "$code"
+  if [ "$code" -eq 0 ] || [ -f "$OUT" ] || [ $(( $(date +%s) - started )) -ge 20 ]; then
+    rm -f "$OUT"
+    exit 0
   fi
   echo "Wayfire stopped after $(( $(date +%s) - started ))s (code $code); starting labwc" >>"$LOG"
 fi
