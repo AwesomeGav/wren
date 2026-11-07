@@ -32,8 +32,6 @@ else
   PYTHONPATH=/usr/lib/wren python3 -m autoscale >/dev/null 2>&1
 fi
 wren-panel &
-# Floe Passkeys (the built-in passkey authenticator)
-wren-passkeys &
 MAKO=/etc/xdg/wren/mako/config
 [ -r "$HOME/.config/wren/theme/mako" ] && MAKO="$HOME/.config/wren/theme/mako"
 mako -c "$MAKO" >/dev/null 2>&1 &

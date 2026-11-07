@@ -102,6 +102,8 @@ for svc in NetworkManager bluetooth earlyoom; do
 done
 ln -sf /usr/lib/systemd/system/NetworkManager.service "$UNITS/dbus-org.freedesktop.NetworkManager.service"
 ln -sf /usr/lib/systemd/system/bluetooth.service "$UNITS/dbus-org.bluez.service"
+# Floe Passkeys: the built-in passkey security key, ready from start-up
+ln -sf /etc/systemd/system/floe-passkeys.service "$UNITS/multi-user.target.wants/floe-passkeys.service"
 
 echo ":: Live USB logs in as a regular account (some apps refuse to run as root)"
 sed -i 's/--autologin root/--autologin wren/' "$ROOT/etc/systemd/system/getty@tty1.service.d/autologin.conf"

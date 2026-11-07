@@ -2,11 +2,13 @@
 """Floe Passkeys: a passkey authenticator built into Floe.
 
 It shows up to the computer as a USB security key (through the kernel's
-/dev/uhid), so Firefox, Chrome and other apps can use it without add-ons.
+/dev/uhid, from a small system service), so Firefox, Chrome and other apps can
+use it without add-ons. Each request is answered as the person at the screen.
 Passkeys are kept in ~/.local/share/floe/passkeys, each private key encrypted
 with a key made from your passkey PIN; every sign-in asks for that PIN.
 
-  python3 -m passkeys --daemon    run the security key (started at login)
+  python3 -m passkeys --system    run the security key (system service, as root)
+  python3 -m passkeys --handle    answer one request read from stdin (as the person)
   python3 -m passkeys list        print saved passkeys as JSON
   python3 -m passkeys delete ID   remove one
 """
@@ -395,7 +397,10 @@ UHID_CREATE2, UHID_DESTROY, UHID_OUTPUT, UHID_INPUT2 = 11, 1, 6, 12
 EVENT_SIZE = 4380
 
 
-def run_device():
+def run_device(handler):
+    """The virtual USB security key. Runs as a system service (root), so it works
+    from the moment the computer starts; each request is answered by
+    `handler(request_bytes) -> response_bytes`."""
     fd = os.open("/dev/uhid", os.O_RDWR)
     lock = threading.Lock()
 
@@ -407,19 +412,10 @@ def run_device():
     create += b"Floe Passkeys".ljust(128, b"\0") + b"floe-passkeys".ljust(64, b"\0") + b"floe".ljust(64, b"\0")
     create += struct.pack("<HHIIII", len(REPORT), 0x03, 0x1209, 0xF10E, 1, 0) + REPORT.ljust(4096, b"\0")
     os.write(fd, create)
-    hid = CtapHid(Authenticator(ask_person), send)
 
-    # Stop with the desktop session (the prompt needs it); the next login starts a fresh one
-    display = os.environ.get("WAYLAND_DISPLAY", "")
-    sock = display if display.startswith("/") else os.path.join(os.environ.get("XDG_RUNTIME_DIR", ""), display)
-
-    def watch():
-        while True:
-            time.sleep(5)
-            if display and not os.path.exists(sock):
-                os.write(fd, struct.pack("<I", UHID_DESTROY))
-                os._exit(0)
-    threading.Thread(target=watch, daemon=True).start()
+    class Router:
+        handle = staticmethod(handler)
+    hid = CtapHid(Router(), send)
     try:
         while True:
             ev = os.read(fd, EVENT_SIZE)
@@ -436,11 +432,84 @@ def run_device():
         os.close(fd)
 
 
+def active_desktop():
+    """(user name, uid, home, runtime dir, wayland socket name) of the person using the screen."""
+    import pwd
+    try:
+        out = subprocess.run(["loginctl", "list-sessions", "--no-legend"], capture_output=True, text=True,
+                             timeout=5).stdout
+    except (OSError, subprocess.SubprocessError):
+        return None
+    for line in out.splitlines():
+        sid = line.split()[0] if line.split() else ""
+        if not sid:
+            continue
+        props = {}
+        try:
+            info = subprocess.run(["loginctl", "show-session", sid, "-p", "Active", "-p", "Type", "-p", "Name",
+                                   "-p", "User", "-p", "Class", "-p", "Remote"],
+                                  capture_output=True, text=True, timeout=5).stdout
+        except (OSError, subprocess.SubprocessError):
+            continue
+        for kv in info.splitlines():
+            k, _, v = kv.partition("=")
+            props[k] = v
+        if props.get("Active") != "yes" or props.get("Class") != "user" or props.get("Remote") == "yes":
+            continue
+        try:
+            pw = pwd.getpwnam(props.get("Name", ""))
+        except KeyError:
+            continue
+        run = f"/run/user/{pw.pw_uid}"
+        socks = sorted((f for f in os.listdir(run) if f.startswith("wayland-") and not f.endswith(".lock")),
+                       key=lambda f: os.path.getmtime(os.path.join(run, f)), reverse=True) if os.path.isdir(run) else []
+        if socks:
+            return pw.pw_name, pw.pw_uid, pw.pw_dir, run, socks[0]
+    return None
+
+
+def answer_as_user(data):
+    """Root side: hand the request to the person at the screen, running as them
+    (their passkeys, their PIN, the prompt on their screen)."""
+    if data[:1] == b"\x04":  # getInfo needs nobody
+        return bytes([OK]) + cbor_enc(Authenticator.get_info())
+    if data[:1] == b"\x0b":  # "is this the key you want?"
+        return bytes([OK])
+    who = active_desktop()
+    if not who:
+        return bytes([ERR_OPERATION_DENIED])
+    name, uid, home, run, sock = who
+    if os.path.exists(os.path.join(home, ".config", "wren", "passkeys-off")):
+        return bytes([ERR_OPERATION_DENIED])
+    env = {"HOME": home, "USER": name, "LOGNAME": name, "XDG_RUNTIME_DIR": run, "WAYLAND_DISPLAY": sock,
+           "DBUS_SESSION_BUS_ADDRESS": f"unix:path={run}/bus", "XDG_CONFIG_DIRS": "/etc/xdg/wren:/etc/xdg",
+           "PYTHONPATH": "/usr/lib/wren", "PATH": "/usr/local/bin:/usr/bin", "LANG": os.environ.get("LANG", "C.UTF-8")}
+    try:
+        proc = subprocess.run(["setpriv", f"--reuid={uid}", f"--regid={pwd_gid(uid)}", "--init-groups",
+                               sys.executable, "-m", "passkeys", "--handle"],
+                              input=data, capture_output=True, timeout=200, env=env)
+        if proc.stderr:
+            print("passkeys:", proc.stderr.decode(errors="replace")[-500:], file=sys.stderr)
+        return proc.stdout or bytes([0x7F])
+    except (OSError, subprocess.SubprocessError) as e:
+        print("passkeys:", repr(e), file=sys.stderr)
+        return bytes([0x7F])
+
+
+def pwd_gid(uid):
+    import pwd
+    return pwd.getpwuid(uid).pw_gid
+
+
 def ask_person(request):
     """Shows Floe's passkey prompt (a separate small app) and waits for the answer."""
+    if os.environ.get("FLOE_PASSKEY_TEST_PIN"):  # automated tests only
+        return {"pin": os.environ["FLOE_PASSKEY_TEST_PIN"], "choice": 0}
     try:
         env = dict(os.environ, PYTHONPATH="/usr/lib/wren")
         proc = subprocess.run(PROMPT, input=json.dumps(request), capture_output=True, text=True, timeout=180, env=env)
+        if proc.returncode and proc.stderr:
+            print("passkeys prompt:", proc.stderr[-500:], file=sys.stderr)
         out = proc.stdout.strip()
         return json.loads(out) if out else None
     except (OSError, ValueError, subprocess.SubprocessError):
@@ -449,8 +518,11 @@ def ask_person(request):
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
-    if cmd == "--daemon":
-        run_device()
+    if cmd in ("--system", "--daemon"):
+        run_device(answer_as_user)
+    elif cmd == "--handle":  # one request, answered as the signed-in person
+        req = sys.stdin.buffer.read()
+        sys.stdout.buffer.write(Authenticator(ask_person).handle(req))
     elif cmd == "list":
         print(json.dumps(list_passkeys(), indent=1))
     elif cmd == "delete" and len(sys.argv) > 2:

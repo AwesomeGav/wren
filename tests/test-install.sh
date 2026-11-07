@@ -44,6 +44,7 @@ else
   grep -q 'plymouth.use-simpledrm' /mnt/check/boot/grub/grub.cfg || problems+=("Start-up screen early display option missing")
   grep -q 'systemd.tpm2_wait=0' /mnt/check/boot/grub/grub.cfg || problems+=("TPM wait not disabled")
   [[ -f /mnt/check/etc/systemd/system.conf.d/wren-fast-boot.conf ]] || problems+=("Fast-boot timeouts missing")
+  [[ -L /mnt/check/etc/systemd/system/multi-user.target.wants/floe-passkeys.service ]] || problems+=("Floe Passkeys service not enabled")
   [[ "$(readlink /mnt/check/etc/systemd/system/NetworkManager-wait-online.service)" == /dev/null ]] || problems+=("NetworkManager-wait-online not masked")
   grep -q "echo.*'Loading " /mnt/check/boot/grub/grub.cfg && problems+=("Boot menu still prints Loading messages")
   grep -q 'Theme=wren' /mnt/check/etc/plymouth/plymouthd.conf || problems+=("Start-up theme not selected")

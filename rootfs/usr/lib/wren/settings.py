@@ -1003,16 +1003,15 @@ class Pages:
         card = self.group(box, "Passkeys")
 
         def set_on(on):
+            # The passkey service checks this before every request
             if on:
                 try:
                     os.remove(off_flag)
                 except OSError:
                     pass
-                spawn(["wren-passkeys"])
             else:
                 os.makedirs(os.path.dirname(off_flag), exist_ok=True)
                 open(off_flag, "w").close()
-                spawn(["pkill", "-f", "passkeys --daemon"])
         card.row("dialog-password-symbolic", "Floe Passkeys", "Sign in to websites and apps with a passkey",
                  switch(not os.path.exists(off_flag), set_on))
 

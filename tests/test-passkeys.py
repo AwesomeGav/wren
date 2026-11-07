@@ -94,3 +94,22 @@ print("list:", [(x["site"], x["user"]) for x in pk.list_passkeys()])
 # a long credential payload (multi-packet) round trip
 assert dev.call(0x01, b"x" * 300) == b"x" * 300
 print("Floe Passkeys: all checks passed")
+
+# The way the system service answers: one request per helper run, as the person
+import subprocess
+lib = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "rootfs", "usr", "lib", "wren")
+env = dict(os.environ, PYTHONPATH=lib, FLOE_PASSKEY_TEST_PIN="998877")
+def helper(req):
+    return subprocess.run([sys.executable, "-m", "passkeys", "--handle"], input=req, capture_output=True, env=env,
+                          timeout=60).stdout
+info = helper(b"\x04")
+assert info[0] == 0 and pk.loads(info[1:])[1] == ["FIDO_2_0"], info
+mc = pk.cbor_enc({1: hashlib.sha256(b"x").digest(), 2: {"id": "github.com", "name": "GitHub"},
+                  3: {"id": b"u1", "name": "gavin", "displayName": "Gavin"}, 4: [{"type": "public-key", "alg": -7}],
+                  7: {"rk": True}})
+r = helper(b"\x01" + mc)
+assert r[0] == 0, r[:1]
+ga = helper(b"\x02" + pk.cbor_enc({1: "github.com", 2: hashlib.sha256(b"y").digest()}))
+assert ga[0] == 0, ga[:1]
+assert pk.answer_as_user(b"\x04")[0] == 0
+print("Floe Passkeys: service helper path works")

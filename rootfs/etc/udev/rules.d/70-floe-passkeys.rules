@@ -1,3 +1,0 @@
-# Floe Passkeys: lets the person signed in at this computer run Floe's built-in
-# passkey authenticator, which appears to browsers as a USB security key.
-KERNEL=="uhid", TAG+="uaccess"
