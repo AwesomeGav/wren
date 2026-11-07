@@ -1,0 +1,40 @@
+
+(settings.py:1804): Gdk-WARNING **: 08:20:26.486: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(settings.py:2490): Gtk-CRITICAL **: 08:22:18.203: gtk_icon_theme_get_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+(settings.py:2490): Gtk-CRITICAL **: 08:22:18.203: gtk_icon_theme_add_resource_path: assertion 'GTK_IS_ICON_THEME (self)' failed
+
+(settings.py:2490): Gtk-CRITICAL **: 08:22:18.203: gtk_icon_theme_get_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+(settings.py:2490): Gtk-CRITICAL **: 08:22:18.203: gtk_icon_theme_has_icon: assertion 'GTK_IS_ICON_THEME (self)' failed
+
+(settings.py:2490): Gtk-CRITICAL **: 08:22:18.203: gtk_icon_theme_get_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+(settings.py:2490): Gtk-CRITICAL **: 08:22:18.204: gtk_icon_theme_add_resource_path: assertion 'GTK_IS_ICON_THEME (self)' failed
+/usr/lib/wren/settings.py:1308: Warning: invalid (NULL) pointer instance
+  Adw.Application.do_startup(self)
+/usr/lib/wren/settings.py:1308: Warning: g_signal_connect_object: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+  Adw.Application.do_startup(self)
+Traceback (most recent call last):
+  File "/usr/lib/wren/settings.py", line 1309, in do_startup
+    self.restyle = wrenlib.setup_app_style(CSS)
+                   ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/usr/lib/wren/wrenlib.py", line 191, in setup_app_style
+    Gtk.StyleContext.add_provider_for_display(display, fallback, Gtk.STYLE_PROVIDER_PRIORITY_SETTINGS)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Argument 0 does not allow None as a value
+Traceback (most recent call last):
+  File "/usr/lib/wren/settings.py", line 1332, in do_command_line
+    self.show_page(args[0] if args else "system")
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/wren/settings.py", line 1320, in show_page
+    win = Window(self, page)
+  File "/usr/lib/wren/settings.py", line 1217, in __init__
+    super().__init__(application=app, title="Settings", default_width=1040, default_height=720)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/gi/overrides/Gtk.py", line 571, in __init__
+    raise RuntimeError(
+    ...<2 lines>...
+    )
+RuntimeError: Gtk couldn't be initialized. Use Gtk.init_check() if you want to handle this case.

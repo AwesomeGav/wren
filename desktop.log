@@ -1,0 +1,162 @@
+II 2026-11-07 08:17:23.000 - [wayfire/src/main.cpp:410] Starting wayfire: 0.11.0-d3990237 (Jul 27 2026) branch makepkg wlroots-0.20.2
+II 2026-11-07 08:17:23.000 - [backend/backend.c:342] Loading user-specified backends due to WLR_BACKENDS: headless
+II 2026-11-07 08:17:23.000 - [backend/headless/backend.c:60] Creating headless backend
+II 2026-11-07 08:17:23.000 - [util/env.c:25] Loading WLR_RENDERER option: gles2
+II 2026-11-07 08:17:23.000 - [render/wlr_renderer.c:157] Opening DRM render node '/dev/dri/renderD128' from WLR_RENDER_DRM_DEVICE
+II 2026-11-07 08:17:23.015 - [render/egl.c:205] Supported EGL client extensions: EGL_EXT_device_base EGL_EXT_device_enumeration EGL_EXT_device_query EGL_EXT_platform_base EGL_KHR_client_get_all_proc_addresses EGL_EXT_client_extensions EGL_KHR_debug EGL_EXT_platform_device EGL_EXT_explicit_device EGL_EXT_platform_wayland EGL_KHR_platform_wayland EGL_EXT_platform_x11 EGL_KHR_platform_x11 EGL_EXT_platform_xcb EGL_MESA_platform_gbm EGL_KHR_platform_gbm EGL_MESA_platform_surfaceless
+II 2026-11-07 08:17:23.023 - [util/env.c:9] Loading WLR_RENDERER_ALLOW_SOFTWARE option: 1
+II 2026-11-07 08:17:23.023 - [render/egl.c:332] Using software rendering
+II 2026-11-07 08:17:23.023 - [render/egl.c:369] Using EGL 1.5
+II 2026-11-07 08:17:23.023 - [render/egl.c:370] Supported EGL display extensions: EGL_ANDROID_blob_cache EGL_EXT_buffer_age EGL_EXT_config_select_group EGL_EXT_create_context_robustness EGL_EXT_image_dma_buf_import EGL_EXT_image_dma_buf_import_modifiers EGL_EXT_query_reset_notification_strategy EGL_EXT_surface_compression EGL_KHR_cl_event2 EGL_KHR_config_attribs EGL_KHR_context_flush_control EGL_KHR_create_context EGL_KHR_create_context_no_error EGL_KHR_fence_sync EGL_KHR_get_all_proc_addresses EGL_KHR_gl_colorspace EGL_KHR_gl_renderbuffer_image EGL_KHR_gl_texture_2D_image EGL_KHR_gl_texture_3D_image EGL_KHR_gl_texture_cubemap_image EGL_KHR_image EGL_KHR_image_base EGL_KHR_image_pixmap EGL_KHR_no_config_context EGL_KHR_reusable_sync EGL_KHR_surfaceless_context EGL_EXT_pixel_format_float EGL_KHR_wait_sync EGL_MESA_configless_context EGL_MESA_gl_interop EGL_MESA_image_dma_buf_export EGL_MESA_query_driver EGL_MESA_x11_native_visual_id 
+II 2026-11-07 08:17:23.023 - [render/egl.c:372] Supported EGL device extensions: EGL_MESA_device_software EGL_EXT_device_drm_render_node
+II 2026-11-07 08:17:23.023 - [render/egl.c:374] EGL vendor: Mesa Project
+II 2026-11-07 08:17:23.054 - [render/gles2/renderer.c:538] Creating GLES2 renderer
+II 2026-11-07 08:17:23.054 - [render/gles2/renderer.c:539] Using OpenGL ES 3.2 Mesa 26.2.6-arch1.1
+II 2026-11-07 08:17:23.054 - [render/gles2/renderer.c:540] GL vendor: Mesa
+II 2026-11-07 08:17:23.054 - [render/gles2/renderer.c:541] GL renderer: llvmpipe (LLVM 23.1.4, 256 bits)
+II 2026-11-07 08:17:23.054 - [render/gles2/renderer.c:542] Supported GLES2 extensions: GL_EXT_blend_minmax GL_EXT_multi_draw_arrays GL_EXT_texture_filter_anisotropic GL_EXT_texture_compression_s3tc GL_EXT_texture_compression_dxt1 GL_EXT_texture_compression_rgtc GL_EXT_texture_format_BGRA8888 GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth24 GL_OES_element_index_uint GL_OES_fbo_render_mipmap GL_OES_mapbuffer GL_OES_rgb8_rgba8 GL_OES_standard_derivatives GL_OES_stencil8 GL_OES_texture_3D GL_OES_texture_float GL_OES_texture_float_linear GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_texture_npot GL_OES_vertex_half_float GL_EXT_draw_instanced GL_EXT_texture_sRGB_decode GL_OES_EGL_image GL_OES_depth_texture GL_OES_packed_depth_stencil GL_EXT_texture_type_2_10_10_10_REV GL_NV_conditional_render GL_OES_get_program_binary GL_APPLE_texture_max_level GL_EXT_discard_framebuffer GL_EXT_read_format_bgra GL_EXT_texture_storage GL_NV_pack_subimage GL_NV_texture_barrier GL_EXT_frag_depth GL_NV_fbo_color_attachments GL_OES_EGL_image_external GL_OES_EGL_sync GL_OES_vertex_array_object GL_OES_viewport_array GL_ANGLE_pack_reverse_row_order GL_ANGLE_texture_compression_dxt3 GL_ANGLE_texture_compression_dxt5 GL_EXT_occlusion_query_boolean GL_EXT_robustness GL_EXT_sRGB GL_EXT_texture_rg GL_EXT_unpack_subimage GL_NV_draw_buffers GL_NV_read_buffer GL_NV_read_depth GL_NV_read_depth_stencil GL_NV_read_stencil GL_APPLE_sync GL_EXT_draw_buffers GL_EXT_instanced_arrays GL_EXT_map_buffer_range GL_EXT_shadow_samplers GL_KHR_debug GL_KHR_robustness GL_KHR_texture_compression_astc_ldr GL_NV_generate_mipmap_sRGB GL_NV_pixel_buffer_object GL_OES_depth_texture_cube_map GL_OES_required_internalformat GL_OES_surfaceless_context GL_EXT_color_buffer_float GL_EXT_debug_label GL_EXT_sRGB_write_control GL_EXT_separate_shader_objects GL_EXT_shader_framebuffer_fetch GL_EXT_shader_group_vote GL_EXT_shader_implicit_conversions GL_EXT_shader_integer_mix GL_EXT_tessellation_point_size GL_EXT_tessellation_shader GL_ANDROID_extension_pack_es31a GL_ARM_shader_framebuffer_fetch_depth_stencil GL_EXT_base_instance GL_EXT_compressed_ETC1_RGB8_sub_texture GL_EXT_copy_image GL_EXT_draw_buffers_indexed GL_EXT_draw_elements_base_vertex GL_EXT_gpu_shader5 GL_EXT_multi_draw_indirect GL_EXT_polygon_offset_clamp GL_EXT_primitive_bounding_box GL_EXT_render_snorm GL_EXT_shader_io_blocks GL_EXT_texture_border_clamp GL_EXT_texture_buffer GL_EXT_texture_cube_map_array GL_EXT_texture_norm16 GL_EXT_texture_view GL_KHR_blend_equation_advanced GL_KHR_blend_equation_advanced_coherent GL_KHR_context_flush_control GL_KHR_robust_buffer_access_behavior GL_NV_image_formats GL_NV_shader_noperspective_interpolation GL_OES_copy_image GL_OES_draw_buffers_indexed GL_OES_draw_elements_base_vertex GL_OES_gpu_shader5 GL_OES_primitive_bounding_box GL_OES_sample_shading GL_OES_sample_variables GL_OES_shader_io_blocks GL_OES_shader_multisample_interpolation GL_OES_tessellation_point_size GL_OES_tessellation_shader GL_OES_texture_border_clamp GL_OES_texture_buffer GL_OES_texture_cube_map_array GL_OES_texture_stencil8 GL_OES_texture_storage_multisample_2d_array GL_OES_texture_view GL_EXT_blend_func_extended GL_EXT_buffer_storage GL_EXT_float_blend GL_EXT_geometry_point_size GL_EXT_geometry_shader GL_EXT_texture_filter_minmax GL_EXT_texture_sRGB_R8 GL_EXT_texture_sRGB_RG8 GL_KHR_no_error GL_KHR_texture_compression_astc_sliced_3d GL_NV_sample_locations GL_OES_EGL_image_external_essl3 GL_OES_geometry_point_size GL_OES_geometry_shader GL_OES_shader_image_atomic GL_EXT_clear_texture GL_EXT_clip_cull_distance GL_EXT_conservative_depth GL_EXT_disjoint_timer_query GL_EXT_texture_compression_s3tc_srgb GL_MESA_shader_integer_functions GL_EXT_clip_control GL_EXT_color_buffer_half_float GL_EXT_memory_object GL_EXT_memory_object_fd GL_EXT_texture_compression_bptc GL_EXT_texture_mirror_clamp_to_edge GL_KHR_parallel_shader_compile GL_NV_alpha_to_coverage_dither_control GL_EXT_EGL_image_storage GL_EXT_shader_framebuffer_fetch_non_coherent GL_EXT_texture_shadow_lod GL_MESA_framebuffer_flip_y GL_OVR_multiview GL_OVR_multiview2 GL_EXT_dep
+II 2026-11-07 08:17:23.069 - [wayfire/src/default-config-backend.cpp:65] Using config file: /var/tmp/wayfire-test.ini
+II 2026-11-07 08:17:23.072 - [wf-config/src/file.cpp:623] Loaded XML configuration options from 47 files in /usr/share/wayfire/metadata:
+II 2026-11-07 08:17:23.072 - [wf-config/src/file.cpp:636] input-method-v1.xml, animate.xml, xdg-activation.xml, idle.xml, output.xml, expo.xml, wrot.xml, blur.xml, workarounds.xml, foreign-toplevel.xml, window-rules.xml, scale-title-filter.xml, extra-gestures.xml, ipc.xml, session-lock.xml, shortcuts-inhibit.xml, vswipe.xml, simple-tile.xml, core.xml, switcher.xml, vswitch.xml, oswitch.xml, command.xml, wobbly.xml, cube.xml, move.xml, input-device.xml, scale.xml, zoom.xml, wsets.xml, resize.xml, preserve-output.xml, wm-actions.xml, invert.xml, place.xml, ipc-rules.xml, autostart.xml, security-context-v1.xml, grid.xml, wayfire-shell.xml, input.xml, gtk-shell.xml, fast-switcher.xml, ext-toplevel.xml, kde-appmenu.xml, alpha.xml, decoration.xml
+II 2026-11-07 08:17:23.072 - [wayfire/src/core/core.cpp:127] Explicit synchronization is not supported by the renderer and backend
+II 2026-11-07 08:17:23.072 - [backend/headless/backend.c:60] Creating headless backend
+II 2026-11-07 08:17:23.072 - [backend/headless/backend.c:17] Starting headless backend
+II 2026-11-07 08:17:23.072 - [xwayland/sockets.c:102] Created /tmp/.X11-unix ourselves -- other users will be unable to create X11 UNIX sockets of their own
+II 2026-11-07 08:17:23.073 - [wayfire/src/core/core.cpp:181] Not using wlr_drm_lease_device_v1; VR will not be available!
+II 2026-11-07 08:17:23.073 - [wayfire/src/core/core.cpp:294] Renderer does not support input color transforms; wp_color_management_v1 will not be available.
+II 2026-11-07 08:17:23.076 - [wayfire/src/main.cpp:501] Using socket name wayland-1
+II 2026-11-07 08:17:23.076 - [backend/headless/backend.c:17] Starting headless backend
+II 2026-11-07 08:17:23.076 - [wayfire/src/core/output-layout.cpp:1563] new output: HEADLESS-1 ("(null) (null) (null)")
+II 2026-11-07 08:17:23.076 - [wayfire/src/core/output-layout.cpp:1578] Adding with 0x564402efff60
+II 2026-11-07 08:17:23.076 - [wayfire/src/core/output-layout.cpp:919] Couldn't find matching mode 1280x720@0 for output HEADLESS-1. Trying to use custom mode(might not work)
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+EE 2026-11-07 08:17:23.076 - [render/allocator/gbm.c:89] gbm_bo_create failed: Permission denied
+EE 2026-11-07 08:17:23.076 - [render/swapchain.c:107] Failed to allocate buffer
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+EE 2026-11-07 08:17:23.076 - [render/allocator/gbm.c:89] gbm_bo_create failed: Permission denied
+EE 2026-11-07 08:17:23.076 - [render/swapchain.c:107] Failed to allocate buffer
+EE 2026-11-07 08:17:23.076 - [types/output/swapchain.c:109] Swapchain for output 'HEADLESS-1' failed test
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+EE 2026-11-07 08:17:23.100 - [render/allocator/gbm.c:89] gbm_bo_create failed: Permission denied
+EE 2026-11-07 08:17:23.100 - [render/swapchain.c:107] Failed to allocate buffer
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.gtk.vfs.Daemon' requested by ':1.1' (uid=1000 pid=12748 comm="gsettings set org.gnome.desktop.interface font-nam" label="unconfined")
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Successfully activated service 'org.gtk.vfs.Daemon'
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='ca.desrt.dconf' requested by ':1.1' (uid=1000 pid=12748 comm="gsettings set org.gnome.desktop.interface font-nam" label="unconfined")
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Successfully activated service 'ca.desrt.dconf'
+EE 2026-11-07 08:17:23.533 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.24' (uid=1000 pid=12843 comm="python3 -m shell --service" label="unconfined")
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.25' (uid=1000 pid=12909 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.freedesktop.portal.Documents' requested by ':1.25' (uid=1000 pid=12909 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Successfully activated service 'org.freedesktop.portal.Documents'
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.651: Choosing gtk.portal for org.freedesktop.impl.portal.Lockdown as a last-resort fallback
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.25' (uid=1000 pid=12909 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+
+(xdg-desktop-portal-gtk:276): xdg-desktop-portal-gtk-WARNING **: 08:17:23.725: error: Could not connect: No such file or directory
+
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.923: Choosing gtk.portal for org.freedesktop.impl.portal.Access as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.930: Failed to create RealtimeKit proxy: Could not connect: No such file or directory
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.930: Choosing gtk.portal for org.freedesktop.impl.portal.Settings as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.931: Choosing gtk.portal for org.freedesktop.impl.portal.FileChooser as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.931: Choosing gtk.portal for org.freedesktop.impl.portal.AppChooser as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.932: Choosing gtk.portal for org.freedesktop.impl.portal.Print as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.932: Choosing gtk.portal for org.freedesktop.impl.portal.Notification as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.933: Choosing gtk.portal for org.freedesktop.impl.portal.Inhibit as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.935: Failed to connect to PipeWire: Couldn't connect to PipeWire
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.935: Choosing wlr.portal for org.freedesktop.impl.portal.Screenshot via the deprecated UseIn key
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.935: The preferred method to match portal implementations to desktop environments is to use the portals.conf(5) configuration file
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.wlr' requested by ':1.25' (uid=1000 pid=12909 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+2026/11/07 08:17:23 [ERROR] - pipewire: couldn't connect to context
+2026/11/07 08:17:23 [ERROR] - xdpw: failed to initialize screencast
+'impl->enter_count > 0' failed at ../pipewire/spa/plugins/support/loop.c:619 loop_leave()
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activated service 'org.freedesktop.impl.portal.desktop.wlr' failed: Process org.freedesktop.impl.portal.desktop.wlr exited with status 1
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.940: Failed to create screenshot proxy: Error calling StartServiceByName for org.freedesktop.impl.portal.desktop.wlr: Process org.freedesktop.impl.portal.desktop.wlr exited with status 1
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.940: Choosing gtk.portal for org.freedesktop.impl.portal.Account as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.940: Choosing gtk.portal for org.freedesktop.impl.portal.Email as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.941: Choosing gtk.portal for org.freedesktop.impl.portal.DynamicLauncher as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.941: Choosing wlr.portal for org.freedesktop.impl.portal.ScreenCast via the deprecated UseIn key
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.wlr' requested by ':1.25' (uid=1000 pid=12909 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+2026/11/07 08:17:23 [ERROR] - pipewire: couldn't connect to context
+2026/11/07 08:17:23 [ERROR] - xdpw: failed to initialize screencast
+'impl->enter_count > 0' failed at ../pipewire/spa/plugins/support/loop.c:619 loop_leave()
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activated service 'org.freedesktop.impl.portal.desktop.wlr' failed: Process org.freedesktop.impl.portal.desktop.wlr exited with status 1
+
+(/usr/lib/xdg-desktop-portal:254): xdg-desktop-portal-WARNING **: 08:17:23.946: Failed to create screen cast proxy: Error calling StartServiceByName for org.freedesktop.impl.portal.desktop.wlr: Process org.freedesktop.impl.portal.desktop.wlr exited with status 1
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'
+EE 2026-11-07 08:17:23.972 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.a11y.Bus' requested by ':1.31' (uid=1000 pid=12843 comm="python3 -m shell --service" label="unconfined")
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Successfully activated service 'org.a11y.Bus'
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+EE 2026-11-07 08:17:33.101 - [render/allocator/gbm.c:89] gbm_bo_create failed: Permission denied
+EE 2026-11-07 08:17:33.101 - [render/swapchain.c:107] Failed to allocate buffer
+dbus-daemon[305]: Activating service name='org.a11y.atspi.Registry' requested by ':1.1' (uid=1000 pid=12843 comm="python3 -m shell --service" label="unconfined")
+dbus-daemon[305]: Successfully activated service 'org.a11y.atspi.Registry'
+SpiRegistry daemon is running with well-known name - org.a11y.atspi.Registry
+EE 2026-11-07 08:17:33.205 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+EE 2026-11-07 08:17:36.173 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+EE 2026-11-07 08:17:36.309 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+EE 2026-11-07 08:17:39.199 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+EE 2026-11-07 08:17:39.326 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+EE 2026-11-07 08:17:42.216 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+EE 2026-11-07 08:17:42.340 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+II 2026-11-07 08:17:42.821 - [wayfire/src/view/xdg-shell/xdg-toplevel-view.cpp:29] new xdg_shell_stable surface: (null) app-id: (null)
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Activating service name='org.gtk.vfs.Metadata' requested by ':1.21' (uid=1000 pid=12895 comm="waybar -c /home/wren/.config/wren/theme/waybar.jso" label="unconfined")
+dbus-daemon[74]: [session uid=1000 pid=12729 pidfd=5] Successfully activated service 'org.gtk.vfs.Metadata'
+EE 2026-11-07 08:17:43.816 - [wayfire/plugins/animate/animate.cpp:373] Unknown animation type: ""
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+EE 2026-11-07 08:17:47.605 - [render/allocator/gbm.c:89] gbm_bo_create failed: Permission denied
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+KMS: DRM_IOCTL_MODE_CREATE_DUMB failed: Permission denied
+EE 2026-11-07 08:17:47.605 - [render/allocator/gbm.c:89] gbm_bo_create failed: Permission denied
+EE 2026-11-07 08:17:47.605 - [wayfire/src/render.cpp:465] Failed to allocate auxilliary buffer! Size 976x736 format 875713089
+EE 2026-11-07 08:17:47.605 - [wayfire/src/api/wayfire/dassert.hpp:26] Cannot run a render pass without a valid target!
+EE 2026-11-07 08:17:47.615 - #1  wf::regionf_t::operator*=(double) ??:?
+EE 2026-11-07 08:17:47.624 - #2  wf::render_pass_t::render_pass_t(wf::render_pass_params_t const&) ??:?
+EE 2026-11-07 08:17:47.633 - #3  wf::render_pass_t::run(wf::render_pass_params_t const&) ??:?
+EE 2026-11-07 08:17:47.641 - #4  wf::view_interface_t::take_snapshot(wf::auxilliary_buffer_t&) ??:?
+EE 2026-11-07 08:17:47.648 - #5  std::_Function_handler<void (Particle&), ParticleSystem::pinit_func::{lambda(auto:1)#1}>::_M_invoke(std::_Any_data const&, Particle&) ??:?
+EE 2026-11-07 08:17:47.654 - #6  newInstance ??:?
+EE 2026-11-07 08:17:47.660 - #7  std::_Function_handler<void (wf::view_pre_unmap_signal*), wayfire_animation::on_view_pre_unmap::{lambda(wf::view_pre_unmap_signal*)#1}>::_M_invoke(std::_Any_data const&, wf::view_pre_unmap_signal*&&) ??:?
+EE 2026-11-07 08:17:47.668 - #8  std::_Function_handler<void (wf::signal::connection_base_t*), wf::signal::provider_t::emit<wf::view_pre_unmap_signal>(wf::view_pre_unmap_signal*)::{lambda(wf::signal::connection_base_t*)#1}>::_M_invoke(std::_Any_data const&, wf::signal::connection_base_t*&&) ??:?
+EE 2026-11-07 08:17:47.677 - #9  std::_Function_handler<void (wf::signal::connection_base_t*&), std::function<void (wf::signal::connection_base_t*)> >::_M_invoke(std::_Any_data const&, wf::signal::connection_base_t*&) ??:?
+EE 2026-11-07 08:17:47.686 - #10 wf::signal::provider_t::for_each_connection(std::type_index, std::function<void (wf::signal::connection_base_t*)>) ??:?
+EE 2026-11-07 08:17:47.694 - #11 wf::view_interface_t::emit_view_pre_unmap() ??:?
+EE 2026-11-07 08:17:47.703 - #12 wf::xdg_toplevel_view_t::start_unmap_tx() ??:?
+EE 2026-11-07 08:17:47.711 - #13 std::_Function_handler<void (), wf::wl_timer<true>::set_timeout(unsigned int, std::function<bool ()>)::{lambda()#1}>::_M_manager(std::_Any_data&, std::_Any_data const&, std::_Manager_operation) ??:?
+EE 2026-11-07 08:17:47.718 - #14 wl_signal_emit_mutable ??:?
+EE 2026-11-07 08:17:47.724 - #15 wlr_surface_unmap ??:?
+EE 2026-11-07 08:17:47.731 - #16 wlr_buffer_finish ??:?
+EE 2026-11-07 08:17:47.737 - #17 wl_display_add_shm_format ??:?
+EE 2026-11-07 08:17:47.743 - #18 wl_client_destroy ??:?
+EE 2026-11-07 08:17:47.749 - #19 wl_client_destroy ??:?
+EE 2026-11-07 08:17:47.755 - #20 wl_event_loop_dispatch ??:?
+EE 2026-11-07 08:17:47.761 - #21 wl_display_run ??:?
+EE 2026-11-07 08:17:47.769 - #22 main ??:?
+EE 2026-11-07 08:17:47.776 - #23 __libc_init_first ??:?
+EE 2026-11-07 08:17:47.783 - #24 __libc_start_main ??:?
+EE 2026-11-07 08:17:47.792 - #25 _start ??:?
+Gdk-Message: 08:17:47.799: Error reading events from display: Broken pipe
+A connection to the bus can't be made
+Wayfire failed; using labwc

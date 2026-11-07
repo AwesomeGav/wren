@@ -1,0 +1,2 @@
+
+(python3:2329): Gdk-WARNING **: 08:21:45.649: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”

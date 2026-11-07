@@ -1,0 +1,101 @@
+00:00:00.000 [INFO] [backend/backend.c:342] Loading user-specified backends due to WLR_BACKENDS: headless
+00:00:00.000 [INFO] [backend/headless/backend.c:60] Creating headless backend
+00:00:00.000 [INFO] [../cage/cage.c:201] Running as root user, this is dangerous
+00:00:00.017 [INFO] [render/egl.c:205] Supported EGL client extensions: EGL_EXT_device_base EGL_EXT_device_enumeration EGL_EXT_device_query EGL_EXT_platform_base EGL_KHR_client_get_all_proc_addresses EGL_EXT_client_extensions EGL_KHR_debug EGL_EXT_platform_device EGL_EXT_explicit_device EGL_EXT_platform_wayland EGL_KHR_platform_wayland EGL_EXT_platform_x11 EGL_KHR_platform_x11 EGL_EXT_platform_xcb EGL_MESA_platform_gbm EGL_KHR_platform_gbm EGL_MESA_platform_surfaceless
+00:00:00.025 [ERROR] [render/egl.c:334] Software rendering detected, please use the WLR_RENDERER_ALLOW_SOFTWARE environment variable to proceed
+00:00:00.025 [ERROR] [render/egl.c:611] Failed to initialize EGL context
+00:00:00.025 [ERROR] [render/gles2/renderer.c:499] Could not initialize EGL
+00:00:00.025 [INFO] [render/vulkan/renderer.c:2594] The vulkan renderer is only experimental and not expected to be ready for daily use
+00:00:00.025 [INFO] [render/vulkan/renderer.c:2596] Run with VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation to enable the validation layer
+00:00:00.031 [ERROR] [render/vulkan/vulkan.c:265] Could not retrieve physical devices: ERROR_INITIALIZATION_FAILED (-3)
+00:00:00.031 [ERROR] [render/vulkan/renderer.c:2608] Could not match drm and vulkan device
+00:00:00.032 [INFO] [render/pixman/renderer.c:328] Creating pixman renderer
+00:00:00.032 [INFO] [../cage/cage.c:521] Failed to create wlr_drm_lease_manager_v1
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:83] /tmp/.X11-unix not owned by root or us
+00:00:00.032 [ERROR] [xwayland/sockets.c:200] No display available in the first 33
+00:00:00.032 [ERROR] [../cage/cage.c:567] Cannot create XWayland server
+00:00:00.032 [INFO] [backend/headless/backend.c:17] Starting headless backend
+/usr/lib/wren/greeter.py:123: PyGIWarning: Gdk was imported without specifying a version first. Use gi.require_version('Gdk', '4.0') before import to ensure that the right version gets loaded.
+  from gi.repository import Gdk, GLib, Gtk
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.2' (uid=0 pid=15073 comm="python3 /usr/lib/wren/greeter.py" label="unconfined")
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.3' (uid=0 pid=15080 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Activating service name='org.freedesktop.portal.Documents' requested by ':1.3' (uid=0 pid=15080 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Successfully activated service 'org.freedesktop.portal.Documents'
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.272: Choosing gtk.portal for org.freedesktop.impl.portal.Lockdown as a last-resort fallback
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.3' (uid=0 pid=15080 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Activating service name='org.gtk.vfs.Daemon' requested by ':1.6' (uid=0 pid=15102 comm="/usr/lib/xdg-desktop-portal-gtk" label="unconfined")
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Successfully activated service 'org.gtk.vfs.Daemon'
+
+(xdg-desktop-portal-gtk:2447): xdg-desktop-portal-gtk-WARNING **: 08:22:14.380: error: Could not connect: No such file or directory
+
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.575: Choosing gtk.portal for org.freedesktop.impl.portal.Access as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.583: Failed to create RealtimeKit proxy: Could not connect: No such file or directory
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.583: Choosing gtk.portal for org.freedesktop.impl.portal.Settings as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.584: Choosing gtk.portal for org.freedesktop.impl.portal.FileChooser as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.584: Choosing gtk.portal for org.freedesktop.impl.portal.AppChooser as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.585: Choosing gtk.portal for org.freedesktop.impl.portal.Print as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.586: Choosing gtk.portal for org.freedesktop.impl.portal.Notification as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.586: Choosing gtk.portal for org.freedesktop.impl.portal.Inhibit as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.589: Failed to connect to PipeWire: Couldn't connect to PipeWire
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.589: Choosing gtk.portal for org.freedesktop.impl.portal.Account as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.589: Choosing gtk.portal for org.freedesktop.impl.portal.Email as a last-resort fallback
+
+(/usr/lib/xdg-desktop-portal:2425): xdg-desktop-portal-WARNING **: 08:22:14.590: Choosing gtk.portal for org.freedesktop.impl.portal.DynamicLauncher as a last-resort fallback
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'
+
+(greeter.py:2418): Gtk-WARNING **: 08:22:14.622: Use GtkSettings:gtk-interface-color-scheme instead
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Activating service name='org.a11y.Bus' requested by ':1.9' (uid=0 pid=15073 comm="python3 /usr/lib/wren/greeter.py" label="unconfined")
+dbus-daemon[2408]: [session uid=0 pid=15063 pidfd=5] Successfully activated service 'org.a11y.Bus'
+/usr/lib/wren/greeter.py:205: Warning: value "-6" of type 'gint' is invalid or out of range for property 'margin-top' of type 'gint'
+  clock = Gtk.Label(xalign=0, margin_top=S(-6))
+dbus-daemon[2477]: Activating service name='org.a11y.atspi.Registry' requested by ':1.1' (uid=0 pid=15073 comm="python3 /usr/lib/wren/greeter.py" label="unconfined")
+dbus-daemon[2477]: Successfully activated service 'org.a11y.atspi.Registry'
+SpiRegistry daemon is running with well-known name - org.a11y.atspi.Registry
+Gdk-Message: 08:22:21.211: Error reading events from display: Broken pipe
+A connection to the bus can't be made

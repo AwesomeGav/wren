@@ -1,0 +1,171 @@
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.gtk.vfs.Daemon' requested by ':1.1' (uid=1000 pid=13228 comm="swaybg -i /usr/share/wren/wallpapers/silk.jpg -m f" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.gtk.vfs.Daemon'
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='ca.desrt.dconf' requested by ':1.4' (uid=1000 pid=13251 comm="gsettings set org.gnome.desktop.interface color-sc" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'ca.desrt.dconf'
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.16' (uid=1000 pid=13315 comm="waybar -c /home/wren/.config/wren/theme/waybar.jso" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.19' (uid=1000 pid=13364 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.freedesktop.portal.Documents' requested by ':1.19' (uid=1000 pid=13364 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.freedesktop.portal.Documents'
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.19' (uid=1000 pid=13364 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+
+(xdg-desktop-portal-gtk:735): xdg-desktop-portal-gtk-WARNING **: 08:17:48.153: error: Could not connect: No such file or directory
+
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+(/usr/lib/xdg-desktop-portal:709): xdg-desktop-portal-WARNING **: 08:17:48.161: Failed to create RealtimeKit proxy: Could not connect: No such file or directory
+
+(/usr/lib/xdg-desktop-portal:709): xdg-desktop-portal-WARNING **: 08:17:48.165: Failed to connect to PipeWire: Couldn't connect to PipeWire
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.wlr' requested by ':1.19' (uid=1000 pid=13364 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+2026/11/07 08:17:48 [ERROR] - pipewire: couldn't connect to context
+2026/11/07 08:17:48 [ERROR] - xdpw: failed to initialize screencast
+'impl->enter_count > 0' failed at ../pipewire/spa/plugins/support/loop.c:619 loop_leave()
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activated service 'org.freedesktop.impl.portal.desktop.wlr' failed: Process org.freedesktop.impl.portal.desktop.wlr exited with status 1
+
+(/usr/lib/xdg-desktop-portal:709): xdg-desktop-portal-WARNING **: 08:17:48.170: Failed to create screenshot proxy: Error calling StartServiceByName for org.freedesktop.impl.portal.desktop.wlr: Process org.freedesktop.impl.portal.desktop.wlr exited with status 1
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.wlr' requested by ':1.19' (uid=1000 pid=13364 comm="/usr/lib/xdg-desktop-portal" label="unconfined")
+2026/11/07 08:17:48 [ERROR] - pipewire: couldn't connect to context
+2026/11/07 08:17:48 [ERROR] - xdpw: failed to initialize screencast
+'impl->enter_count > 0' failed at ../pipewire/spa/plugins/support/loop.c:619 loop_leave()
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activated service 'org.freedesktop.impl.portal.desktop.wlr' failed: Process org.freedesktop.impl.portal.desktop.wlr exited with status 1
+
+(/usr/lib/xdg-desktop-portal:709): xdg-desktop-portal-WARNING **: 08:17:48.176: Failed to create screen cast proxy: Error calling StartServiceByName for org.freedesktop.impl.portal.desktop.wlr: Process org.freedesktop.impl.portal.desktop.wlr exited with status 1
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.a11y.Bus' requested by ':1.27' (uid=1000 pid=13267 comm="python3 -m shell --service" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.a11y.Bus'
+Xwayland glamor: GBM Wayland interfaces not available
+Failed to initialize glamor, falling back to sw
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.gtk.vfs.Metadata' requested by ':1.16' (uid=1000 pid=13315 comm="waybar -c /home/wren/.config/wren/theme/waybar.jso" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.gtk.vfs.Metadata'
+00:00:05.782 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 250, value 4194309
+00:00:05.782 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 253, value 4194309
+00:00:05.782 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 255, value 4194309
+00:00:05.782 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 258, value 4194309
+00:00:05.782 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 259, value 4194309
+dbus-daemon[764]: Activating service name='org.a11y.atspi.Registry' requested by ':1.1' (uid=1000 pid=13267 comm="python3 -m shell --service" label="unconfined")
+dbus-daemon[764]: Successfully activated service 'org.a11y.atspi.Registry'
+SpiRegistry daemon is running with well-known name - org.a11y.atspi.Registry
+00:00:11.787 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 340, value 4194309
+00:00:11.787 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 342, value 4194309
+00:00:11.787 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 345, value 4194309
+00:00:11.787 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 346, value 4194309
+00:00:11.787 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 349, value 4194309
+00:00:17.792 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 440, value 4194309
+00:00:17.792 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 442, value 4194309
+00:00:17.792 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 445, value 4194309
+00:00:17.792 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 446, value 4194309
+W 08:18:07.151889            default ../pipewire/src/pipewire/thread.c:119:impl_create: pthread_setname error: No such file or directory
+Could not connect to PipeWire
+W 08:18:07.156970            default ../pipewire/src/pipewire/thread.c:119:impl_create: pthread_setname error: No such file or directory
+Could not connect to PipeWire
+
+(installer.py:1012): Gdk-WARNING **: 08:18:07.748: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(installer.py:1032): Gdk-WARNING **: 08:18:13.800: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(installer.py:1090): Gdk-WARNING **: 08:18:19.848: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(installer.py:1163): Gdk-WARNING **: 08:18:25.904: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+00:00:40.933 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 1129, value 8388613
+00:00:40.933 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 1131, value 8388613
+00:00:40.933 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 1134, value 8388613
+00:00:40.933 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 1135, value 8388613
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.gtk.vfs.UDisks2VolumeMonitor' requested by ':1.55' (uid=1000 pid=13855 comm="nautilus --new-window /home/wren" label="unconfined")
+
+(process:1215): GVFS-UDisks2-WARNING **: 08:18:31.953: Failed to connect to UDisks: Could not connect: No such file or directory
+
+(process:1215): GVFS-RemoteVolumeMonitorDaemon-WARNING **: 08:18:31.953: monitor says it's not supported
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.gtk.vfs.UDisks2VolumeMonitor'
+
+(process:1215): GVFS-RemoteVolumeMonitorDaemon-WARNING **: 08:18:31.954: monitor says it's not supported
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.gtk.vfs.MTPVolumeMonitor' requested by ':1.55' (uid=1000 pid=13855 comm="nautilus --new-window /home/wren" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.gtk.vfs.MTPVolumeMonitor'
+
+** (process:1226): WARNING **: 08:18:31.973: Mount entry was not found for /home/wren/.local/share/Trash/files
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.freedesktop.Tracker3.Miner.Files' requested by ':1.55' (uid=1000 pid=13855 comm="nautilus --new-window /home/wren" label="unconfined")
+
+** (process:1243): WARNING **: 08:18:32.078: Unable to load /home/wren/.local/share/recently-used.xbel: Failed to open file “/home/wren/.local/share/recently-used.xbel”: No such file or directory
+
+(localsearch-3:1236): libupower-glib-WARNING **: 08:18:32.121: Couldn't connect to proxy: Could not connect: No such file or directory
+
+(localsearch-3:1236): Tracker-WARNING **: 08:18:32.121: Unable to connect to UPower
+
+(localsearch-3:1236): libupower-glib-WARNING **: 08:18:32.122: Couldn't connect to proxy: Could not connect: No such file or directory
+
+(localsearch-3:1236): Tracker-WARNING **: 08:18:32.122: Unable to connect to UPower
+
+(process:1215): GVFS-RemoteVolumeMonitorDaemon-WARNING **: 08:18:32.124: monitor says it's not supported
+
+(localsearch-3:1236): GVFS-RemoteVolumeMonitor-WARNING **: 08:18:32.124: remote volume monitor with dbus name org.gtk.vfs.UDisks2VolumeMonitor is not supported
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Successfully activated service 'org.freedesktop.Tracker3.Miner.Files'
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.60' (uid=1000 pid=13891 comm="/usr/lib/localsearch-3" label="unconfined")
+dbus-daemon[554]: [session uid=1000 pid=13209 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+
+(localsearch-3:1236): libupower-glib-WARNING **: 08:18:32.580: Couldn't connect to proxy: Could not connect: No such file or directory
+
+(localsearch-3:1236): Tracker-WARNING **: 08:18:32.580: Unable to connect to UPower
+
+(localsearch-extractor-3:1263): Tracker-WARNING **: 08:18:32.596: Task for 'file:///home/wren/Documents/Resume.docx' finished with error: Could not open:Failed to open zip '/home/wren/Documents/Resume.docx' (libzip errcode=19)
+
+
+(localsearch-extractor-3:1263): Tracker-WARNING **: 08:18:32.606: Task for 'file:///home/wren/Documents/Trip%20plan.pdf' finished with error: PDF document is damaged
+
+
+(localsearch-extractor-3:1263): Tracker-WARNING **: 08:18:32.607: Got error parsing XML file: Failed to open zip '/home/wren/Documents/Budget 2026.ods' (libzip errcode=19)
+
+00:00:46.937 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 1446, value 8388613
+00:00:46.937 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 1448, value 8388613
+00:00:46.937 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 1451, value 8388613
+00:00:46.937 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 1452, value 8388613
+00:00:52.940 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 1748, value 8388613
+00:00:52.940 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 1753, value 8388613
+00:00:52.940 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 1755, value 8388613
+00:00:52.940 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 1758, value 8388613
+00:00:52.940 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 1759, value 8388613
+00:00:59.947 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2186, value 8388613
+00:00:59.947 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 2193, value 8388613
+00:00:59.947 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2195, value 8388613
+00:00:59.947 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 2198, value 8388613
+00:00:59.947 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 2199, value 8388613
+** Message: 08:18:47.991: Connecting to org.freedesktop.Tracker3.Miner.Files
+
+(gnome-text-editor:1485): Gdk-WARNING **: 08:19:01.422: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(gnome-text-editor:1485): libenchant-WARNING **: 08:19:01.509: broker.vala:159: Error loading plugin: libvoikko.so.1: cannot open shared object file: No such file or directory
+
+(gnome-text-editor:1485): libenchant-WARNING **: 08:19:01.509: broker.vala:159: Error loading plugin: libhspell.so.0: cannot open shared object file: No such file or directory
+
+(gnome-text-editor:1485): libenchant-WARNING **: 08:19:01.509: broker.vala:159: Error loading plugin: libaspell.so.15: cannot open shared object file: No such file or directory
+
+(gnome-text-editor:1485): libenchant-WARNING **: 08:19:01.509: broker.vala:159: Error loading plugin: libhunspell-1.7.so.0: cannot open shared object file: No such file or directory
+
+(gnome-text-editor:1485): libenchant-WARNING **: 08:19:01.509: broker.vala:159: Error loading plugin: libnuspell.so.5: cannot open shared object file: No such file or directory
+00:01:18.955 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2314, value 8388613
+00:01:18.955 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2318, value 8388613
+00:01:18.955 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 2321, value 8388613
+00:01:18.955 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 2322, value 8388613
+00:01:35.957 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2448, value 8388613
+00:01:35.957 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2452, value 8388613
+00:01:35.957 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 2455, value 8388613
+00:01:35.957 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 2456, value 8388613
+00:01:52.961 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2570, value 8388613
+00:01:52.961 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2574, value 8388613
+00:01:52.961 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 2577, value 8388613
+00:01:52.961 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 2578, value 8388613
+00:02:09.965 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2694, value 8388613
+00:02:09.965 [ERROR] [xwayland/xwm.c:1984] xcb error: op ConfigureWindow (no minor), code Window (no extension), sequence 2698, value 8388613
+00:02:09.965 [ERROR] [xwayland/xwm.c:1984] xcb error: op ChangeProperty (no minor), code Window (no extension), sequence 2701, value 8388613
+00:02:09.965 [ERROR] [xwayland/xwm.c:1984] xcb error: op DeleteProperty (no minor), code Window (no extension), sequence 2702, value 8388613
+
+(process:1215): GVFS-RemoteVolumeMonitorDaemon-WARNING **: 08:21:19.638: monitor says it's not supported
+** Message: 08:21:27.687: Connecting to org.freedesktop.Tracker3.Miner.Files
+pkill: pattern that searches for process name longer than 15 characters will result in zero matches
+Try `pkill -f' option to match against the complete command line.
+(EE) failed to read Wayland events: Broken pipe
+Gdk-Message: 08:22:14.044: Error reading events from display: Broken pipe
+A connection to the bus can't be made
+A connection to the bus can't be made
+A connection to the bus can't be made
+A connection to the bus can't be made
+
+(localsearch-3:1236): GVFS-RemoteVolumeMonitor-WARNING **: 08:22:14.077: Owner of volume monitor org.gtk.vfs.MTPVolumeMonitor disconnected from the bus; removing drives/volumes/mounts

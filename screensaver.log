@@ -1,0 +1,10 @@
+screensaver: starting 
+
+(python3:1368): Gdk-WARNING **: 08:18:48.076: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+screensaver: showing on 1 screen(s)
+screensaver: first frame 1280x720 after 0.08s
+screensaver: starting (preview)
+screensaver: already showing
+13271 swayidle -w timeout 60 wren-screensaver & resume wren-screensaver --stop timeout 600 wren-lock & before-sleep wren-lock &
+14023 python3 -m screensaver
+15016 pgrep -af screensaver

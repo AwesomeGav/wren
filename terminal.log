@@ -1,0 +1,4 @@
+
+(terminal.py:1504): Gdk-WARNING **: 08:19:07.690: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+/usr/lib/wren/terminal.py:157: DeprecationWarning: Vte.Terminal.get_window_title is deprecated
+  title = term.get_window_title() if hasattr(term, "get_window_title") else None

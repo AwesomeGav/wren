@@ -1,0 +1,12 @@
+
+(store.py:1551): Gdk-WARNING **: 08:19:14.885: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(store.py:1593): Gtk-WARNING **: 08:19:26.004: Unable to acquire session bus: Could not connect: No such file or directory
+
+(store.py:1626): Gdk-WARNING **: 08:19:35.043: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(store.py:1654): Gtk-WARNING **: 08:19:43.023: Unable to acquire session bus: Could not connect: No such file or directory
+
+(store.py:1694): Gdk-WARNING **: 08:19:52.195: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(store.py:1779): Gdk-WARNING **: 08:20:09.332: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”

@@ -1,0 +1,4 @@
+
+(bluetooth.py:1413): Gdk-WARNING **: 08:18:49.169: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(bluetooth.py:1470): Gdk-WARNING **: 08:18:55.338: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”

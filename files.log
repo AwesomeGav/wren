@@ -1,0 +1,9 @@
+** Message: 08:18:31.869: Connecting to org.freedesktop.Tracker3.Miner.Files
+nautilus-application-Message: 08:18:31.869: Failed to initialize display server connection: Unsupported or missing session type ''
+
+(org.gnome.Nautilus:1200): Gdk-WARNING **: 08:18:31.876: Cannot get portal org.freedesktop.portal.Inhibit version: GDBus.Error:org.freedesktop.DBus.Error.InvalidArgs: No such interface “org.freedesktop.portal.Inhibit”
+
+(org.gnome.Nautilus:1200): GVFS-RemoteVolumeMonitor-WARNING **: 08:18:31.954: remote volume monitor with dbus name org.gtk.vfs.UDisks2VolumeMonitor is not supported
+
+(org.gnome.Nautilus:1200): Gtk-WARNING **: 08:18:41.986: GtkColumnListView 0x55c9ce5d8540 (listview) reported min width -48, but sizes must be >= 0
+WARNING: Glycin running without sandbox. Bubblewrap (bwrap) doesn't work in the environment.
