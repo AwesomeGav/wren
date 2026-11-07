@@ -991,82 +991,85 @@ class Pages:
         self.passkeys(box)
         return box
 
-    # Passwords and passkeys: Bitwarden in Firefox, plus the app
-    BW_GUID = "{446900e4-71c2-419f-a6a7-df9c091e268b}"
-    BW_APP = "com.bitwarden.desktop"
-
-    def _bw_in_firefox(self):
-        try:
-            data = json.load(open("/etc/firefox/policies/policies.json"))
-            return self.BW_GUID in data.get("policies", {}).get("ExtensionSettings", {})
-        except (OSError, ValueError):
-            return False
-
-    def _bw_app_installed(self):
-        return self.BW_APP in run(["flatpak", "list", "--app", "--columns=application"], 10).split()
-
+    # Floe Passkeys: the built-in passkey authenticator
     def passkeys(self, box):
-        card = self.group(box, "Passwords and passkeys")
-        box.append(label("Floe uses Bitwarden, a free password manager, to keep your passwords and passkeys. "
-                         "When a site like Google asks you to sign in, Bitwarden offers the right one and signs "
-                         "you in. Your passkeys also work on your phone with the Bitwarden app.",
-                         "row-sub", wrap=True, margin_top=8, margin_start=2, max_width_chars=80))
+        try:
+            import passkeys as pk
+        except Exception:
+            return
+        off_flag = os.path.join(os.path.expanduser("~"), ".config", "wren", "passkeys-off")
+        card = self.group(box, "Passkeys")
 
-        quiet = {"on": False}
-
-        def set_firefox(on):
-            if quiet["on"]:
-                return
-
-            def work():
-                return ok(["pkexec", "/usr/lib/wren/passkeys-helper.sh", "enable" if on else "disable"], 120)
-
-            def done(result):
-                if result:
-                    self.win.toast("Restart Firefox, then click the Bitwarden icon to sign in" if on
-                                   else "Bitwarden will be removed from Firefox when it restarts")
-                else:
-                    self.win.toast("Bitwarden wasn't changed")
-                    quiet["on"] = True
-                    fx_switch.set_active(self._bw_in_firefox())
-                    quiet["on"] = False
-            background(work, done)
-        fx_switch = switch(self._bw_in_firefox(), set_firefox)
-        card.row("web-browser-symbolic", "Bitwarden in Firefox", "Fills in passwords and passkeys on websites",
-                 fx_switch)
-
-        app_slot = Gtk.Box(valign=Gtk.Align.CENTER)
-
-        def show_app_state(installed):
-            child = app_slot.get_first_child()
-            if child:
-                app_slot.remove(child)
-            if installed:
-                app_slot.append(button("Open", lambda: spawn(["flatpak", "run", self.BW_APP])))
+        def set_on(on):
+            if on:
+                try:
+                    os.remove(off_flag)
+                except OSError:
+                    pass
+                spawn(["wren-passkeys"])
             else:
-                app_slot.append(button("Install", install_app, primary=True))
+                os.makedirs(os.path.dirname(off_flag), exist_ok=True)
+                open(off_flag, "w").close()
+                spawn(["pkill", "-f", "passkeys --daemon"])
+        card.row("dialog-password-symbolic", "Floe Passkeys", "Sign in to websites and apps with a passkey",
+                 switch(not os.path.exists(off_flag), set_on))
 
-        def install_app():
-            self.win.toast("Installing Bitwarden. This can take a few minutes.")
-            child = app_slot.get_first_child()
-            if child:
-                child.set_sensitive(False)
+        pin_slot = Gtk.Box(valign=Gtk.Align.CENTER)
 
-            def work():
-                run(["flatpak", "remote-add", "--user", "--if-not-exists", "flathub",
-                     "https://dl.flathub.org/repo/flathub.flatpakrepo"], 60)
-                return ok(["flatpak", "install", "--user", "-y", "--noninteractive", "flathub", self.BW_APP], 1800)
+        def change_pin():
+            dlg = Adw.AlertDialog(heading="Change passkey PIN" if pk.has_pin() else "Set a passkey PIN")
+            form = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+            old = Gtk.PasswordEntry(placeholder_text="Current PIN", show_peek_icon=True, visible=pk.has_pin())
+            new1 = Gtk.PasswordEntry(placeholder_text="New PIN (at least 4 characters)", show_peek_icon=True)
+            new2 = Gtk.PasswordEntry(placeholder_text="New PIN again", show_peek_icon=True)
+            for w in (old, new1, new2):
+                form.append(w)
+            dlg.set_extra_child(form)
+            dlg.add_response("cancel", "Cancel")
+            dlg.add_response("save", "Save PIN")
+            dlg.set_response_appearance("save", Adw.ResponseAppearance.SUGGESTED)
 
-            def done(result):
-                self.win.toast("Bitwarden is installed" if result else "Bitwarden couldn't be installed. Check your internet connection.")
-                show_app_state(self._bw_app_installed())
-            background(work, done)
+            def done(_d, resp):
+                if resp != "save":
+                    return
+                if len(new1.get_text()) < 4 or new1.get_text() != new2.get_text():
+                    self.win.toast("The new PINs must match and be at least 4 characters")
+                    return
+                background(lambda: pk.set_pin(new1.get_text(), old.get_text() or None),
+                           lambda r: self.win.toast("Passkey PIN saved" if r else "The current PIN isn't right"))
+            dlg.connect("response", done)
+            dlg.present(self.win)
+        pin_slot.append(button("Change" if pk.has_pin() else "Set PIN", change_pin))
+        card.row("system-lock-screen-symbolic", "Passkey PIN", "Asked for every time you use a passkey", pin_slot)
 
-        card.row("dialog-password-symbolic", "Bitwarden app", "See and edit everything you've saved", app_slot)
-        show_app_state(False)
-        background(self._bw_app_installed, show_app_state)
-        card.row("phone-symbolic", "On your phone", "Get Bitwarden from the App Store or Google Play",
-                 on_click=lambda: Gio.AppInfo.launch_default_for_uri("https://bitwarden.com/download/", None))
+        saved = self.group(box, "Saved passkeys")
+        items = pk.list_passkeys()
+        if not items:
+            saved.row("dialog-information-symbolic", "No passkeys yet",
+                      "When a site offers to create a passkey, Floe saves it here")
+        for item in items:
+            def remove(item=item):
+                dlg = Adw.AlertDialog(heading=f"Delete the passkey for {item['site']}?",
+                                      body="You won't be able to sign in with it any more. Make sure you have "
+                                           "another way to sign in to this account first.")
+                dlg.add_response("cancel", "Cancel")
+                dlg.add_response("delete", "Delete")
+                dlg.set_response_appearance("delete", Adw.ResponseAppearance.DESTRUCTIVE)
+
+                def done(_d, resp):
+                    if resp == "delete" and pk.delete_passkey(item["id"]):
+                        self.win.toast("Passkey deleted")
+                        self.win.open("accounts")
+                dlg.connect("response", done)
+                dlg.present(self.win)
+            when = GLib.DateTime.new_from_unix_local(item["created"]).format("%B %-d, %Y") if item["created"] else ""
+            saved.row("web-browser-symbolic", item["site"],
+                      ", ".join(x for x in (item["user"] or item["display"], f"saved {when}" if when else "") if x),
+                      button("Delete", remove))
+        box.append(label("Your passkeys are kept on this computer and locked with your passkey PIN. When a site "
+                         "asks you to sign in with a passkey or a security key, Floe asks for your PIN and signs "
+                         "you in. In Chrome, choose \u201cUse a different device\u201d, then \u201cUSB security key\u201d.",
+                         "row-sub", wrap=True, margin_top=8, margin_start=2, max_width_chars=80))
 
     # -------------------------------------------------------- Time & language
     def time(self):
@@ -1255,7 +1258,7 @@ class Window(Adw.ApplicationWindow):
         "storage": "disk space trash", "about": "device name hostname specs ram cpu",
         "devices": "bluetooth mouse touchpad trackpad scroll pointer", "network": "wifi wi-fi internet airplane ip",
         "personalization": "background wallpaper text size font", "apps": "default browser uninstall",
-        "accounts": "password user passkey passkeys bitwarden google sign in login", "time": "date clock timezone keyboard layout language",
+        "accounts": "password user passkey passkeys security key sign in login pin", "time": "date clock timezone keyboard layout language",
         "update": "software upgrade",
     }
 

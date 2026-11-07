@@ -33,13 +33,14 @@ jobs:
             pacman-
 
       - name: Install build tools
-        run: pacman -Syu --noconfirm archiso python zstd
+        run: pacman -Syu --noconfirm archiso python zstd python-cryptography python-fido2
 
       - name: Check scripts for syntax errors
         run: |
           for f in build.sh wren-setup live/usr/lib/wren/install-backend.sh tests/*.sh migrations/*.sh rootfs/usr/lib/wren/*.sh rootfs/usr/local/bin/wren-update; do bash -n "$f"; done
           python -m py_compile rootfs/usr/lib/wren/*.py live/usr/lib/wren/installer.py
           python tests/test-greeter.py
+          python tests/test-passkeys.py
 
       - name: Build the ISO
         run: bash build.sh

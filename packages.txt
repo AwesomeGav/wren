@@ -26,6 +26,7 @@ foot
 # --- Wren Shell + Installer (Python GTK4) -------------------------------
 python
 python-gobject
+python-cryptography
 python-pillow
 gtk4
 libadwaita

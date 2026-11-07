@@ -1,0 +1,11 @@
+#!/bin/sh
+# Floe Passkeys: runs the built-in passkey authenticator for this session
+# (one copy only; restarted if it ever stops). Off if ~/.config/wren/passkeys-off exists.
+[ -f "$HOME/.config/wren/passkeys-off" ] && exit 0
+LOCK="${XDG_RUNTIME_DIR:-/tmp}/floe-passkeys.lock"
+exec 9>"$LOCK"
+flock -n 9 || exit 0
+while [ ! -f "$HOME/.config/wren/passkeys-off" ]; do
+  PYTHONPATH=/usr/lib/wren python3 -m passkeys --daemon 2>>"$HOME/.cache/wren/passkeys.log"
+  sleep 3
+done
