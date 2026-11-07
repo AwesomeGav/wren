@@ -126,10 +126,10 @@ class Prompt(Adw.Application):
             if not r.get("has_pin"):
                 self.sub.set_markup(self.sub.get_label() + "\n\nFirst, choose a passkey PIN. You'll type it "
                                     "whenever you sign in with a passkey. Use at least 4 characters.")
-                self.pin.set_placeholder_text("New passkey PIN")
+                self.pin.set_property("placeholder-text", "New passkey PIN")
                 self.pin2.set_visible(True)
             else:
-                self.pin.set_placeholder_text("Passkey PIN")
+                self.pin.set_property("placeholder-text", "Passkey PIN")
             self.ok.set_label("Save passkey")
         elif kind == "signin":
             self.title.set_text(f"Sign in to {r.get('rp', '')}")
@@ -147,7 +147,7 @@ class Prompt(Adw.Application):
             else:
                 who = (accts[0].get("user") or accts[0].get("display")) if accts else ""
                 self.sub.set_text((f"as {who}. " if who else "") + "Enter your passkey PIN to continue.")
-            self.pin.set_placeholder_text("Passkey PIN")
+            self.pin.set_property("placeholder-text", "Passkey PIN")
             self.ok.set_label("Sign in")
         else:  # already saved
             self.title.set_text("This passkey is already saved")

@@ -14,6 +14,7 @@ chmod 777 "$R/var/tmp/shots"
 cat > "$R/var/tmp/scenes.sh" <<'EOF'
 shot() { sleep "$2"; grim "/var/tmp/shots/$1.png"; }
 sleep 2
+pkill -x swayidle   # no screen saver or lock in the middle of the screenshots
 wren-shell --service >/var/tmp/shots/shell.log 2>&1 &
 shot 1-desktop 8
 wren-shell launcher; shot 2-launcher 3; wren-shell launcher
