@@ -4,7 +4,7 @@ After=systemd-udevd.service systemd-modules-load.service
 
 [Service]
 Type=simple
-Environment=PYTHONPATH=/usr/lib/wren
+Environment=PYTHONPATH=/usr/lib/wren PYTHONUNBUFFERED=1
 ExecStartPre=-/usr/bin/modprobe uhid
 ExecStart=/usr/bin/python3 -m passkeys --system
 Restart=always

@@ -9,6 +9,7 @@ with a key made from your passkey PIN; every sign-in asks for that PIN.
 
   python3 -m passkeys --system    run the security key (system service, as root)
   python3 -m passkeys --handle    answer one request read from stdin (as the person)
+  python3 -m passkeys status      check that browsers can reach it
   python3 -m passkeys list        print saved passkeys as JSON
   python3 -m passkeys delete ID   remove one
 """
@@ -32,6 +33,13 @@ CREDS = os.path.join(STORE, "passkeys.json")
 LOCK = os.path.join(STORE, "pin.json")
 AAGUID = bytes.fromhex("f10e0000a5c04f1e9c0d1f10e0000001")  # identifies "Floe Passkeys"
 PROMPT = [sys.executable, "-m", "passkey_prompt"]
+COMMANDS = {0x01: "save a passkey", 0x02: "sign in", 0x04: "getInfo", 0x06: "clientPIN", 0x08: "next sign-in",
+            0x0B: "selection"}
+
+
+def log(*parts):
+    """Goes to the system journal: journalctl -u floe-passkeys"""
+    print("floe-passkeys:", *parts, file=sys.stderr, flush=True)
 
 
 # ---------------------------------------------------------------- tiny CBOR
@@ -240,6 +248,14 @@ class Authenticator:
             return bytes([ERR_UNSUPPORTED_ALGORITHM])
         rp, user = p[2], p[3]
         rp_id = rp["id"]
+        if rp_id == "make.me.blink":
+            # Firefox's "which security key do you want to use?" check: a throwaway answer
+            # (nothing saved, no prompt) so Floe Passkeys counts as chosen straight away.
+            priv = ec.generate_private_key(ec.SECP256R1())
+            cred_id = secrets.token_bytes(32)
+            auth_data = (hashlib.sha256(rp_id.encode()).digest() + bytes([0x01 | 0x40]) + struct.pack(">I", 0)
+                         + AAGUID + struct.pack(">H", len(cred_id)) + cred_id + cbor_enc(cose_key(priv.public_key())))
+            return bytes([OK]) + cbor_enc({1: "none", 2: auth_data, 3: {}})
         creds = _read(CREDS, {})
         for ex in p.get(5) or []:
             if b64(ex.get("id", b"")) in creds and creds[b64(ex["id"])]["rp"] == rp_id:
@@ -285,6 +301,12 @@ class Authenticator:
             found = [cid for cid, c in creds.items() if c["rp"] == rp_id]
         if not found:
             return bytes([ERR_NO_CREDENTIALS])
+        if (p.get(5) or {}).get("up") is False:
+            # A browser's silent check ("does this key have one of these?"), done before asking
+            # the person. Answer without a prompt; nothing here can be used to sign in.
+            auth_data = hashlib.sha256(rp_id.encode()).digest() + bytes([0x00]) + struct.pack(">I", 0)
+            return bytes([OK]) + cbor_enc({1: {"id": unb64(found[0]), "type": "public-key"}, 2: auth_data,
+                                           3: bytes.fromhex("3006020101020101")})
         answer = self.ask({"kind": "signin", "rp": rp_id,
                            "accounts": [{"user": creds[c].get("user_name", ""),
                                          "display": creds[c].get("display", "")} for c in found]})
@@ -340,7 +362,9 @@ class CtapHid:
         cid = struct.unpack(">I", pkt[:4])[0]
         if pkt[4] & 0x80:
             cmd, n = pkt[4], struct.unpack(">H", pkt[5:7])[0]
-            if cmd == CTAPHID_CANCEL:
+            if cmd == CTAPHID_CANCEL:  # the site gave up: close Floe's prompt
+                if self.busy == cid and hasattr(self.auth, "cancel"):
+                    self.auth.cancel()
                 return
             self.partial[cid] = [cmd, n, bytearray(pkt[7:7 + n]), 0]
         else:
@@ -385,7 +409,7 @@ class CtapHid:
             try:
                 result = self.auth.handle(data)
             except Exception as e:  # never leave the browser hanging
-                print("passkeys:", repr(e), file=sys.stderr)
+                log("error:", repr(e))
                 result = bytes([0x7F])
             done.set()
             self._reply(cid, CTAPHID_CBOR, result)
@@ -412,9 +436,11 @@ def run_device(handler):
     create += b"Floe Passkeys".ljust(128, b"\0") + b"floe-passkeys".ljust(64, b"\0") + b"floe".ljust(64, b"\0")
     create += struct.pack("<HHIIII", len(REPORT), 0x03, 0x1209, 0xF10E, 1, 0) + REPORT.ljust(4096, b"\0")
     os.write(fd, create)
+    threading.Thread(target=open_up_node, daemon=True).start()
 
     class Router:
         handle = staticmethod(handler)
+        cancel = staticmethod(cancel_request)
     hid = CtapHid(Router(), send)
     try:
         while True:
@@ -430,6 +456,46 @@ def run_device(handler):
     finally:
         os.write(fd, struct.pack("<I", UHID_DESTROY))
         os.close(fd)
+
+
+def find_node():
+    """/dev/hidrawN of the Floe Passkeys device, or None."""
+    import glob
+    for d in glob.glob("/sys/class/hidraw/hidraw*"):
+        try:
+            uevent = open(os.path.join(d, "device", "uevent")).read()
+        except OSError:
+            continue
+        if "HID_ID=0003:00001209:0000F10E" in uevent:
+            return "/dev/" + os.path.basename(d)
+    return None
+
+
+def open_up_node():
+    """Browsers open the security key as the signed-in person. The udev rule allows that;
+    this does the same in case the rule hasn't applied (requests still need the PIN)."""
+    for _ in range(50):
+        node = find_node()
+        if node and os.path.exists(node):
+            time.sleep(0.5)  # let udev finish with it first
+            try:
+                os.chmod(node, 0o666)
+            except OSError as e:
+                log("couldn't open up", node, repr(e))
+            log("ready as", node, oct(os.stat(node).st_mode & 0o777))
+            return
+        time.sleep(0.1)
+    log("the security key didn't appear (is the uhid module loaded?)")
+
+
+_current = {"proc": None}
+
+
+def cancel_request():
+    proc = _current["proc"]
+    if proc and proc.poll() is None:
+        log("the site cancelled; closing the prompt")
+        proc.kill()
 
 
 def active_desktop():
@@ -471,28 +537,46 @@ def active_desktop():
 def answer_as_user(data):
     """Root side: hand the request to the person at the screen, running as them
     (their passkeys, their PIN, the prompt on their screen)."""
+    what = COMMANDS.get(data[0], hex(data[0])) if data else "empty"
     if data[:1] == b"\x04":  # getInfo needs nobody
+        log("a browser found the security key")
         return bytes([OK]) + cbor_enc(Authenticator.get_info())
     if data[:1] == b"\x0b":  # "is this the key you want?"
         return bytes([OK])
+    if os.environ.get("FLOE_PASSKEY_DIRECT"):  # automated tests: no desktop to route to
+        return Authenticator(ask_person).handle(data)
     who = active_desktop()
     if not who:
+        log(what, "- no one is signed in at the screen; refused")
         return bytes([ERR_OPERATION_DENIED])
     name, uid, home, run, sock = who
     if os.path.exists(os.path.join(home, ".config", "wren", "passkeys-off")):
+        log(what, "- passkeys are turned off in Settings for", name)
         return bytes([ERR_OPERATION_DENIED])
+    log(what, "- asking", name, "on", sock)
     env = {"HOME": home, "USER": name, "LOGNAME": name, "XDG_RUNTIME_DIR": run, "WAYLAND_DISPLAY": sock,
            "DBUS_SESSION_BUS_ADDRESS": f"unix:path={run}/bus", "XDG_CONFIG_DIRS": "/etc/xdg/wren:/etc/xdg",
-           "PYTHONPATH": "/usr/lib/wren", "PATH": "/usr/local/bin:/usr/bin", "LANG": os.environ.get("LANG", "C.UTF-8")}
+           "PYTHONPATH": "/usr/lib/wren", "PATH": "/usr/local/bin:/usr/bin", "LANG": os.environ.get("LANG", "C.UTF-8"),
+           "PYTHONUNBUFFERED": "1"}
     try:
-        proc = subprocess.run(["setpriv", f"--reuid={uid}", f"--regid={pwd_gid(uid)}", "--init-groups",
-                               sys.executable, "-m", "passkeys", "--handle"],
-                              input=data, capture_output=True, timeout=200, env=env)
-        if proc.stderr:
-            print("passkeys:", proc.stderr.decode(errors="replace")[-500:], file=sys.stderr)
-        return proc.stdout or bytes([0x7F])
+        proc = subprocess.Popen(["setpriv", f"--reuid={uid}", f"--regid={pwd_gid(uid)}", "--init-groups",
+                                 sys.executable, "-m", "passkeys", "--handle"], cwd=home if os.path.isdir(home) else "/",
+                                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+        _current["proc"] = proc
+        try:
+            out, err = proc.communicate(data, timeout=200)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            out, err = proc.communicate()
+        _current["proc"] = None
+        if err:
+            log(err.decode(errors="replace")[-800:].strip())
+        if proc.returncode < 0:
+            return bytes([0x2D])  # cancelled
+        log(what, "- answered", hex(out[0]) if out else "nothing")
+        return out or bytes([0x7F])
     except (OSError, subprocess.SubprocessError) as e:
-        print("passkeys:", repr(e), file=sys.stderr)
+        log(what, "- couldn't ask:", repr(e))
         return bytes([0x7F])
 
 
@@ -508,12 +592,27 @@ def ask_person(request):
     try:
         env = dict(os.environ, PYTHONPATH="/usr/lib/wren")
         proc = subprocess.run(PROMPT, input=json.dumps(request), capture_output=True, text=True, timeout=180, env=env)
-        if proc.returncode and proc.stderr:
-            print("passkeys prompt:", proc.stderr[-500:], file=sys.stderr)
+        if proc.stderr.strip():
+            log("prompt:", proc.stderr[-600:].strip())
         out = proc.stdout.strip()
         return json.loads(out) if out else None
-    except (OSError, ValueError, subprocess.SubprocessError):
+    except (OSError, ValueError, subprocess.SubprocessError) as e:
+        log("prompt failed:", repr(e))
         return None
+
+
+def status():
+    """What `wren-passkeys status` prints: is everything in place?"""
+    node = find_node()
+    print("security key:", node or "not present (is floe-passkeys.service running?)")
+    if node:
+        st = os.stat(node)
+        print("permissions:", oct(st.st_mode & 0o777), "ok" if st.st_mode & 0o006 == 0o006 or os.access(node, os.R_OK | os.W_OK)
+              else "- browsers can't open it")
+    who = active_desktop()
+    print("person at the screen:", f"{who[0]} on {who[4]}" if who else "none found")
+    print("passkey PIN set:", "yes" if has_pin() else "no (it's chosen the first time you save a passkey)")
+    print("saved passkeys:", len(list_passkeys()))
 
 
 if __name__ == "__main__":
@@ -523,6 +622,8 @@ if __name__ == "__main__":
     elif cmd == "--handle":  # one request, answered as the signed-in person
         req = sys.stdin.buffer.read()
         sys.stdout.buffer.write(Authenticator(ask_person).handle(req))
+    elif cmd == "status":
+        status()
     elif cmd == "list":
         print(json.dumps(list_passkeys(), indent=1))
     elif cmd == "delete" and len(sys.argv) > 2:

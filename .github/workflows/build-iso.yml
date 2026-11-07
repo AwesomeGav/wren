@@ -15,6 +15,17 @@ permissions:
   contents: write
 
 jobs:
+  # Floe Passkeys through a real kernel security-key device, the way a browser uses it
+  passkeys-device:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check Floe Passkeys as a browser would
+        run: |
+          sudo apt-get install -y linux-modules-extra-$(uname -r) >/dev/null 2>&1 || true
+          sudo pip install --break-system-packages -q fido2 cryptography
+          sudo python3 tests/test-passkeys-kernel.py
+
   build:
     runs-on: ubuntu-latest
     container:

@@ -1,4 +1,6 @@
 #!/bin/sh
-# Floe Passkeys now runs as a system service (floe-passkeys.service) from start-up.
-# Kept so older sessions that still call this don't fail.
-exit 0
+# Floe Passkeys runs as a system service (floe-passkeys.service).
+#   wren-passkeys status   checks that browsers can reach it
+#   wren-passkeys list     saved passkeys (JSON)
+[ $# -eq 0 ] && set -- status
+exec env PYTHONPATH=/usr/lib/wren python3 -m passkeys "$@"

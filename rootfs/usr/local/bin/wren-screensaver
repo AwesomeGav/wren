@@ -1,0 +1,8 @@
+#!/bin/sh
+# Floe's screen saver (started by wren-idle, or "Preview" in Settings).
+#   wren-screensaver --stop   ends it (with its fade)
+if [ "$1" = "--stop" ]; then
+  pkill -TERM -f "python3 -m screensaver" 2>/dev/null
+  exit 0
+fi
+exec env PYTHONPATH=/usr/lib/wren python3 -m screensaver "$@"

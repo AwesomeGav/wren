@@ -1,6 +1,7 @@
 #!/bin/sh
 # Locks the screen / puts the computer to sleep after the times chosen in Settings.
-# WREN_LOCK_AFTER and WREN_SLEEP_AFTER are in seconds; 0 means never.
+# WREN_SAVER_AFTER, WREN_LOCK_AFTER and WREN_SLEEP_AFTER are in seconds; 0 means never.
+WREN_SAVER_AFTER=60
 WREN_LOCK_AFTER=600
 WREN_SLEEP_AFTER=0
 [ -r "$HOME/.config/wren/settings.env" ] && . "$HOME/.config/wren/settings.env"
@@ -11,6 +12,9 @@ if [ -d /run/archiso ]; then  # live USB: never lock or sleep
 fi
 LOCK='wren-lock &'
 set -- -w
+# Screen saver: any use of the computer ends it (and it ends itself too)
+[ "$WREN_SAVER_AFTER" -gt 0 ] 2>/dev/null && \
+  set -- "$@" timeout "$WREN_SAVER_AFTER" 'wren-screensaver &' resume 'wren-screensaver --stop'
 [ "$WREN_LOCK_AFTER" -gt 0 ] 2>/dev/null && set -- "$@" timeout "$WREN_LOCK_AFTER" "$LOCK"
 [ "$WREN_SLEEP_AFTER" -gt 0 ] 2>/dev/null && set -- "$@" timeout "$WREN_SLEEP_AFTER" 'systemctl suspend'
 # Battery saver: dim the screen after 1 minute of no use

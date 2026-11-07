@@ -64,6 +64,10 @@ gnome-calculator >/dev/null 2>&1 &
 for i in 1 2 3 4 5 6 7 8; do grim "/var/tmp/shots/15-open-anim-$i.png"; done
 sleep 2; pkill -x gnome-calculator; sleep 1
 cp "$HOME/.cache/wren/panel.log" /var/tmp/shots/panel.log 2>/dev/null
+# Screen saver: fading in, then a few seconds later
+wren-screensaver --preview >/var/tmp/shots/screensaver.log 2>&1 & pid=$!
+shot 18-screensaver-a 4; shot 18-screensaver-b 4
+wren-screensaver --stop; sleep 1; kill $pid 2>/dev/null
 # Lock screen last: a killed locker leaves the session locked
 wren-lock >/var/tmp/shots/lock.log 2>&1 & shot 14-lock-screen 5
 wren-logout

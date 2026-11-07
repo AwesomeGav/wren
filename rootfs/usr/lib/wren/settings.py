@@ -142,6 +142,7 @@ def save_prefs(prefs):
         json.dump(prefs, f, indent=2)
     env = {
         "WREN_WALLPAPER": prefs.get("wallpaper", wrenlib.DEFAULT_WALLPAPER),
+        "WREN_SAVER_AFTER": str(prefs.get("saver_after", 60)),
         "WREN_LOCK_AFTER": str(prefs.get("lock_after", 600)),
         "WREN_SLEEP_AFTER": str(prefs.get("sleep_after", 0)),
     }
@@ -530,6 +531,13 @@ class Pages:
             self.prefs[key] = opts[i][0]
             self.save()
             spawn(["wren-idle"])
+        saver_opts = [(30, "30 seconds"), (60, "1 minute"), (120, "2 minutes"), (300, "5 minutes"), (0, "Never")]
+        saver_pick = dropdown([t for _, t in saver_opts], pick(saver_opts, "saver_after", 60),
+                              lambda i: set_opt("saver_after", saver_opts, i))
+        saver_box = Gtk.Box(spacing=8, valign=Gtk.Align.CENTER)
+        saver_box.append(button("Preview", lambda: spawn(["wren-screensaver", "--preview"])))
+        saver_box.append(saver_pick)
+        card.row("video-display-symbolic", "Screen saver", "Drifting ice and a clock when you step away", saver_box)
         card.row("system-lock-screen-symbolic", "Lock the screen after", "",
                  dropdown([t for _, t in lock_opts], pick(lock_opts, "lock_after", 600),
                           lambda i: set_opt("lock_after", lock_opts, i)))
@@ -1255,7 +1263,7 @@ class Window(Adw.ApplicationWindow):
 
     KEYWORDS = {
         "display": "screen monitor brightness resolution scale", "sound": "audio volume speaker microphone headphones",
-        "notifications": "do not disturb dnd", "power": "battery sleep lock screen idle",
+        "notifications": "do not disturb dnd", "power": "battery sleep lock screen idle screen saver screensaver",
         "storage": "disk space trash", "about": "device name hostname specs ram cpu",
         "devices": "bluetooth mouse touchpad trackpad scroll pointer", "network": "wifi wi-fi internet airplane ip",
         "personalization": "background wallpaper text size font", "apps": "default browser uninstall",
