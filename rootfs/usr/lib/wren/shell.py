@@ -80,7 +80,7 @@ window.wren-layer { background: transparent; }
 .backdrop.shown { background-color: @wren_glass_tint; }
 .backdrop.clear, .backdrop.clear.shown { background-color: transparent; }
 /* No frosted backdrop behind these, so the panel itself is nearly solid to stay readable over windows */
-.backdrop.clear .sheet { background-color: @wren_glass_strong; }
+.backdrop.clear .sheet { background-color: alpha(@wren_surface, 0.97); }
 .sheet { opacity: 0; transform: translateY(10px) scale(0.975);
          transition: opacity 90ms ease-out, transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1.06); }
 .sheet.shown { opacity: 1; transform: none; }

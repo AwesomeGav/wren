@@ -1,6 +1,9 @@
 #!/bin/sh
 # Started once when the Wren desktop starts (by Wayfire, or labwc in the fallback session).
 
+# Icons, cursor, fonts and light/dark for GNOME apps (needs this session's D-Bus, so done here)
+wren-theme gsettings >/dev/null 2>&1 &
+
 # Let D-Bus-started apps and portals find this desktop
 dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_CONFIG_DIRS \
   XCURSOR_SIZE XCURSOR_THEME >/dev/null 2>&1

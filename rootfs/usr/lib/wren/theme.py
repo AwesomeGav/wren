@@ -322,6 +322,10 @@ if __name__ == "__main__":
                 quiet(["labwc", "--reconfigure"])
     elif cmd == "blur":
         make_blur()
+    elif cmd == "gsettings":
+        # Re-apply light/dark, icons, cursor and fonts for GNOME apps (cheap; run at each login)
+        t = load_theme()
+        apply_settings(t, palette(t), "Wren" if t["accent"] == "teal" else "Wren-" + t["accent"].title())
     elif cmd == "wm":
         wm_config()
     elif cmd == "panel":
