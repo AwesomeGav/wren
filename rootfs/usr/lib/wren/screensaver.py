@@ -9,6 +9,7 @@ frame rate, lower on battery, so it costs very little.
   python3 -m screensaver            run it
   python3 -m screensaver --preview  run it from Settings (ignores the click that opened it)
 """
+import faulthandler
 import fcntl
 import math
 import os
@@ -32,6 +33,10 @@ sys.path.insert(0, "/usr/lib/wren")
 import wrenlib  # noqa: E402
 
 PREVIEW = "--preview" in sys.argv
+
+
+def log(*parts):
+    print("screensaver:", *parts, file=sys.stderr, flush=True)
 
 
 def rgba(r, g, b, a=1.0):
@@ -183,6 +188,8 @@ class Scene(Gtk.Widget):
         w, h = self.get_width(), self.get_height()
         if not w or not h:
             return
+        if not self.size[0]:
+            log(f"first frame {w}x{h} after {time.monotonic() - self.app.t0:.2f}s")
         if self.size != (w, h):
             self.populate(w, h)
         t = self.app.clock()
@@ -293,7 +300,7 @@ class Saver(Gtk.Application):
         for i in range(max(1, monitors.get_n_items())):
             self.add_screen(monitors.get_item(i) if monitors.get_n_items() else None, i)
         self.hold()
-        print("screen saver showing on", len(self.windows), "screen(s)", file=sys.stderr, flush=True)
+        log("showing on", len(self.windows), "screen(s)")
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, lambda: self.end() or True)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, lambda: self.end() or True)
         self.tick()
@@ -352,12 +359,15 @@ class Saver(Gtk.Application):
 
 
 def main():
+    faulthandler.register(signal.SIGUSR1)  # `pkill -USR1 -f "m screensaver"` prints where it is
+    log("starting", "(preview)" if PREVIEW else "")
     run = os.environ.get("XDG_RUNTIME_DIR", "/tmp")
     lock = open(os.path.join(run, "floe-screensaver.lock"), "w")
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
-        return  # already showing
+        log("already showing")
+        return
     if not PREVIEW and os.system("pidof -q hyprlock") == 0:
         return  # the lock screen is up; nothing to cover
     Saver().run([])

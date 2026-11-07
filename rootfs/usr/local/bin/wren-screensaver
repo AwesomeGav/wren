@@ -5,4 +5,5 @@ if [ "$1" = "--stop" ]; then
   pkill -TERM -f "python3 -m screensaver" 2>/dev/null
   exit 0
 fi
-exec env PYTHONPATH=/usr/lib/wren python3 -m screensaver "$@"
+mkdir -p "$HOME/.cache/wren"
+exec env PYTHONPATH=/usr/lib/wren python3 -m screensaver "$@" 2>>"$HOME/.cache/wren/screensaver.log"
